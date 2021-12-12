@@ -77,6 +77,14 @@ func TestT2FuncGen(t *testing.T) {
 				pkgdir: "./",
 			},
 		},
+		{
+			name: "string-interface{}",
+			args: args{
+				Tx:     "string",
+				Ty:     "interface{}",
+				pkgdir: "./",
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -13,6 +13,7 @@ var (
 		"stri32":     "si32",
 		"i32str":     "i32s",
 		"strf64":     "sf64",
+		"strobj":     "so",
 	}
 )
 
