@@ -1,9 +1,9 @@
-package si32
+package su8
 
 import "sort"
 
-// FilterMap : Filter & Modify []string slice, return []rune slice
-func FilterMap(arr []string, filter func(i int, e string) bool, modifier func(i int, e string) rune) (r []rune) {
+// FilterMap : Filter & Modify []string slice, return []byte slice
+func FilterMap(arr []string, filter func(i int, e string) bool, modifier func(i int, e string) byte) (r []byte) {
 	if modifier == nil {
 		panic("modifier cannot be nil")
 	}
@@ -28,18 +28,18 @@ var (
 )
 
 // Map2KVs : map to key slice & value slice
-func Map2KVs(m map[string]rune, less4key func(i string, j string) bool, less4value func(i rune, j rune) bool) (keys []string, values []rune) {
+func Map2KVs(m map[string]byte, less4key func(i string, j string) bool, less4value func(i byte, j byte) bool) (keys []string, values []byte) {
 
 	if m == nil {
 		return nil, nil
 	}
 	if len(m) == 0 {
-		return []string{}, []rune{}
+		return []string{}, []byte{}
 	}
 
 	type kv struct {
 		key   string
-		value rune
+		value byte
 	}
 
 	kvSlc := []kv{}
@@ -74,8 +74,8 @@ func Map2KVs(m map[string]rune, less4key func(i string, j string) bool, less4val
 }
 
 // MapMerge:
-func MapMerge(ms ...map[string]rune) map[string][]rune {
-	res := map[string][]rune{}
+func MapMerge(ms ...map[string]byte) map[string][]byte {
+	res := map[string][]byte{}
 	for _, m := range ms {
 	srcMap:
 		for k, v := range m {

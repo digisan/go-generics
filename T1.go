@@ -14,7 +14,7 @@ var mAliasTyp = map[string]string{
 
 // type -> package name
 var mTypPkg = map[string]string{
-	"int":         "i32",
+	"int":         "i64",
 	"int8":        "i8",
 	"int16":       "i16",
 	"int32":       "i32",
@@ -23,7 +23,7 @@ var mTypPkg = map[string]string{
 	"float32":     "f32",
 	"float64":     "f64",
 	"bool":        "boolean",
-	"uint":        "u32",
+	"uint":        "u64",
 	"uint8":       "u8",
 	"byte":        "u8",
 	"uint16":      "u16",

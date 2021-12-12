@@ -7,7 +7,7 @@ import (
 
 func TestDelEleOrderly(t *testing.T) {
 	type args struct {
-		arr *[]int
+		arr *[]rune
 		i   int
 	}
 	tests := []struct {
@@ -18,7 +18,7 @@ func TestDelEleOrderly(t *testing.T) {
 		{
 			name: "OK",
 			args: args{
-				arr: &[]int{1, 2, 3, 4},
+				arr: &[]rune{1, 2, 3, 4},
 				i:   0,
 			},
 		},
@@ -33,7 +33,7 @@ func TestDelEleOrderly(t *testing.T) {
 
 func TestDelEle(t *testing.T) {
 	type args struct {
-		arr *[]int
+		arr *[]rune
 		i   int
 	}
 	tests := []struct {
@@ -44,7 +44,7 @@ func TestDelEle(t *testing.T) {
 		{
 			name: "OK",
 			args: args{
-				arr: &[]int{1, 2, 3, 4},
+				arr: &[]rune{1, 2, 3, 4},
 				i:   0,
 			},
 		},

@@ -1,20 +1,21 @@
-package i32
+package i64
 
 import (
 	"reflect"
+	"sort"
 	"unsafe"
 )
 
-func DelEleOrderly(arr *[]rune, i int) {
+func DelEleOrderly(arr *[]int, i int) {
 	*arr = append((*arr)[:i], (*arr)[i+1:]...)
 }
 
-func DelEle(arr *[]rune, i int) {
+func DelEle(arr *[]int, i int) {
 	(*arr)[i] = (*arr)[len(*arr)-1]
 	(*reflect.SliceHeader)(unsafe.Pointer(arr)).Len--
 }
 
-func Max(arr ...rune) rune {
+func Max(arr ...int) int {
 	if len(arr) == 0 {
 		panic("Max args at least has one element")
 	}
@@ -27,7 +28,7 @@ func Max(arr ...rune) rune {
 	return m
 }
 
-func MaxIdx(arr ...rune) (rune, int) {
+func MaxIdx(arr ...int) (int, int) {
 	if len(arr) == 0 {
 		panic("Max args at least has one element")
 	}
@@ -42,7 +43,7 @@ func MaxIdx(arr ...rune) (rune, int) {
 	return m, idx
 }
 
-func Min(arr ...rune) rune {
+func Min(arr ...int) int {
 	if len(arr) == 0 {
 		panic("Min args at least has one element")
 	}
@@ -55,7 +56,7 @@ func Min(arr ...rune) rune {
 	return m
 }
 
-func MinIdx(arr ...rune) (rune, int) {
+func MinIdx(arr ...int) (int, int) {
 	if len(arr) == 0 {
 		panic("Min args at least has one element")
 	}
@@ -71,17 +72,17 @@ func MinIdx(arr ...rune) (rune, int) {
 }
 
 // In : if arr has element e, return true. otherwise false
-func In(e rune, arr ...rune) bool {
+func In(e int, arr ...int) bool {
 	return IdxOf(e, arr...) != -1
 }
 
 // NotIn : if arr does NOT have element e, return true. otherwise false
-func NotIn(e rune, arr ...rune) bool {
+func NotIn(e int, arr ...int) bool {
 	return !In(e, arr...)
 }
 
 // IdxOf : returns the index of the first instance of e in slice, or -1 if e is not present in slice
-func IdxOf(e rune, arr ...rune) int {
+func IdxOf(e int, arr ...int) int {
 	for i, ele := range arr {
 		if ele == e {
 			return i
@@ -91,7 +92,7 @@ func IdxOf(e rune, arr ...rune) int {
 }
 
 // LastIdxOf : returns the index of the last instance of e in slice, or -1 if e is not present in slice
-func LastIdxOf(e rune, arr ...rune) int {
+func LastIdxOf(e int, arr ...int) int {
 	for i := len(arr) - 1; i >= 0; i-- {
 		if arr[i] == e {
 			return i
@@ -101,11 +102,11 @@ func LastIdxOf(e rune, arr ...rune) int {
 }
 
 // MkSet : remove repeated elements in arr
-func MkSet(arr ...rune) (set []rune) {
+func MkSet(arr ...int) (set []int) {
 	if arr == nil {
 		return nil
 	}
-	m := make(map[rune]struct{})
+	m := make(map[int]struct{})
 	for _, ele := range arr {
 		if _, ok := m[ele]; !ok {
 			set = append(set, ele)
@@ -113,13 +114,13 @@ func MkSet(arr ...rune) (set []rune) {
 		}
 	}
 	if len(set) == 0 {
-		return []rune{}
+		return []int{}
 	}
 	return
 }
 
 // Superset :
-func Superset(setA, setB []rune) bool {
+func Superset(setA, setB []int) bool {
 NEXT_B:
 	for _, b := range setB {
 		for _, a := range setA {
@@ -133,12 +134,12 @@ NEXT_B:
 }
 
 // Subset :
-func Subset(setA, setB []rune) bool {
+func Subset(setA, setB []int) bool {
 	return Superset(setB, setA)
 }
 
 // equal :
-func equal(setA, setB []rune) bool {
+func equal(setA, setB []int) bool {
 	if (setA == nil && setB != nil) || (setA != nil && setB == nil) {
 		return false
 	}
@@ -146,8 +147,8 @@ func equal(setA, setB []rune) bool {
 		return false
 	}
 
-	tmpA := make([]rune, len(setA))
-	tmpB := make([]rune, len(setB))
+	tmpA := make([]int, len(setA))
+	tmpB := make([]int, len(setB))
 	copy(tmpA, setA)
 	copy(tmpB, setB)
 
@@ -165,7 +166,7 @@ AGAIN:
 }
 
 // Equal
-func Equal(sets ...[]rune) bool {
+func Equal(sets ...[]int) bool {
 	for i := 0; i < len(sets)-1; i++ {
 		this := sets[i]
 		next := sets[i+1]
@@ -177,17 +178,17 @@ func Equal(sets ...[]rune) bool {
 }
 
 // SuperEq :
-func SuperEq(setA, setB []rune) bool {
+func SuperEq(setA, setB []int) bool {
 	return Superset(setA, setB) || Equal(setA, setB)
 }
 
 // SubEq :
-func SubEq(setA, setB []rune) bool {
+func SubEq(setA, setB []int) bool {
 	return Subset(setA, setB) || Equal(setA, setB)
 }
 
 // union :
-func union(setA, setB []rune) (set []rune) {
+func union(setA, setB []int) (set []int) {
 	if setA == nil && setB == nil {
 		return nil
 	}
@@ -198,7 +199,7 @@ func union(setA, setB []rune) (set []rune) {
 		return setA
 	}
 
-	m := make(map[rune]struct{})
+	m := make(map[int]struct{})
 	for _, a := range setA {
 		if _, ok := m[a]; !ok {
 			set = append(set, a)
@@ -212,13 +213,13 @@ func union(setA, setB []rune) (set []rune) {
 		}
 	}
 	if set == nil {
-		return []rune{}
+		return []int{}
 	}
 	return
 }
 
 // Union :
-func Union(sets ...[]rune) (set []rune) {
+func Union(sets ...[]int) (set []int) {
 	if len(sets) == 0 {
 		return nil
 	}
@@ -230,12 +231,12 @@ func Union(sets ...[]rune) (set []rune) {
 }
 
 // intersect :
-func intersect(setA, setB []rune) (set []rune) {
+func intersect(setA, setB []int) (set []int) {
 	if setA == nil || setB == nil {
 		return nil
 	}
 
-	copyA, copyB := make([]rune, len(setA)), make([]rune, len(setB))
+	copyA, copyB := make([]int, len(setA)), make([]int, len(setB))
 	copy(copyA, setA)
 	copy(copyB, setB)
 
@@ -251,13 +252,13 @@ AGAIN:
 		}
 	}
 	if set == nil {
-		return []rune{}
+		return []int{}
 	}
 	return
 }
 
 // Intersect :
-func Intersect(sets ...[]rune) (set []rune) {
+func Intersect(sets ...[]int) (set []int) {
 	if len(sets) == 0 {
 		return nil
 	}
@@ -268,11 +269,11 @@ func Intersect(sets ...[]rune) (set []rune) {
 	return set
 }
 
-func minus(setA, setB []rune) (set []rune) {
+func minus(setA, setB []int) (set []int) {
 	if setA == nil {
 		return nil
 	}
-	set = make([]rune, 0)
+	set = make([]int, 0)
 
 NEXT_A:
 	for _, a := range setA {
@@ -286,17 +287,17 @@ NEXT_A:
 	return
 }
 
-func Minus(setA []rune, setOthers ...[]rune) (set []rune) {
+func Minus(setA []int, setOthers ...[]int) (set []int) {
 	return minus(setA, Union(setOthers...))
 }
 
 // Reorder : any index must less than len(arr)
-func Reorder(arr []rune, indices []int) (orders []rune) {
+func Reorder(arr []int, indices []int) (orders []int) {
 	if arr == nil || indices == nil {
 		return nil
 	}
 	if len(arr) == 0 || len(indices) == 0 {
-		return []rune{}
+		return []int{}
 	}
 	for _, idx := range indices {
 		orders = append(orders, arr[idx])
@@ -305,7 +306,7 @@ func Reorder(arr []rune, indices []int) (orders []rune) {
 }
 
 // Reverse : [1,2,3] => [3,2,1]
-func Reverse(arr []rune) []rune {
+func Reverse(arr []int) []int {
 	indices := make([]int, len(arr))
 	for i := 0; i < len(arr); i++ {
 		indices[i] = len(arr) - 1 - i
@@ -314,12 +315,12 @@ func Reverse(arr []rune) []rune {
 }
 
 // Reduce :
-func Reduce(arr []rune, reduce func(e0, e1 rune) rune) rune {
+func Reduce(arr []int, reduce func(e0, e1 int) int) int {
 	switch len(arr) {
 	case 0, 1:
 		panic("Reduce at least receives 2 parameters")
 	default:
-		var r rune
+		var r int
 		for i := 0; i < len(arr)-1; i++ {
 			j := i + 1
 			e0, e1 := arr[i], arr[j]
@@ -333,7 +334,7 @@ func Reduce(arr []rune, reduce func(e0, e1 rune) rune) rune {
 }
 
 // ZipArray :
-func ZipArray(arrays ...[]rune) (zipped [][]rune) {
+func ZipArray(arrays ...[]int) (zipped [][]int) {
 
 	Min := func(data ...int) int {
 		min := data[0]
@@ -351,11 +352,104 @@ func ZipArray(arrays ...[]rune) (zipped [][]rune) {
 	}
 	min := Min(lens...)
 	for i := 0; i < min; i++ {
-		tuple := []rune{}
+		tuple := []int{}
 		for _, arr := range arrays {
 			tuple = append(tuple, arr[i])
 		}
 		zipped = append(zipped, tuple)
 	}
 	return
+}
+
+// FilterMap : Filter & Modify []int slice, return []int slice
+func FilterMap(arr []int, filter func(i int, e int) bool, modifier func(i int, e int) int) (r []int) {
+	switch {
+	case filter != nil && modifier != nil:
+		for i, e := range arr {
+			if filter(i, e) {
+				r = append(r, modifier(i, e))
+			}
+		}
+	case filter != nil && modifier == nil:
+		for i, e := range arr {
+			if filter(i, e) {
+				r = append(r, e)
+			}
+		}
+	case filter == nil && modifier != nil:
+		for i, e := range arr {
+			r = append(r, modifier(i, e))
+		}
+	default:
+		return arr
+	}
+	return
+}
+
+var (
+	FM = FilterMap
+)
+
+// Map2KVs : map to key slice & value slice
+func Map2KVs(m map[int]int, less4key func(i int, j int) bool, less4value func(i int, j int) bool) (keys []int, values []int) {
+
+	if m == nil {
+		return nil, nil
+	}
+	if len(m) == 0 {
+		return []int{}, []int{}
+	}
+
+	type kv struct {
+		key   int
+		value int
+	}
+
+	kvSlc := []kv{}
+	for k, v := range m {
+		kvSlc = append(kvSlc, kv{key: k, value: v})
+	}
+
+	switch {
+	case less4key != nil && less4value == nil:
+		sort.SliceStable(kvSlc, func(i, j int) bool { return less4key(kvSlc[i].key, kvSlc[j].key) })
+
+	case less4key == nil && less4value != nil:
+		sort.SliceStable(kvSlc, func(i, j int) bool { return less4value(kvSlc[i].value, kvSlc[j].value) })
+
+	case less4key != nil && less4value != nil:
+		sort.SliceStable(kvSlc, func(i, j int) bool {
+			if kvSlc[i].value == kvSlc[j].value {
+				return less4key(kvSlc[i].key, kvSlc[j].key)
+			}
+			return less4value(kvSlc[i].value, kvSlc[j].value)
+		})
+
+	default:
+		// do not sort
+	}
+
+	for _, kvEle := range kvSlc {
+		keys = append(keys, kvEle.key)
+		values = append(values, kvEle.value)
+	}
+	return
+}
+
+// MapMerge:
+func MapMerge(ms ...map[int]int) map[int][]int {
+	res := map[int][]int{}
+	for _, m := range ms {
+	srcMap:
+		for k, v := range m {
+			// Check if (k,v) was added before:
+			for _, v2 := range res[k] {
+				if v == v2 {
+					continue srcMap
+				}
+			}
+			res[k] = append(res[k], v)
+		}
+	}
+	return res
 }

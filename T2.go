@@ -14,6 +14,10 @@ var (
 		"i32str":     "i32s",
 		"strf64":     "sf64",
 		"strobj":     "so",
+		"i64str":     "i64s",
+		"stri64":     "si64",
+		"stru8":      "su8",
+		"u8str":      "u8s",
 	}
 )
 
