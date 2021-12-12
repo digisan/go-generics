@@ -109,19 +109,51 @@ func TestT2FuncGen(t *testing.T) {
 		// 		pkgdir: "./",
 		// 	},
 		// },
+		// {
+		// 	name: "string-byte",
+		// 	args: args{
+		// 		Tx:     "string",
+		// 		Ty:     "byte",
+		// 		pkgdir: "./",
+		// 	},
+		// },
+		// {
+		// 	name: "byte-string",
+		// 	args: args{
+		// 		Tx:     "byte",
+		// 		Ty:     "string",
+		// 		pkgdir: "./",
+		// 	},
+		// },
+		// {
+		// 	name: "byte-int",
+		// 	args: args{
+		// 		Tx:     "byte",
+		// 		Ty:     "int",
+		// 		pkgdir: "./",
+		// 	},
+		// },
+		// {
+		// 	name: "int-byte",
+		// 	args: args{
+		// 		Tx:     "int",
+		// 		Ty:     "byte",
+		// 		pkgdir: "./",
+		// 	},
+		// },
+		// {
+		// 	name: "byte-float64",
+		// 	args: args{
+		// 		Tx:     "byte",
+		// 		Ty:     "float64",
+		// 		pkgdir: "./",
+		// 	},
+		// },
 		{
-			name: "string-byte",
-			args: args{
-				Tx:     "string",
-				Ty:     "byte",
-				pkgdir: "./",
-			},
-		},
-		{
-			name: "byte-string",
+			name: "byte-rune",
 			args: args{
 				Tx:     "byte",
-				Ty:     "string",
+				Ty:     "rune",
 				pkgdir: "./",
 			},
 		},
