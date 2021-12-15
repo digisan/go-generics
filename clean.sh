@@ -4,6 +4,8 @@ set -e
 
 rm -rf ./boolean
 rm -rf ./f64
+rm -rf ./f64i64
+rm -rf ./f64u64
 rm -rf ./i32
 rm -rf ./i64
 rm -rf ./obj

@@ -149,11 +149,27 @@ func TestT2FuncGen(t *testing.T) {
 		// 		pkgdir: "./",
 		// 	},
 		// },
+		// {
+		// 	name: "byte-rune",
+		// 	args: args{
+		// 		Tx:     "byte",
+		// 		Ty:     "rune",
+		// 		pkgdir: "./",
+		// 	},
+		// },
 		{
-			name: "byte-rune",
+			name: "float64-int",
 			args: args{
-				Tx:     "byte",
-				Ty:     "rune",
+				Tx:     "float64",
+				Ty:     "int",
+				pkgdir: "./",
+			},
+		},
+		{
+			name: "float64-uint",
+			args: args{
+				Tx:     "float64",
+				Ty:     "uint",
 				pkgdir: "./",
 			},
 		},
