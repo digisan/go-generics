@@ -157,19 +157,35 @@ func TestT2FuncGen(t *testing.T) {
 		// 		pkgdir: "./",
 		// 	},
 		// },
+		// {
+		// 	name: "float64-int",
+		// 	args: args{
+		// 		Tx:     "float64",
+		// 		Ty:     "int",
+		// 		pkgdir: "./",
+		// 	},
+		// },
+		// {
+		// 	name: "float64-uint",
+		// 	args: args{
+		// 		Tx:     "float64",
+		// 		Ty:     "uint",
+		// 		pkgdir: "./",
+		// 	},
+		// },
 		{
-			name: "float64-int",
+			name: "float64v4-uint",
 			args: args{
-				Tx:     "float64",
-				Ty:     "int",
+				Tx:     "[4]float64",
+				Ty:     "uint",
 				pkgdir: "./",
 			},
 		},
 		{
-			name: "float64-uint",
+			name: "float64v4-int",
 			args: args{
-				Tx:     "float64",
-				Ty:     "uint",
+				Tx:     "[4]float64",
+				Ty:     "int",
 				pkgdir: "./",
 			},
 		},

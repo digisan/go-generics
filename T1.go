@@ -22,6 +22,8 @@ var mTypPkg = map[string]string{
 	"int64":       "i64",
 	"float32":     "f32",
 	"float64":     "f64",
+	"[3]float64":  "f64v3",
+	"[4]float64":  "f64v4",
 	"bool":        "boolean",
 	"uint":        "u64",
 	"uint8":       "u8",
