@@ -361,6 +361,23 @@ func ZipArray(arrays ...[]float64) (zipped [][]float64) {
 	return
 }
 
+func Filter(data *[]float64, check func(i int, e float64) bool) []float64 {
+	if check == nil {
+		return *data
+	}
+
+	p := *data
+	var k = 0
+	for i, v := range p {
+		if check(i, v) {
+			p[k], p[i] = p[i], p[k]
+			k++
+		}
+	}
+	(*reflect.SliceHeader)(unsafe.Pointer(data)).Len = k
+	return p[:k]
+}
+
 // FilterMap : Filter & Modify []float64 slice, return []float64 slice
 func FilterMap(arr []float64, filter func(i int, e float64) bool, modifier func(i int, e float64) float64) (r []float64) {
 	switch {

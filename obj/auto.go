@@ -305,6 +305,23 @@ func ZipArray(arrays ...[]interface{}) (zipped [][]interface{}) {
 	return
 }
 
+func Filter(data *[]interface{}, check func(i int, e interface{}) bool) []interface{} {
+	if check == nil {
+		return *data
+	}
+
+	p := *data
+	var k = 0
+	for i, v := range p {
+		if check(i, v) {
+			p[k], p[i] = p[i], p[k]
+			k++
+		}
+	}
+	(*reflect.SliceHeader)(unsafe.Pointer(data)).Len = k
+	return p[:k]
+}
+
 // FilterMap : Filter & Modify []interface{} slice, return []interface{} slice
 func FilterMap(arr []interface{}, filter func(i int, e interface{}) bool, modifier func(i int, e interface{}) interface{}) (r []interface{}) {
 	switch {

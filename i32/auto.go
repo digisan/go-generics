@@ -359,3 +359,20 @@ func ZipArray(arrays ...[]rune) (zipped [][]rune) {
 	}
 	return
 }
+
+func Filter(data *[]rune, check func(i int, e rune) bool) []rune {
+	if check == nil {
+		return *data
+	}
+
+	p := *data
+	var k = 0
+	for i, v := range p {
+		if check(i, v) {
+			p[k], p[i] = p[i], p[k]
+			k++
+		}
+	}
+	(*reflect.SliceHeader)(unsafe.Pointer(data)).Len = k
+	return p[:k]
+}

@@ -303,3 +303,20 @@ func ZipArray(arrays ...[]bool) (zipped [][]bool) {
 	}
 	return
 }
+
+func Filter(data *[]bool, check func(i int, e bool) bool) []bool {
+	if check == nil {
+		return *data
+	}
+
+	p := *data
+	var k = 0
+	for i, v := range p {
+		if check(i, v) {
+			p[k], p[i] = p[i], p[k]
+			k++
+		}
+	}
+	(*reflect.SliceHeader)(unsafe.Pointer(data)).Len = k
+	return p[:k]
+}

@@ -306,6 +306,23 @@ func ZipArray(arrays ...[]image.Point) (zipped [][]image.Point) {
 	return
 }
 
+func Filter(data *[]image.Point, check func(i int, e image.Point) bool) []image.Point {
+	if check == nil {
+		return *data
+	}
+
+	p := *data
+	var k = 0
+	for i, v := range p {
+		if check(i, v) {
+			p[k], p[i] = p[i], p[k]
+			k++
+		}
+	}
+	(*reflect.SliceHeader)(unsafe.Pointer(data)).Len = k
+	return p[:k]
+}
+
 // FilterMap : Filter & Modify []image.Point slice, return []image.Point slice
 func FilterMap(arr []image.Point, filter func(i int, e image.Point) bool, modifier func(i int, e image.Point) image.Point) (r []image.Point) {
 	switch {

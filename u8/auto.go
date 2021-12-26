@@ -359,3 +359,20 @@ func ZipArray(arrays ...[]byte) (zipped [][]byte) {
 	}
 	return
 }
+
+func Filter(data *[]byte, check func(i int, e byte) bool) []byte {
+	if check == nil {
+		return *data
+	}
+
+	p := *data
+	var k = 0
+	for i, v := range p {
+		if check(i, v) {
+			p[k], p[i] = p[i], p[k]
+			k++
+		}
+	}
+	(*reflect.SliceHeader)(unsafe.Pointer(data)).Len = k
+	return p[:k]
+}
