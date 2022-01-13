@@ -229,6 +229,22 @@ func TestT2FuncGen(t *testing.T) {
 				pkgdir: "./",
 			},
 		},
+		{
+			name: "int-bool",
+			args: args{
+				Tx:     "int",
+				Ty:     "bool",
+				pkgdir: "./",
+			},
+		},
+		{
+			name: "image.Point-bool",
+			args: args{
+				Tx:     "image.Point",
+				Ty:     "bool",
+				pkgdir: "./",
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -10,6 +10,8 @@ import (
 var (
 	mPkgRename = map[string]string{
 		"strboolean": "sb",
+		"i64boolean": "i64b",
+		"ptboolean":  "ptb",
 		"stri32":     "si32",
 		"i32str":     "i32s",
 		"strf64":     "sf64",
