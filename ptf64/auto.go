@@ -93,3 +93,14 @@ func MapMerge(ms ...map[image.Point]float64) map[image.Point][]float64 {
 	}
 	return res
 }
+
+// MapFilter:
+func MapFilter(m map[image.Point]float64, filter func(k image.Point, v float64) bool) map[image.Point]float64 {
+	rm := make(map[image.Point]float64)
+	for k, v := range m {
+		if filter(k, v) {
+			rm[k] = v
+		}
+	}
+	return rm
+}

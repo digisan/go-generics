@@ -470,3 +470,14 @@ func MapMerge(ms ...map[float64]float64) map[float64][]float64 {
 	}
 	return res
 }
+
+// MapFilter:
+func MapFilter(m map[float64]float64, filter func(k float64, v float64) bool) map[float64]float64 {
+	rm := make(map[float64]float64)
+	for k, v := range m {
+		if filter(k, v) {
+			rm[k] = v
+		}
+	}
+	return rm
+}

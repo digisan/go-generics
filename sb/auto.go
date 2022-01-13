@@ -90,3 +90,14 @@ func MapMerge(ms ...map[string]bool) map[string][]bool {
 	}
 	return res
 }
+
+// MapFilter:
+func MapFilter(m map[string]bool, filter func(k string, v bool) bool) map[string]bool {
+	rm := make(map[string]bool)
+	for k, v := range m {
+		if filter(k, v) {
+			rm[k] = v
+		}
+	}
+	return rm
+}

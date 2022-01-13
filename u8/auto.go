@@ -376,3 +376,14 @@ func Filter(data *[]byte, check func(i int, e byte) bool) []byte {
 	(*reflect.SliceHeader)(unsafe.Pointer(data)).Len = k
 	return p[:k]
 }
+
+// MapFilter:
+func MapFilter(m map[byte]byte, filter func(k byte, v byte) bool) map[byte]byte {
+	rm := make(map[byte]byte)
+	for k, v := range m {
+		if filter(k, v) {
+			rm[k] = v
+		}
+	}
+	return rm
+}

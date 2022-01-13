@@ -93,3 +93,14 @@ func MapMerge(ms ...map[image.Point]int) map[image.Point][]int {
 	}
 	return res
 }
+
+// MapFilter:
+func MapFilter(m map[image.Point]int, filter func(k image.Point, v int) bool) map[image.Point]int {
+	rm := make(map[image.Point]int)
+	for k, v := range m {
+		if filter(k, v) {
+			rm[k] = v
+		}
+	}
+	return rm
+}

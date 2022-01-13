@@ -111,3 +111,14 @@ func MapMerge(ms ...map[xxx]yyy) map[xxx][]yyy {
     }
     return res
 }
+
+// MapFilter:
+func MapFilter(m map[xxx]yyy, filter func(k xxx, v yyy) bool) map[xxx]yyy {
+	rm := make(map[xxx]yyy)
+	for k, v := range m {
+		if filter(k, v) {
+			rm[k] = v
+		}
+	}
+	return rm
+}

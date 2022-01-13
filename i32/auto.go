@@ -376,3 +376,14 @@ func Filter(data *[]rune, check func(i int, e rune) bool) []rune {
 	(*reflect.SliceHeader)(unsafe.Pointer(data)).Len = k
 	return p[:k]
 }
+
+// MapFilter:
+func MapFilter(m map[rune]rune, filter func(k rune, v rune) bool) map[rune]rune {
+	rm := make(map[rune]rune)
+	for k, v := range m {
+		if filter(k, v) {
+			rm[k] = v
+		}
+	}
+	return rm
+}

@@ -470,3 +470,14 @@ func MapMerge(ms ...map[int]int) map[int][]int {
 	}
 	return res
 }
+
+// MapFilter:
+func MapFilter(m map[int]int, filter func(k int, v int) bool) map[int]int {
+	rm := make(map[int]int)
+	for k, v := range m {
+		if filter(k, v) {
+			rm[k] = v
+		}
+	}
+	return rm
+}

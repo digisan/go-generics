@@ -90,3 +90,14 @@ func MapMerge(ms ...map[[4]float64]int) map[[4]float64][]int {
 	}
 	return res
 }
+
+// MapFilter:
+func MapFilter(m map[[4]float64]int, filter func(k [4]float64, v int) bool) map[[4]float64]int {
+	rm := make(map[[4]float64]int)
+	for k, v := range m {
+		if filter(k, v) {
+			rm[k] = v
+		}
+	}
+	return rm
+}

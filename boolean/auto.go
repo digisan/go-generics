@@ -320,3 +320,14 @@ func Filter(data *[]bool, check func(i int, e bool) bool) []bool {
 	(*reflect.SliceHeader)(unsafe.Pointer(data)).Len = k
 	return p[:k]
 }
+
+// MapFilter:
+func MapFilter(m map[bool]bool, filter func(k bool, v bool) bool) map[bool]bool {
+	rm := make(map[bool]bool)
+	for k, v := range m {
+		if filter(k, v) {
+			rm[k] = v
+		}
+	}
+	return rm
+}

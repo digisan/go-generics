@@ -205,6 +205,30 @@ func TestT2FuncGen(t *testing.T) {
 				pkgdir: "./",
 			},
 		},
+		{
+			name: "byte-byte",
+			args: args{
+				Tx:     "byte",
+				Ty:     "byte",
+				pkgdir: "./",
+			},
+		},
+		{
+			name: "rune-rune",
+			args: args{
+				Tx:     "rune",
+				Ty:     "rune",
+				pkgdir: "./",
+			},
+		},
+		{
+			name: "bool-bool",
+			args: args{
+				Tx:     "bool",
+				Ty:     "bool",
+				pkgdir: "./",
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

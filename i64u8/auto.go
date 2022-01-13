@@ -90,3 +90,14 @@ func MapMerge(ms ...map[int]byte) map[int][]byte {
 	}
 	return res
 }
+
+// MapFilter:
+func MapFilter(m map[int]byte, filter func(k int, v byte) bool) map[int]byte {
+	rm := make(map[int]byte)
+	for k, v := range m {
+		if filter(k, v) {
+			rm[k] = v
+		}
+	}
+	return rm
+}

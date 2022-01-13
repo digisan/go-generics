@@ -414,3 +414,14 @@ func MapMerge(ms ...map[interface{}]interface{}) map[interface{}][]interface{} {
 	}
 	return res
 }
+
+// MapFilter:
+func MapFilter(m map[interface{}]interface{}, filter func(k interface{}, v interface{}) bool) map[interface{}]interface{} {
+	rm := make(map[interface{}]interface{})
+	for k, v := range m {
+		if filter(k, v) {
+			rm[k] = v
+		}
+	}
+	return rm
+}

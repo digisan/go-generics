@@ -90,3 +90,14 @@ func MapMerge(ms ...map[string]interface{}) map[string][]interface{} {
 	}
 	return res
 }
+
+// MapFilter:
+func MapFilter(m map[string]interface{}, filter func(k string, v interface{}) bool) map[string]interface{} {
+	rm := make(map[string]interface{})
+	for k, v := range m {
+		if filter(k, v) {
+			rm[k] = v
+		}
+	}
+	return rm
+}
