@@ -379,11 +379,16 @@ func Filter(data *[]rune, check func(i int, e rune) bool) []rune {
 
 // MapFilter:
 func MapFilter(m map[rune]rune, filter func(k rune, v rune) bool) map[rune]rune {
-	rm := make(map[rune]rune)
+	rt := make(map[rune]rune)
 	for k, v := range m {
 		if filter(k, v) {
-			rm[k] = v
+			rt[k] = v
 		}
 	}
-	return rm
+	return rt
+}
+
+// MapCopy:
+func MapCopy(m map[rune]rune) map[rune]rune {
+	return MapFilter(m, func(k rune, v rune) bool { return true })
 }

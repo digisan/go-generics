@@ -93,11 +93,16 @@ func MapMerge(ms ...map[string]rune) map[string][]rune {
 
 // MapFilter:
 func MapFilter(m map[string]rune, filter func(k string, v rune) bool) map[string]rune {
-	rm := make(map[string]rune)
+	rt := make(map[string]rune)
 	for k, v := range m {
 		if filter(k, v) {
-			rm[k] = v
+			rt[k] = v
 		}
 	}
-	return rm
+	return rt
+}
+
+// MapCopy:
+func MapCopy(m map[string]rune) map[string]rune {
+	return MapFilter(m, func(k string, v rune) bool { return true })
 }

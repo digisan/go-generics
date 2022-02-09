@@ -379,11 +379,16 @@ func Filter(data *[]byte, check func(i int, e byte) bool) []byte {
 
 // MapFilter:
 func MapFilter(m map[byte]byte, filter func(k byte, v byte) bool) map[byte]byte {
-	rm := make(map[byte]byte)
+	rt := make(map[byte]byte)
 	for k, v := range m {
 		if filter(k, v) {
-			rm[k] = v
+			rt[k] = v
 		}
 	}
-	return rm
+	return rt
+}
+
+// MapCopy:
+func MapCopy(m map[byte]byte) map[byte]byte {
+	return MapFilter(m, func(k byte, v byte) bool { return true })
 }

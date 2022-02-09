@@ -56,3 +56,20 @@ func TestDelEle(t *testing.T) {
 		})
 	}
 }
+
+func TestMapCopy(t *testing.T) {
+	m := map[rune]rune{
+		'A': 'a',
+		'B': 'b',
+	}
+	fmt.Println("m original:", m)
+
+	fmt.Println("copying... to cp")
+	cp := MapCopy(m)
+
+	fmt.Println("modifying m...")
+	m['B'] = 'B'
+	fmt.Println("m modified:", m)
+
+	fmt.Println("cp", cp)
+}

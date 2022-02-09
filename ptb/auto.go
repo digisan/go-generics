@@ -96,11 +96,16 @@ func MapMerge(ms ...map[image.Point]bool) map[image.Point][]bool {
 
 // MapFilter:
 func MapFilter(m map[image.Point]bool, filter func(k image.Point, v bool) bool) map[image.Point]bool {
-	rm := make(map[image.Point]bool)
+	rt := make(map[image.Point]bool)
 	for k, v := range m {
 		if filter(k, v) {
-			rm[k] = v
+			rt[k] = v
 		}
 	}
-	return rm
+	return rt
+}
+
+// MapCopy:
+func MapCopy(m map[image.Point]bool) map[image.Point]bool {
+	return MapFilter(m, func(k image.Point, v bool) bool { return true })
 }

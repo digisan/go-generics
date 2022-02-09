@@ -417,11 +417,16 @@ func MapMerge(ms ...map[interface{}]interface{}) map[interface{}][]interface{} {
 
 // MapFilter:
 func MapFilter(m map[interface{}]interface{}, filter func(k interface{}, v interface{}) bool) map[interface{}]interface{} {
-	rm := make(map[interface{}]interface{})
+	rt := make(map[interface{}]interface{})
 	for k, v := range m {
 		if filter(k, v) {
-			rm[k] = v
+			rt[k] = v
 		}
 	}
-	return rm
+	return rt
+}
+
+// MapCopy:
+func MapCopy(m map[interface{}]interface{}) map[interface{}]interface{} {
+	return MapFilter(m, func(k interface{}, v interface{}) bool { return true })
 }

@@ -93,11 +93,16 @@ func MapMerge(ms ...map[byte]string) map[byte][]string {
 
 // MapFilter:
 func MapFilter(m map[byte]string, filter func(k byte, v string) bool) map[byte]string {
-	rm := make(map[byte]string)
+	rt := make(map[byte]string)
 	for k, v := range m {
 		if filter(k, v) {
-			rm[k] = v
+			rt[k] = v
 		}
 	}
-	return rm
+	return rt
+}
+
+// MapCopy:
+func MapCopy(m map[byte]string) map[byte]string {
+	return MapFilter(m, func(k byte, v string) bool { return true })
 }

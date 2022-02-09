@@ -93,11 +93,16 @@ func MapMerge(ms ...map[string]interface{}) map[string][]interface{} {
 
 // MapFilter:
 func MapFilter(m map[string]interface{}, filter func(k string, v interface{}) bool) map[string]interface{} {
-	rm := make(map[string]interface{})
+	rt := make(map[string]interface{})
 	for k, v := range m {
 		if filter(k, v) {
-			rm[k] = v
+			rt[k] = v
 		}
 	}
-	return rm
+	return rt
+}
+
+// MapCopy:
+func MapCopy(m map[string]interface{}) map[string]interface{} {
+	return MapFilter(m, func(k string, v interface{}) bool { return true })
 }

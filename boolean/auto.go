@@ -323,11 +323,16 @@ func Filter(data *[]bool, check func(i int, e bool) bool) []bool {
 
 // MapFilter:
 func MapFilter(m map[bool]bool, filter func(k bool, v bool) bool) map[bool]bool {
-	rm := make(map[bool]bool)
+	rt := make(map[bool]bool)
 	for k, v := range m {
 		if filter(k, v) {
-			rm[k] = v
+			rt[k] = v
 		}
 	}
-	return rm
+	return rt
+}
+
+// MapCopy:
+func MapCopy(m map[bool]bool) map[bool]bool {
+	return MapFilter(m, func(k bool, v bool) bool { return true })
 }

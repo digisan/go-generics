@@ -473,11 +473,16 @@ func MapMerge(ms ...map[int]int) map[int][]int {
 
 // MapFilter:
 func MapFilter(m map[int]int, filter func(k int, v int) bool) map[int]int {
-	rm := make(map[int]int)
+	rt := make(map[int]int)
 	for k, v := range m {
 		if filter(k, v) {
-			rm[k] = v
+			rt[k] = v
 		}
 	}
-	return rm
+	return rt
+}
+
+// MapCopy:
+func MapCopy(m map[int]int) map[int]int {
+	return MapFilter(m, func(k int, v int) bool { return true })
 }
