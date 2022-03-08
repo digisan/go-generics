@@ -5,13 +5,25 @@ import (
 	"unsafe"
 )
 
-func DelEleOrderly(arr *[]byte, i int) {
+func DelEleOrderlyAt(arr *[]byte, i int) {
 	*arr = append((*arr)[:i], (*arr)[i+1:]...)
 }
 
-func DelEle(arr *[]byte, i int) {
+func DelEleAt(arr *[]byte, i int) {
 	(*arr)[i] = (*arr)[len(*arr)-1]
 	(*reflect.SliceHeader)(unsafe.Pointer(arr)).Len--
+}
+
+func DelOneEle(arr *[]byte, ele byte) {
+	if idx := IdxOf(ele, (*arr)...); idx >= 0 {
+		DelEleAt(arr, idx)
+	}
+}
+
+func DelOneEleOrderly(arr *[]byte, ele byte) {
+	if idx := IdxOf(ele, (*arr)...); idx >= 0 {
+		DelEleOrderlyAt(arr, idx)
+	}
 }
 
 func Max(arr ...byte) byte {

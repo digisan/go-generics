@@ -7,13 +7,25 @@ import (
 	"unsafe"
 )
 
-func DelEleOrderly(arr *[]image.Point, i int) {
+func DelEleOrderlyAt(arr *[]image.Point, i int) {
 	*arr = append((*arr)[:i], (*arr)[i+1:]...)
 }
 
-func DelEle(arr *[]image.Point, i int) {
+func DelEleAt(arr *[]image.Point, i int) {
 	(*arr)[i] = (*arr)[len(*arr)-1]
 	(*reflect.SliceHeader)(unsafe.Pointer(arr)).Len--
+}
+
+func DelOneEle(arr *[]image.Point, ele image.Point) {
+	if idx := IdxOf(ele, (*arr)...); idx >= 0 {
+		DelEleAt(arr, idx)
+	}
+}
+
+func DelOneEleOrderly(arr *[]image.Point, ele image.Point) {
+	if idx := IdxOf(ele, (*arr)...); idx >= 0 {
+		DelEleOrderlyAt(arr, idx)
+	}
 }
 
 // In : if arr has element e, return true. otherwise false

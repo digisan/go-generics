@@ -6,13 +6,25 @@ import (
 	"unsafe"
 )
 
-func DelEleOrderly(arr *[]interface{}, i int) {
+func DelEleOrderlyAt(arr *[]interface{}, i int) {
 	*arr = append((*arr)[:i], (*arr)[i+1:]...)
 }
 
-func DelEle(arr *[]interface{}, i int) {
+func DelEleAt(arr *[]interface{}, i int) {
 	(*arr)[i] = (*arr)[len(*arr)-1]
 	(*reflect.SliceHeader)(unsafe.Pointer(arr)).Len--
+}
+
+func DelOneEle(arr *[]interface{}, ele interface{}) {
+	if idx := IdxOf(ele, (*arr)...); idx >= 0 {
+		DelEleAt(arr, idx)
+	}
+}
+
+func DelOneEleOrderly(arr *[]interface{}, ele interface{}) {
+	if idx := IdxOf(ele, (*arr)...); idx >= 0 {
+		DelEleOrderlyAt(arr, idx)
+	}
 }
 
 // In : if arr has element e, return true. otherwise false

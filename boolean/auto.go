@@ -5,13 +5,25 @@ import (
 	"unsafe"
 )
 
-func DelEleOrderly(arr *[]bool, i int) {
+func DelEleOrderlyAt(arr *[]bool, i int) {
 	*arr = append((*arr)[:i], (*arr)[i+1:]...)
 }
 
-func DelEle(arr *[]bool, i int) {
+func DelEleAt(arr *[]bool, i int) {
 	(*arr)[i] = (*arr)[len(*arr)-1]
 	(*reflect.SliceHeader)(unsafe.Pointer(arr)).Len--
+}
+
+func DelOneEle(arr *[]bool, ele bool) {
+	if idx := IdxOf(ele, (*arr)...); idx >= 0 {
+		DelEleAt(arr, idx)
+	}
+}
+
+func DelOneEleOrderly(arr *[]bool, ele bool) {
+	if idx := IdxOf(ele, (*arr)...); idx >= 0 {
+		DelEleOrderlyAt(arr, idx)
+	}
 }
 
 // In : if arr has element e, return true. otherwise false

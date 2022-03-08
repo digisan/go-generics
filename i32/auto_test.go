@@ -5,10 +5,10 @@ import (
 	"testing"
 )
 
-func TestDelEleOrderly(t *testing.T) {
+func TestDelOneEleOrderly(t *testing.T) {
 	type args struct {
 		arr *[]rune
-		i   int
+		i   rune
 	}
 	tests := []struct {
 		name string
@@ -18,20 +18,20 @@ func TestDelEleOrderly(t *testing.T) {
 		{
 			name: "OK",
 			args: args{
-				arr: &[]rune{1, 2, 3, 4},
-				i:   0,
+				arr: &[]rune{1, 2, 0, 3, 0, 4},
+				i:   1,
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			DelEleOrderly(tt.args.arr, tt.args.i)
+			DelOneEle(tt.args.arr, tt.args.i)
 			fmt.Println(*tt.args.arr)
 		})
 	}
 }
 
-func TestDelEle(t *testing.T) {
+func TestDelEleOrderlyAt(t *testing.T) {
 	type args struct {
 		arr *[]rune
 		i   int
@@ -51,7 +51,33 @@ func TestDelEle(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			DelEle(tt.args.arr, tt.args.i)
+			DelEleOrderlyAt(tt.args.arr, tt.args.i)
+			fmt.Println(*tt.args.arr)
+		})
+	}
+}
+
+func TestDelEleAt(t *testing.T) {
+	type args struct {
+		arr *[]rune
+		i   int
+	}
+	tests := []struct {
+		name string
+		args args
+	}{
+		// TODO: Add test cases.
+		{
+			name: "OK",
+			args: args{
+				arr: &[]rune{1, 2, 3, 4},
+				i:   0,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			DelEleAt(tt.args.arr, tt.args.i)
 			fmt.Println(*tt.args.arr)
 		})
 	}
