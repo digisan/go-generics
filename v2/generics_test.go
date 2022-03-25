@@ -575,3 +575,101 @@ func TestMap(t *testing.T) {
 		})
 	}
 }
+
+func Test_equals(t *testing.T) {
+	type args struct {
+		setA []int
+		setB []int
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				setA: []int{1, 2, 3, 4},
+				setB: []int{3, 1, 2, 4},
+			},
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := equals(tt.args.setA, tt.args.setB); got != tt.want {
+				t.Errorf("equals() = %v, want %v", got, tt.want)
+			}
+		})
+		fmt.Println("SetA", tt.args.setA)
+		fmt.Println("SetB", tt.args.setB)
+	}
+}
+
+func TestEquals(t *testing.T) {
+	type args struct {
+		sets [][]int
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				sets: [][]int{
+					{1, 2, 3, 4},
+					{3, 1, 2, 4},
+					{3, 1, 2, 4, 5},
+				},
+			},
+			want: false,
+		},
+		{
+			args: args{
+				sets: [][]int{
+					{1, 2, 3, 4},
+					{3, 1, 2, 4},
+				},
+			},
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Equals(tt.args.sets...); got != tt.want {
+				t.Errorf("Equals() = %v, want %v", got, tt.want)
+			}
+		})
+		fmt.Println("sets", tt.args.sets)
+	}
+}
+
+func TestReduce(t *testing.T) {
+	type args struct {
+		arr    []int
+		reduce func(e0, e1 int) int
+	}
+	tests := []struct {
+		name  string
+		args  args
+		wantR int
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				arr:    []int{1, 2, 3, 4, 5},
+				reduce: func(e0, e1 int) int { return e0 + e1 },
+			},
+			wantR: 15,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if gotR := Reduce(tt.args.arr, tt.args.reduce); !reflect.DeepEqual(gotR, tt.wantR) {
+				t.Errorf("Reduce() = %v, want %v", gotR, tt.wantR)
+			}
+		})
+	}
+}

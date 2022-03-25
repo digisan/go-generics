@@ -251,3 +251,245 @@ func MapFilter[T1 comparable, T2 any](m map[T1]T2, filter func(k T1, v T2) bool)
 func MapCopy[T1 comparable, T2 any](m map[T1]T2) map[T1]T2 {
 	return MapFilter(m, func(k T1, v T2) bool { return true })
 }
+
+/////////////////////////////////////////////////////////////////////////
+
+// IsSuper :
+func IsSuper[T comparable](setA, setB []T) bool {
+NEXT_B:
+	for _, b := range setB {
+		for _, a := range setA {
+			if a == b {
+				continue NEXT_B
+			}
+		}
+		return false
+	}
+	return len(setA) > len(setB)
+}
+
+// IsSub :
+func IsSub[T comparable](setA, setB []T) bool {
+	return IsSuper(setB, setA)
+}
+
+// equals :
+func equals[T comparable](setA, setB []T) bool {
+	if (setA == nil && setB != nil) || (setA != nil && setB == nil) {
+		return false
+	}
+	if len(setA) != len(setB) {
+		return false
+	}
+
+	tmpA := make([]T, len(setA))
+	tmpB := make([]T, len(setB))
+	copy(tmpA, setA)
+	copy(tmpB, setB)
+
+AGAIN:
+	for i, a := range tmpA {
+		for j, b := range tmpB {
+			if a == b {
+				DelEleAt(&tmpA, i)
+				DelEleAt(&tmpB, j)
+				goto AGAIN
+			}
+		}
+	}
+	return len(tmpA) == 0 && len(tmpB) == 0
+}
+
+// Equals
+func Equals[T comparable](sets ...[]T) bool {
+	for i := 0; i < len(sets)-1; i++ {
+		this := sets[i]
+		next := sets[i+1]
+		if !equals(this, next) {
+			return false
+		}
+	}
+	return true
+}
+
+// SupEq :
+func SupEq[T comparable](setA, setB []T) bool {
+	return IsSuper(setA, setB) || Equals(setA, setB)
+}
+
+// SubEq :
+func SubEq[T comparable](setA, setB []T) bool {
+	return IsSub(setA, setB) || Equals(setA, setB)
+}
+
+// union :
+func union[T comparable](setA, setB []T) (set []T) {
+	if setA == nil && setB == nil {
+		return nil
+	}
+	if setA == nil && setB != nil {
+		return setB
+	}
+	if setA != nil && setB == nil {
+		return setA
+	}
+
+	m := make(map[T]struct{})
+	for _, a := range setA {
+		if _, ok := m[a]; !ok {
+			set = append(set, a)
+			m[a] = struct{}{}
+		}
+	}
+	for _, b := range setB {
+		if _, ok := m[b]; !ok {
+			set = append(set, b)
+			m[b] = struct{}{}
+		}
+	}
+	if set == nil {
+		return []T{}
+	}
+	return
+}
+
+// Union :
+func Union[T comparable](sets ...[]T) (set []T) {
+	if len(sets) == 0 {
+		return nil
+	}
+	set = sets[0]
+	for _, s := range sets[1:] {
+		set = union(set, s)
+	}
+	return set
+}
+
+// intersect :
+func intersect[T comparable](setA, setB []T) (set []T) {
+	if setA == nil || setB == nil {
+		return nil
+	}
+
+	copyA, copyB := make([]T, len(setA)), make([]T, len(setB))
+	copy(copyA, setA)
+	copy(copyB, setB)
+
+AGAIN:
+	for i, a := range copyA {
+		for j, b := range copyB {
+			if a == b {
+				set = append(set, a)
+				DelEleAt(&copyA, i)
+				DelEleAt(&copyB, j)
+				goto AGAIN
+			}
+		}
+	}
+	if set == nil {
+		return []T{}
+	}
+	return
+}
+
+// Intersect :
+func Intersect[T comparable](sets ...[]T) (set []T) {
+	if len(sets) == 0 {
+		return nil
+	}
+	set = sets[0]
+	for _, s := range sets[1:] {
+		set = intersect(set, s)
+	}
+	return set
+}
+
+func minus[T comparable](setA, setB []T) (set []T) {
+	if setA == nil {
+		return nil
+	}
+	set = make([]T, 0)
+
+NEXT_A:
+	for _, a := range setA {
+		for _, b := range setB {
+			if a == b {
+				continue NEXT_A
+			}
+		}
+		set = append(set, a)
+	}
+	return
+}
+
+func Minus[T comparable](setA []T, setOthers ...[]T) (set []T) {
+	return minus(setA, Union(setOthers...))
+}
+
+// Reorder : any index must less than len(arr)
+func Reorder[T any](arr []T, indices []int) (orders []T) {
+	if arr == nil || indices == nil {
+		return nil
+	}
+	if len(arr) == 0 || len(indices) == 0 {
+		return []T{}
+	}
+	for _, idx := range indices {
+		orders = append(orders, arr[idx])
+	}
+	return orders
+}
+
+// Reverse : [1,2,3] => [3,2,1]
+func Reverse[T any](arr []T) []T {
+	indices := make([]int, len(arr))
+	for i := 0; i < len(arr); i++ {
+		indices[i] = len(arr) - 1 - i
+	}
+	return Reorder(arr, indices)
+}
+
+// Reduce :
+func Reduce[T any](arr []T, reduce func(e0, e1 T) T) (r T) {
+
+	if len(arr) < 2 {
+		panic("Reduce at least receives 2 parameters")
+	}
+
+	for i := 0; i < len(arr)-1; i++ {
+		j := i + 1
+		e0, e1 := arr[i], arr[j]
+		if i > 0 {
+			e0 = r
+		}
+		r = reduce(e0, e1)
+	}
+	return r
+}
+
+// ZipArray :
+func ZipArray[T any](arrays ...[]T) (zipped [][]T) {
+	Min := func(data ...int) int {
+		min := data[0]
+		for i := 1; i < len(data); i++ {
+			if data[i] < min {
+				min = data[i]
+			}
+		}
+		return min
+	}
+
+	lens := []int{}
+	for _, arr := range arrays {
+		lens = append(lens, len(arr))
+	}
+	min := Min(lens...)
+	for i := 0; i < min; i++ {
+		tuple := []T{}
+		for _, arr := range arrays {
+			tuple = append(tuple, arr[i])
+		}
+		zipped = append(zipped, tuple)
+	}
+	return
+}
