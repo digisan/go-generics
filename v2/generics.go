@@ -2,6 +2,7 @@ package v2
 
 import (
 	"reflect"
+	"sort"
 	"unsafe"
 )
 
@@ -139,7 +140,7 @@ func Settify[T comparable](arr ...T) (set []T) {
 	return
 }
 
-func Filter[T comparable](data *[]T, check func(i int, e T) bool) []T {
+func Filter[T any](data *[]T, check func(i int, e T) bool) []T {
 	if check == nil {
 		return *data
 	}
@@ -156,31 +157,86 @@ func Filter[T comparable](data *[]T, check func(i int, e T) bool) []T {
 	return p[:k]
 }
 
-// FilterMap : Filter & Modify []string slice, return []string slice
-// func FilterMap[T1, T2 comparable](arr []T1, filter func(i int, e T1) bool, mapper func(i int, e T1) T2) (r []T2) {
-// 	switch {
-// 	case filter != nil && mapper != nil:
-// 		for i, e := range arr {
-// 			if filter(i, e) {
-// 				r = append(r, mapper(i, e))
-// 			}
-// 		}
-// 	case filter != nil && mapper == nil:
-// 		for i, e := range arr {
-// 			if filter(i, e) {
-// 				r = append(r, e)
-// 			}
-// 		}
-// 	case filter == nil && mapper != nil:
-// 		for i, e := range arr {
-// 			r = append(r, mapper(i, e))
-// 		}
-// 	default:
-// 		return arr
-// 	}
-// 	return
-// }
+func Map[T1, T2 any](arr []T1, mapper func(i int, e T1) T2) (r []T2) {
+	r = make([]T2, 0, len(arr))
+	if mapper != nil {
+		for i, e := range arr {
+			r = append(r, mapper(i, e))
+		}
+	}
+	return
+}
 
+// FilterMap : Filter & Modify A slice, return B slice
+func FilterMap[T1, T2 any](arr []T1, filter func(i int, e T1) bool, mapper func(i int, e T1) T2) (r []T2) {
+	return Map(Filter(&arr, filter), mapper)
+}
+
+// for Map2KVs
+type kv struct {
+	key any
+	val any
+}
+
+// Map2KVs : map to key slice & value slice
+func Map2KVs[T1, T2 comparable](m map[T1]T2, less4k func(i, j T1) bool, less4v func(i, j T2) bool) (keys []T1, values []T2) {
+
+	kvSlc := make([]kv, 0, len(m))
+	for k, v := range m {
+		kvSlc = append(kvSlc, kv{key: k, val: v})
+	}
+
+	switch {
+	case less4k != nil && less4v == nil:
+		sort.SliceStable(kvSlc, func(i, j int) bool { return less4k(kvSlc[i].key.(T1), kvSlc[j].key.(T1)) })
+
+	case less4k == nil && less4v != nil:
+		sort.SliceStable(kvSlc, func(i, j int) bool { return less4v(kvSlc[i].val.(T2), kvSlc[j].val.(T2)) })
+
+	case less4k != nil && less4v != nil:
+		sort.SliceStable(kvSlc, func(i, j int) bool {
+			if kvSlc[i].val == kvSlc[j].val {
+				return less4k(kvSlc[i].key.(T1), kvSlc[j].key.(T1))
+			}
+			return less4v(kvSlc[i].val.(T2), kvSlc[j].val.(T2))
+		})
+
+	default:
+		// do not sort
+	}
+
+	keys = make([]T1, 0, len(m))
+	values = make([]T2, 0, len(m))
+	for _, kvEle := range kvSlc {
+		keys = append(keys, kvEle.key.(T1))
+		values = append(values, kvEle.val.(T2))
+	}
+	return
+}
+
+// TODO...
+// MapSafeMerge
+// MapReplaceMerge
+
+// MapMerge:
+func MapMerge[T1, T2 comparable](ms ...map[T1]T2) map[T1][]T2 {
+	res := map[T1][]T2{}
+	for _, m := range ms {
+	srcMap:
+		for k, v := range m {
+			// Check if (k,v) was added before:
+			for _, v2 := range res[k] {
+				if v == v2 {
+					continue srcMap
+				}
+			}
+			res[k] = append(res[k], v)
+		}
+	}
+	return res
+}
+
+// MapFilter:
 func MapFilter[T1 comparable, T2 any](m map[T1]T2, filter func(k T1, v T2) bool) map[T1]T2 {
 	rt := make(map[T1]T2)
 	for k, v := range m {

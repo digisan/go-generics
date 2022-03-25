@@ -358,3 +358,220 @@ func TestMapFilter(t *testing.T) {
 		})
 	}
 }
+
+func TestMap2KVs(t *testing.T) {
+	type args struct {
+		m          map[int]string
+		less4key   func(i, j int) bool
+		less4value func(i, j string) bool
+	}
+	tests := []struct {
+		name       string
+		args       args
+		wantKeys   []int
+		wantValues []string
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				m: map[int]string{
+					6: "6",
+					1: "1",
+					2: "2",
+					3: "A",
+					4: "A",
+					5: "5",
+				},
+				less4key:   func(i, j int) bool { return i > j },
+				less4value: func(i, j string) bool { return i < j },
+			},
+			wantKeys:   []int{1, 2, 5, 6, 4, 3},
+			wantValues: []string{"1", "2", "5", "6", "A", "A"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotKeys, gotValues := Map2KVs(tt.args.m, tt.args.less4key, tt.args.less4value)
+			if !reflect.DeepEqual(gotKeys, tt.wantKeys) {
+				t.Errorf("Map2KVs() gotKeys = %v, want %v", gotKeys, tt.wantKeys)
+			}
+			if !reflect.DeepEqual(gotValues, tt.wantValues) {
+				t.Errorf("Map2KVs() gotValues = %v, want %v", gotValues, tt.wantValues)
+			}
+		})
+	}
+}
+
+func TestMapMerge(t *testing.T) {
+	type args struct {
+		ms []map[int]string
+	}
+	tests := []struct {
+		name string
+		args args
+		want map[int][]string
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				ms: []map[int]string{
+					{
+						6: "66",
+						1: "11",
+						2: "22",
+						3: "A",
+						4: "A",
+						5: "55",
+					},
+					{
+						6: "66",
+						1: "11",
+						2: "22",
+						3: "B",
+						4: "B",
+						5: "55",
+					},
+					{
+						6: "6",
+						1: "1",
+						2: "2",
+						3: "A",
+						4: "A",
+						5: "5",
+					},
+				},
+			},
+			want: map[int][]string{
+				6: {"66", "6"},
+				1: {"11", "1"},
+				2: {"22", "2"},
+				3: {"A", "B"},
+				4: {"A", "B"},
+				5: {"55", "5"},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := MapMerge(tt.args.ms...); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("MapMerge() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestFilterMap(t *testing.T) {
+	type args struct {
+		arr    []int
+		filter func(i int, e int) bool
+		mapper func(i int, e int) string
+	}
+	tests := []struct {
+		name  string
+		args  args
+		wantR []string
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				arr:    []int{1, 2, 3, 4, 5, 6, 7},
+				filter: func(i, e int) bool { return e > 3 },
+				mapper: func(i, e int) string { return fmt.Sprint(e) },
+			},
+			wantR: []string{"4", "5", "6", "7"},
+		},
+		{
+			args: args{
+				arr:    []int{1, 2, 3, 4, 5, 6, 7},
+				filter: nil,
+				mapper: func(i, e int) string { return fmt.Sprint(e) },
+			},
+			wantR: []string{"1", "2", "3", "4", "5", "6", "7"},
+		},
+		{
+			args: args{
+				arr:    []int{1, 2, 3, 4, 5, 6, 7},
+				filter: func(i, e int) bool { return e > 3 },
+				mapper: nil,
+			},
+			wantR: []string{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if gotR := FilterMap(tt.args.arr, tt.args.filter, tt.args.mapper); !reflect.DeepEqual(gotR, tt.wantR) {
+				t.Errorf("FilterMap() = %v, want %v", gotR, tt.wantR)
+			}
+		})
+	}
+}
+
+func TestFilter(t *testing.T) {
+	type args struct {
+		data  *[]int
+		check func(i int, e int) bool
+	}
+	tests := []struct {
+		name string
+		args args
+		want []int
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				data:  &[]int{1, 2, 3, 4, 5},
+				check: func(i, e int) bool { return e < 4 },
+			},
+			want: []int{1, 2, 3},
+		},
+		{
+			args: args{
+				data:  &[]int{1, 2, 3, 4, 5},
+				check: nil,
+			},
+			want: []int{1, 2, 3, 4, 5},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Filter(tt.args.data, tt.args.check); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Filter() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestMap(t *testing.T) {
+	type args struct {
+		arr    []int
+		mapper func(i int, e int) string
+	}
+	tests := []struct {
+		name  string
+		args  args
+		wantR []string
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				arr:    []int{1, 2, 3, 4, 5},
+				mapper: func(i, e int) string { return fmt.Sprint(e) },
+			},
+			wantR: []string{"1", "2", "3", "4", "5"},
+		},
+		{
+			args: args{
+				arr:    []int{1, 2, 3, 4, 5},
+				mapper: nil,
+			},
+			wantR: []string{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if gotR := Map(tt.args.arr, tt.args.mapper); !reflect.DeepEqual(gotR, tt.wantR) {
+				t.Errorf("Map() = %v, want %v", gotR, tt.wantR)
+			}
+		})
+	}
+}
