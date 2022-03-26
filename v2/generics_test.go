@@ -673,3 +673,221 @@ func TestReduce(t *testing.T) {
 		})
 	}
 }
+
+func TestIn(t *testing.T) {
+	type args struct {
+		e   int
+		arr []int
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				e:   10,
+				arr: []int{3, 5, 2, 10, 2, 5, 0, 7},
+			},
+			want: true,
+		},
+		{
+			args: args{
+				e:   10,
+				arr: []int{3, 5, 2, 11, 2, 5, 0, 7},
+			},
+			want: false,
+		},
+		{
+			args: args{
+				e:   10,
+				arr: []int{},
+			},
+			want: false,
+		},
+		{
+			args: args{
+				e:   10,
+				arr: nil,
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := In(tt.args.e, tt.args.arr...); got != tt.want {
+				t.Errorf("In() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestNotIn(t *testing.T) {
+	type args struct {
+		e   string
+		arr []string
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				e:   "10",
+				arr: []string{"3", "5", "2", "10", "2", "5", "0", "7"},
+			},
+			want: false,
+		},
+		{
+			args: args{
+				e:   "10",
+				arr: []string{"3", "5", "2", "11", "2", "5", "0", "7"},
+			},
+			want: true,
+		},
+		{
+			args: args{
+				e:   "",
+				arr: []string{},
+			},
+			want: true,
+		},
+		{
+			args: args{
+				e:   "",
+				arr: nil,
+			},
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := NotIn(tt.args.e, tt.args.arr...); got != tt.want {
+				t.Errorf("NotIn() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestMapSafeMerge(t *testing.T) {
+	type args struct {
+		ms []map[string]int
+	}
+	tests := []struct {
+		name string
+		args args
+		want map[string]int
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				ms: []map[string]int{
+					{
+						"a": 1,
+						"b": 2,
+						"c": 3,
+					},
+					{
+						"d": 4,
+						"b": 5,
+						"f": 6,
+					},
+				},
+			},
+			want: map[string]int{
+				"a": 1,
+				"b": 2,
+				"c": 3,
+				"d": 4,
+				"f": 6,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := MapSafeMerge(tt.args.ms...); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("MapSafeMerge() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestMapReplaceMerge(t *testing.T) {
+	type args struct {
+		ms []map[string]int
+	}
+	tests := []struct {
+		name string
+		args args
+		want map[string]int
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				ms: []map[string]int{
+					{
+						"a": 1,
+						"b": 2,
+						"c": 3,
+					},
+					{
+						"d": 4,
+						"b": 5,
+						"f": 6,
+					},
+				},
+			},
+			want: map[string]int{
+				"a": 1,
+				"b": 5,
+				"c": 3,
+				"d": 4,
+				"f": 6,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := MapReplaceMerge(tt.args.ms...); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("MapReplaceMerge() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestMapCopy(t *testing.T) {
+	type args struct {
+		m map[string]int
+	}
+	tests := []struct {
+		name string
+		args args
+		want map[string]int
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				m: map[string]int{
+					"a": 1,
+					"b": 2,
+					"c": 3,
+				},
+			},
+			want: map[string]int{				
+				"b": 2,
+				"c": 3,
+				"a": 1,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := MapCopy(tt.args.m); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("MapCopy() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

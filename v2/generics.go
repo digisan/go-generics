@@ -12,6 +12,7 @@ type Ordered interface {
 		~uintptr | ~float32 | ~float64 | ~string
 }
 
+// ***
 func Max[T Ordered](arr ...T) T {
 	if len(arr) == 0 {
 		panic("Max args at least has one element")
@@ -25,6 +26,7 @@ func Max[T Ordered](arr ...T) T {
 	return m
 }
 
+// ***
 func MaxIdx[T Ordered](arr ...T) (T, int) {
 	if len(arr) == 0 {
 		panic("Max args at least has one element")
@@ -39,6 +41,7 @@ func MaxIdx[T Ordered](arr ...T) (T, int) {
 	return m, idx
 }
 
+// ***
 func Min[T Ordered](arr ...T) T {
 	if len(arr) == 0 {
 		panic("Min args at least has one element")
@@ -52,6 +55,7 @@ func Min[T Ordered](arr ...T) T {
 	return m
 }
 
+// ***
 func MinIdx[T Ordered](arr ...T) (T, int) {
 	if len(arr) == 0 {
 		panic("Min args at least has one element")
@@ -66,7 +70,7 @@ func MinIdx[T Ordered](arr ...T) (T, int) {
 	return m, idx
 }
 
-// IdxOf : returns the index of the first instance of e in slice, or -1 if e is not present in slice
+// *** IdxOf : returns the index of the first instance of e in slice, or -1 if e is not present in slice
 func IdxOf[T comparable](e T, arr ...T) int {
 	for i, ele := range arr {
 		if ele == e {
@@ -76,7 +80,7 @@ func IdxOf[T comparable](e T, arr ...T) int {
 	return -1
 }
 
-// LastIdxOf : returns the index of the last instance of e in slice, or -1 if e is not present in slice
+// *** LastIdxOf : returns the index of the last instance of e in slice, or -1 if e is not present in slice
 func LastIdxOf[T comparable](e T, arr ...T) int {
 	for i := len(arr) - 1; i >= 0; i-- {
 		if arr[i] == e {
@@ -86,22 +90,24 @@ func LastIdxOf[T comparable](e T, arr ...T) int {
 	return -1
 }
 
-// In : if arr has element e, return true. otherwise false
+// *** In : if arr has element e, return true. otherwise false
 func In[T comparable](e T, arr ...T) bool {
 	return IdxOf(e, arr...) != -1
 }
 
-// NotIn : if arr does NOT have element e, return true. otherwise false
+// *** NotIn : if arr does NOT have element e, return true. otherwise false
 func NotIn[T comparable](e T, arr ...T) bool {
 	return !In(e, arr...)
 }
 
+// ***
 func DelEleOrderlyAt[T comparable](arr *[]T, i int) {
 	if i >= 0 && i < len(*arr) {
 		*arr = append((*arr)[:i], (*arr)[i+1:]...)
 	}
 }
 
+// ***
 func DelEleAt[T comparable](arr *[]T, i int) {
 	if i >= 0 && i < len(*arr) {
 		(*arr)[i] = (*arr)[len(*arr)-1]
@@ -109,19 +115,21 @@ func DelEleAt[T comparable](arr *[]T, i int) {
 	}
 }
 
+// ***
 func DelOneEle[T comparable](arr *[]T, ele T) {
 	if idx := IdxOf(ele, (*arr)...); idx >= 0 {
 		DelEleAt(arr, idx)
 	}
 }
 
+// ***
 func DelOneEleOrderly[T comparable](arr *[]T, ele T) {
 	if idx := IdxOf(ele, (*arr)...); idx >= 0 {
 		DelEleOrderlyAt(arr, idx)
 	}
 }
 
-// Settify : remove repeated elements in arr
+// *** Settify : remove repeated elements in arr
 func Settify[T comparable](arr ...T) (set []T) {
 	if len(arr) == 0 {
 		return arr
@@ -140,6 +148,7 @@ func Settify[T comparable](arr ...T) (set []T) {
 	return
 }
 
+// ***
 func Filter[T any](data *[]T, check func(i int, e T) bool) []T {
 	if check == nil {
 		return *data
@@ -157,6 +166,7 @@ func Filter[T any](data *[]T, check func(i int, e T) bool) []T {
 	return p[:k]
 }
 
+// ***
 func Map[T1, T2 any](arr []T1, mapper func(i int, e T1) T2) (r []T2) {
 	r = make([]T2, 0, len(arr))
 	if mapper != nil {
@@ -167,7 +177,7 @@ func Map[T1, T2 any](arr []T1, mapper func(i int, e T1) T2) (r []T2) {
 	return
 }
 
-// FilterMap : Filter & Modify A slice, return B slice
+// *** FilterMap : Filter & Modify A slice, return B slice
 func FilterMap[T1, T2 any](arr []T1, filter func(i int, e T1) bool, mapper func(i int, e T1) T2) (r []T2) {
 	return Map(Filter(&arr, filter), mapper)
 }
@@ -178,7 +188,7 @@ type kv struct {
 	val any
 }
 
-// Map2KVs : map to key slice & value slice
+// *** Map2KVs : map to key slice & value slice
 func Map2KVs[T1, T2 comparable](m map[T1]T2, less4k func(i, j T1) bool, less4v func(i, j T2) bool) (keys []T1, values []T2) {
 
 	kvSlc := make([]kv, 0, len(m))
@@ -214,11 +224,31 @@ func Map2KVs[T1, T2 comparable](m map[T1]T2, less4k func(i, j T1) bool, less4v f
 	return
 }
 
-// TODO...
-// MapSafeMerge
-// MapReplaceMerge
+// *** MapSafeMerge:
+func MapSafeMerge[T1, T2 comparable](ms ...map[T1]T2) map[T1]T2 {
+	res := map[T1]T2{}
+	for _, m := range ms {
+		for k, v := range m {
+			if _, ok := res[k]; !ok {
+				res[k] = v
+			}
+		}
+	}
+	return res
+}
 
-// MapMerge:
+// MapReplaceMerge
+func MapReplaceMerge[T1, T2 comparable](ms ...map[T1]T2) map[T1]T2 {
+	res := map[T1]T2{}
+	for _, m := range ms {
+		for k, v := range m {
+			res[k] = v
+		}
+	}
+	return res
+}
+
+// *** MapMerge:
 func MapMerge[T1, T2 comparable](ms ...map[T1]T2) map[T1][]T2 {
 	res := map[T1][]T2{}
 	for _, m := range ms {
@@ -236,7 +266,7 @@ func MapMerge[T1, T2 comparable](ms ...map[T1]T2) map[T1][]T2 {
 	return res
 }
 
-// MapFilter:
+// *** MapFilter:
 func MapFilter[T1 comparable, T2 any](m map[T1]T2, filter func(k T1, v T2) bool) map[T1]T2 {
 	rt := make(map[T1]T2)
 	for k, v := range m {
@@ -247,7 +277,7 @@ func MapFilter[T1 comparable, T2 any](m map[T1]T2, filter func(k T1, v T2) bool)
 	return rt
 }
 
-// MapCopy:
+// *** MapCopy:
 func MapCopy[T1 comparable, T2 any](m map[T1]T2) map[T1]T2 {
 	return MapFilter(m, func(k T1, v T2) bool { return true })
 }
@@ -273,7 +303,7 @@ func IsSub[T comparable](setA, setB []T) bool {
 	return IsSuper(setB, setA)
 }
 
-// equals :
+// *** equals :
 func equals[T comparable](setA, setB []T) bool {
 	if (setA == nil && setB != nil) || (setA != nil && setB == nil) {
 		return false
@@ -300,7 +330,7 @@ AGAIN:
 	return len(tmpA) == 0 && len(tmpB) == 0
 }
 
-// Equals
+// *** Equals
 func Equals[T comparable](sets ...[]T) bool {
 	for i := 0; i < len(sets)-1; i++ {
 		this := sets[i]
@@ -449,9 +479,8 @@ func Reverse[T any](arr []T) []T {
 	return Reorder(arr, indices)
 }
 
-// Reduce :
+// *** Reduce :
 func Reduce[T any](arr []T, reduce func(e0, e1 T) T) (r T) {
-
 	if len(arr) < 2 {
 		panic("Reduce at least receives 2 parameters")
 	}
