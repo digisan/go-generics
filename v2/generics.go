@@ -12,6 +12,17 @@ type Ordered interface {
 		~uintptr | ~float32 | ~float64 | ~string
 }
 
+// last one @ idx=1; first one @ idx=len(arr)
+func Last[T any](idx int, arr ...T) T {
+	if len(arr) == 0 {
+		panic("arr's length must > 0")
+	}
+	if idx <= 0 || idx > len(arr) {
+		panic("idx must between [1, len(arr)]")
+	}
+	return arr[len(arr)-idx]
+}
+
 // ***
 func Max[T Ordered](arr ...T) T {
 	if len(arr) == 0 {
@@ -456,7 +467,7 @@ func Minus[T comparable](setA []T, setOthers ...[]T) (set []T) {
 	return minus(setA, Union(setOthers...))
 }
 
-// Reorder : any index must less than len(arr)
+// *** Reorder : any index must less than len(arr); ([4,2,3,1],[2,1,3,0]) => [3,2,1,4]
 func Reorder[T any](arr []T, indices []int) (orders []T) {
 	if arr == nil || indices == nil {
 		return nil
@@ -470,7 +481,7 @@ func Reorder[T any](arr []T, indices []int) (orders []T) {
 	return orders
 }
 
-// Reverse : [1,2,3] => [3,2,1]
+// *** Reverse : [1,2,3] => [3,2,1]
 func Reverse[T any](arr []T) []T {
 	indices := make([]int, len(arr))
 	for i := 0; i < len(arr); i++ {
@@ -496,7 +507,7 @@ func Reduce[T any](arr []T, reduce func(e0, e1 T) T) (r T) {
 	return r
 }
 
-// ZipArray :
+// *** ZipArray : [[{1,2}], [{3,4,5}], [{6,7,8,9}]] =>  [[1,3,6], [2,4,7]]
 func ZipArray[T any](arrays ...[]T) (zipped [][]T) {
 	Min := func(data ...int) int {
 		min := data[0]

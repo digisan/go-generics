@@ -876,7 +876,7 @@ func TestMapCopy(t *testing.T) {
 					"c": 3,
 				},
 			},
-			want: map[string]int{				
+			want: map[string]int{
 				"b": 2,
 				"c": 3,
 				"a": 1,
@@ -887,6 +887,140 @@ func TestMapCopy(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := MapCopy(tt.args.m); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("MapCopy() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestZipArray(t *testing.T) {
+	type args struct {
+		arrays [][]int
+	}
+	tests := []struct {
+		name       string
+		args       args
+		wantZipped [][]int
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				arrays: [][]int{
+					{1, 2},
+					{3, 4, 5},
+					{6, 7, 8, 9},
+				},
+			},
+			wantZipped: [][]int{
+				{1, 3, 6}, {2, 4, 7},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if gotZipped := ZipArray(tt.args.arrays...); !reflect.DeepEqual(gotZipped, tt.wantZipped) {
+				t.Errorf("ZipArray() = %v, want %v", gotZipped, tt.wantZipped)
+			}
+		})
+	}
+}
+
+func TestReverse(t *testing.T) {
+	type args struct {
+		arr []int
+	}
+	tests := []struct {
+		name string
+		args args
+		want []int
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				arr: []int{},
+			},
+			want: []int{},
+		},
+		{
+			args: args{
+				arr: []int{1, 2, 3},
+			},
+			want: []int{3, 2, 1},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Reverse(tt.args.arr); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Reverse() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestReorder(t *testing.T) {
+	type args struct {
+		arr     []int
+		indices []int
+	}
+	tests := []struct {
+		name       string
+		args       args
+		wantOrders []int
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				arr:     []int{4, 2, 3, 1},
+				indices: []int{2, 1, 3, 0},
+			},
+			wantOrders: []int{3, 2, 1, 4},
+		},
+		{
+			args: args{
+				arr:     []int{4, 2, 3, 1},
+				indices: []int{2, 1},
+			},
+			wantOrders: []int{3, 2},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if gotOrders := Reorder(tt.args.arr, tt.args.indices); !reflect.DeepEqual(gotOrders, tt.wantOrders) {
+				t.Errorf("Reorder() = %v, want %v", gotOrders, tt.wantOrders)
+			}
+		})
+	}
+}
+
+func TestLast(t *testing.T) {
+	type args struct {
+		idx int
+		arr []int
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				idx: 1,
+				arr: []int{1, 2, 3, 4, 5},
+			},
+			want: 5,
+		},
+		{
+			args: args{
+				idx: 2,
+				arr: []int{1, 2, 3, 4, 5},
+			},
+			want: 4,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Last(tt.args.idx, tt.args.arr...); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Last() = %v, want %v", got, tt.want)
 			}
 		})
 	}
