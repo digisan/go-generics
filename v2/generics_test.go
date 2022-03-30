@@ -1019,7 +1019,7 @@ func TestLast(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Last(tt.args.idx, tt.args.arr...); !reflect.DeepEqual(got, tt.want) {
+			if got := Last(tt.args.arr, tt.args.idx); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Last() = %v, want %v", got, tt.want)
 			}
 		})

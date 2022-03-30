@@ -13,7 +13,7 @@ type Ordered interface {
 }
 
 // last one @ idx=1; first one @ idx=len(arr)
-func Last[T any](idx int, arr ...T) T {
+func Last[T any](arr []T, idx int) T {
 	if len(arr) == 0 {
 		panic("arr's length must > 0")
 	}
