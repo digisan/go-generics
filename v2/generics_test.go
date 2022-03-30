@@ -503,6 +503,7 @@ func TestFilterMap(t *testing.T) {
 				t.Errorf("FilterMap() = %v, want %v", gotR, tt.wantR)
 			}
 		})
+		fmt.Println(tt.args.arr)
 	}
 }
 
@@ -522,7 +523,7 @@ func TestFilter(t *testing.T) {
 				data:  &[]int{1, 2, 3, 4, 5},
 				check: func(i, e int) bool { return e < 4 },
 			},
-			want: []int{1, 2, 3},
+			want: []int{1, 2, 3, 4, 5},
 		},
 		{
 			args: args{
@@ -538,6 +539,7 @@ func TestFilter(t *testing.T) {
 				t.Errorf("Filter() = %v, want %v", got, tt.want)
 			}
 		})
+		fmt.Println("filtered:", *tt.args.data)
 	}
 }
 

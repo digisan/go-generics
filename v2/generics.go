@@ -159,7 +159,7 @@ func Settify[T comparable](arr ...T) (set []T) {
 	return
 }
 
-// ***
+// *** input data will be changed, but return original data
 func Filter[T any](data *[]T, check func(i int, e T) bool) []T {
 	if check == nil {
 		return *data
@@ -174,7 +174,7 @@ func Filter[T any](data *[]T, check func(i int, e T) bool) []T {
 		}
 	}
 	(*reflect.SliceHeader)(unsafe.Pointer(data)).Len = k
-	return p[:k]
+	return p
 }
 
 // ***
@@ -190,7 +190,8 @@ func Map[T1, T2 any](arr []T1, mapper func(i int, e T1) T2) (r []T2) {
 
 // *** FilterMap : Filter & Modify A slice, return B slice
 func FilterMap[T1, T2 any](arr []T1, filter func(i int, e T1) bool, mapper func(i int, e T1) T2) (r []T2) {
-	return Map(Filter(&arr, filter), mapper)
+	Filter(&arr, filter)
+	return Map(arr, mapper)
 }
 
 // for Map2KVs
