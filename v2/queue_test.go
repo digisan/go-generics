@@ -53,3 +53,11 @@ func TestQueueCopy(t *testing.T) {
 	fmt.Println("after clear, q:", q, q.Len())
 	fmt.Println("cp:", cp, cp.Len())
 }
+
+func TestQueueSink(t *testing.T) {
+	q := Queue[string](dataStr)
+	fmt.Println("q:", q, q.Len())
+	for _, e := range q.Sink() {
+		fmt.Println(e)
+	}
+}

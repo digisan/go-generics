@@ -48,3 +48,11 @@ func TestStackCopy(t *testing.T) {
 	fmt.Println("after clear, s:", s, s.Len())
 	fmt.Println("cp", cp, cp.Len())
 }
+
+func TestStackSink(t *testing.T) {
+	s := Stack[string](dataStr)
+	fmt.Println("s:", s, s.Len())
+	for _, e := range s.Sink() {
+		fmt.Println(e)
+	}
+}

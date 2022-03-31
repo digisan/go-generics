@@ -201,7 +201,7 @@ type kv struct {
 }
 
 // *** Map2KVs : map to key slice & value slice
-func Map2KVs[T1, T2 comparable](m map[T1]T2, less4k func(i, j T1) bool, less4v func(i, j T2) bool) (keys []T1, values []T2) {
+func Map2KVs[T1 comparable, T2 any](m map[T1]T2, less4k func(i, j T1) bool, less4v func(i, j T2) bool) (keys []T1, values []T2) {
 
 	kvSlc := make([]kv, 0, len(m))
 	for k, v := range m {

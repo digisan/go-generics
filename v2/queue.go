@@ -50,6 +50,20 @@ func (q *Queue[T]) Copy() Queue[T] {
 	return Queue[T](tmp)
 }
 
+// *** Sink :
+func (q *Queue[T]) Sink() []T {
+	n := q.Len()
+	arr := make([]T, 0, n)
+	for {
+		if ele, ok := q.Dequeue(); ok {
+			arr = append(arr, ele)
+		} else {
+			break
+		}
+	}
+	return arr
+}
+
 // *** String :
 func (q Queue[T]) String() string {
 	sep := ","
