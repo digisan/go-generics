@@ -306,6 +306,27 @@ func MapCopy[T1 comparable, T2 any](m map[T1]T2) map[T1]T2 {
 	return MapFilter(m, func(k T1, v T2) bool { return true })
 }
 
+// *** MapToValAny:
+func MapToValAny[T1 comparable, T2 any](m map[T1]T2) map[T1]any {
+	ret := make(map[T1]any)
+	for k, v := range m {
+		ret[k] = v
+	}
+	return ret
+}
+
+// *** MapToArrValAny:
+func MapToArrValAny[T1 comparable, T2 any](m map[T1][]T2) map[T1][]any {
+	ret := make(map[T1][]any)
+	for k, v := range m {
+		ret[k] = make([]any, 0, len(v))
+		for _, item := range v {
+			ret[k] = append(ret[k], item)
+		}
+	}
+	return ret
+}
+
 /////////////////////////////////////////////////////////////////////////
 
 // IsSuper :

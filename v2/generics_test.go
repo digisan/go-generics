@@ -1075,3 +1075,69 @@ func TestMapMerge4ValSlc(t *testing.T) {
 		})
 	}
 }
+
+func TestMapToValAny(t *testing.T) {
+	type args struct {
+		m map[int]int
+	}
+	tests := []struct {
+		name string
+		args args
+		want map[int]any
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				m: map[int]int{
+					1: 1,
+					2: 2,
+					3: 3,
+				},
+			},
+			want: map[int]any{
+				1: 1,
+				2: 2,
+				3: 3,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := MapToValAny(tt.args.m); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("MapToValAny() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestMapToArrValAny(t *testing.T) {
+	type args struct {
+		m map[int][]int
+	}
+	tests := []struct {
+		name string
+		args args
+		want map[int][]any
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				m: map[int][]int{
+					1: {1, 2, 3},
+					2: {4, 5, 6},
+				},
+			},
+			want: map[int][]any{
+				1: {1, 2, 3},
+				2: {4, 5, 6},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := MapToArrValAny(tt.args.m); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("MapToArrValAny() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
