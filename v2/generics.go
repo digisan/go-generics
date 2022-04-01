@@ -237,7 +237,7 @@ func Map2KVs[T1 comparable, T2 any](m map[T1]T2, less4k func(i, j T1) bool, less
 }
 
 // *** MapSafeMerge:
-func MapSafeMerge[T1, T2 comparable](ms ...map[T1]T2) map[T1]T2 {
+func MapSafeMerge[T1 comparable, T2 any](ms ...map[T1]T2) map[T1]T2 {
 	res := map[T1]T2{}
 	for _, m := range ms {
 		for k, v := range m {
@@ -250,7 +250,7 @@ func MapSafeMerge[T1, T2 comparable](ms ...map[T1]T2) map[T1]T2 {
 }
 
 // MapReplaceMerge
-func MapReplaceMerge[T1, T2 comparable](ms ...map[T1]T2) map[T1]T2 {
+func MapReplaceMerge[T1 comparable, T2 any](ms ...map[T1]T2) map[T1]T2 {
 	res := map[T1]T2{}
 	for _, m := range ms {
 		for k, v := range m {
@@ -273,6 +273,18 @@ func MapMerge[T1, T2 comparable](ms ...map[T1]T2) map[T1][]T2 {
 				}
 			}
 			res[k] = append(res[k], v)
+		}
+	}
+	return res
+}
+
+// *** MapMergeOnValSlc :
+func MapMergeOnValSlc[T1, T2 comparable](ms ...map[T1][]T2) map[T1][]T2 {
+	res := map[T1][]T2{}
+	for _, m := range ms {
+		for k, v := range m {
+			res[k] = append(res[k], v...)
+			res[k] = Settify(res[k]...)
 		}
 	}
 	return res

@@ -461,6 +461,13 @@ func TestMapMerge(t *testing.T) {
 }
 
 func TestFilterMap(t *testing.T) {
+
+	// arr := []int{1, 2, 3, 4, 5}
+	// out := FilterMap(arr, func(i int, e int) bool { return e > 3 }, func(i int, e int) int { return e })
+	// fmt.Println("arr:", arr)
+	// fmt.Println("out:", out)
+	// return
+
 	type args struct {
 		arr    []int
 		filter func(i int, e int) bool
@@ -1023,6 +1030,47 @@ func TestLast(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := Last(tt.args.arr, tt.args.idx); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Last() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestMapMerge4ValSlc(t *testing.T) {
+	type args struct {
+		ms []map[string][]string
+	}
+	tests := []struct {
+		name string
+		args args
+		want map[string][]string
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				ms: []map[string][]string{
+					{
+						"a": {"a", "A"},
+						"b": {"b", "B"},
+						"c": {"c", "C"},
+					},
+					{
+						"a": {"Aa", "A"},
+						"b": {"Bb", "B"},
+						"c": {"Cc", "C"},
+					},
+				},
+			},
+			want: map[string][]string{
+				"a": {"a", "A", "Aa"},
+				"b": {"b", "B", "Bb"},
+				"c": {"c", "C", "Cc"},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := MapMergeOnValSlc(tt.args.ms...); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("MapMerge4ValSlc() = %v, want %v", got, tt.want)
 			}
 		})
 	}
