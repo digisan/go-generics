@@ -1141,3 +1141,55 @@ func TestMapToArrValAny(t *testing.T) {
 		})
 	}
 }
+
+func TestMergeArray(t *testing.T) {
+	type args struct {
+		arrays [][]int
+	}
+	tests := []struct {
+		name       string
+		args       args
+		wantMerged []int
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				arrays: [][]int{{2, 2}, {3, 3, 4}, {6, 6, 8, 8}},
+			},
+			wantMerged: []int{2, 2, 3, 3, 4, 6, 6, 8, 8},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if gotMerged := MergeArray(tt.args.arrays...); !reflect.DeepEqual(gotMerged, tt.wantMerged) {
+				t.Errorf("MergeArray() = %v, want %v", gotMerged, tt.wantMerged)
+			}
+		})
+	}
+}
+
+func TestMergeSet(t *testing.T) {
+	type args struct {
+		arrays [][]int
+	}
+	tests := []struct {
+		name       string
+		args       args
+		wantMerged []int
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				arrays: [][]int{{2, 2}, {3, 3, 4}, {6, 6, 8, 8}},
+			},
+			wantMerged: []int{2, 3, 4, 6, 8},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if gotMerged := MergeSet(tt.args.arrays...); !reflect.DeepEqual(gotMerged, tt.wantMerged) {
+				t.Errorf("MergeSet() = %v, want %v", gotMerged, tt.wantMerged)
+			}
+		})
+	}
+}

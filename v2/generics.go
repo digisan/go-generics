@@ -541,7 +541,7 @@ func Reduce[T any](arr []T, reduce func(e0, e1 T) T) (r T) {
 	return r
 }
 
-// *** ZipArray : [[{1,2}], [{3,4,5}], [{6,7,8,9}]] =>  [[1,3,6], [2,4,7]]
+// *** ZipArray : [{1,2}, {3,4,5}, {6,7,8,9}] =>  [{1,3,6}, {2,4,7}]
 func ZipArray[T any](arrays ...[]T) (zipped [][]T) {
 	Min := func(data ...int) int {
 		min := data[0]
@@ -566,4 +566,20 @@ func ZipArray[T any](arrays ...[]T) (zipped [][]T) {
 		zipped = append(zipped, tuple)
 	}
 	return
+}
+
+// *** MergeArray : [{2,2}, {3,3,4}, {6,6,8,8}] => {2,2,3,3,4,6,6,8,8}
+func MergeArray[T any](arrays ...[]T) (merged []T) {
+	for _, arr := range arrays {
+		merged = append(merged, arr...)
+	}
+	return
+}
+
+// *** MergeSet : [{2,2}, {3,3,4}, {6,6,8,8}] => {2,3,4,6,8}
+func MergeSet[T comparable](arrays ...[]T) (merged []T) {
+	for _, arr := range arrays {
+		merged = append(merged, arr...)
+	}
+	return Settify(merged...)
 }
