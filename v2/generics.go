@@ -1,6 +1,7 @@
 package v2
 
 import (
+	"log"
 	"reflect"
 	"sort"
 	"unsafe"
@@ -178,20 +179,41 @@ func Filter[T any](data *[]T, check func(i int, e T) bool) []T {
 }
 
 // ***
+func Map4SglTyp[T any](arr []T, mapper func(i int, e T) T) (r []T) {
+	if mapper == nil {
+		return append([]T{}, arr...)
+	}
+	r = make([]T, 0, len(arr))
+	for i, e := range arr {
+		r = append(r, mapper(i, e))
+	}
+	return
+}
+
 func Map[T1, T2 any](arr []T1, mapper func(i int, e T1) T2) (r []T2) {
+	if mapper == nil {
+		log.Fatalln("mapper CANNOT be nil")
+	}
 	r = make([]T2, 0, len(arr))
-	if mapper != nil {
-		for i, e := range arr {
-			r = append(r, mapper(i, e))
-		}
+	for i, e := range arr {
+		r = append(r, mapper(i, e))
 	}
 	return
 }
 
 // *** FilterMap : Filter & Modify A slice, return B slice
 func FilterMap[T1, T2 any](arr []T1, filter func(i int, e T1) bool, mapper func(i int, e T1) T2) (r []T2) {
-	Filter(&arr, filter)
-	return Map(arr, mapper)
+	tmp := make([]T1, len(arr))
+	copy(tmp, arr)
+	Filter(&tmp, filter)
+	return Map(tmp, mapper)
+}
+
+func FilterMap4SglTyp[T any](arr []T, filter func(i int, e T) bool, mapper func(i int, e T) T) (r []T) {
+	tmp := make([]T, len(arr))
+	copy(tmp, arr)
+	Filter(&tmp, filter)
+	return Map4SglTyp(tmp, mapper)
 }
 
 // for Map2KVs
