@@ -1193,3 +1193,64 @@ func TestMergeSet(t *testing.T) {
 		})
 	}
 }
+
+func TestMapAllFieldsEmpty(t *testing.T) {
+
+	type P struct {
+		name string
+	}
+	var p *P = nil
+
+	type args struct {
+		m map[string]any
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				m: map[string]any{
+					"a": "",
+					"b": []int{},
+					"p": p,
+					"n": nil,
+				},
+			},
+			want: true,
+		},
+		{
+			args: args{
+				m: map[string]any{
+					"a": "",
+					"b": []int{},
+					"c": &[]int{},
+					"p": p,
+					"n": nil,
+				},
+			},
+			want: false,
+		},
+		{
+			args: args{
+				m: map[string]any{
+					"a": "",
+					"b": []int{},
+					"c": &P{},
+					"p": p,
+					"n": nil,
+				},
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := MapAllEmptyFields(tt.args.m); got != tt.want {
+				t.Errorf("MapAllEmptyFields() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

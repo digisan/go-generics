@@ -349,6 +349,33 @@ func MapToArrValAny[T1 comparable, T2 any](m map[T1][]T2) map[T1][]any {
 	return ret
 }
 
+// e.g. [ nil, "", []int{}, XXX ptr(nil) ] are 'empty'
+// [ &[]int{}, &XXX{} ] are NOT 'empty'
+func MapAllEmptyFields[T comparable](m map[T]any) bool {
+	for _, v := range m {
+		if sv, ok := v.(string); ok {
+			if len(sv) > 0 {
+				return false
+			}
+		} else if v != nil {
+			rv := reflect.ValueOf(v)
+			switch reflect.TypeOf(v).Kind() {
+			case reflect.Slice, reflect.Array, reflect.Map, reflect.Chan:
+				if rv.Len() > 0 {
+					return false
+				}
+			case reflect.Pointer:
+				if !rv.IsNil() {
+					return false
+				}
+			default:
+				return false
+			}
+		}
+	}
+	return true
+}
+
 /////////////////////////////////////////////////////////////////////////
 
 // IsSuper :
