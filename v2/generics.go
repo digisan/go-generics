@@ -160,13 +160,14 @@ func Settify[T comparable](arr ...T) (set []T) {
 	return
 }
 
-// *** input data will be changed, but return original data
-func Filter[T any](data *[]T, check func(i int, e T) bool) []T {
+// *** input data will be changed, filtered data keeps order, BUT
+// return RE-ORDERED original set
+func FilterFast[T any](pData *[]T, check func(i int, e T) bool) []T {
 	if check == nil {
-		return *data
+		return *pData
 	}
 
-	p := *data
+	p := *pData
 	var k = 0
 	for i, v := range p {
 		if check(i, v) {
@@ -174,8 +175,23 @@ func Filter[T any](data *[]T, check func(i int, e T) bool) []T {
 			k++
 		}
 	}
-	(*reflect.SliceHeader)(unsafe.Pointer(data)).Len = k
+	(*reflect.SliceHeader)(unsafe.Pointer(pData)).Len = k
 	return p
+}
+
+// *** input data keeps original, return filtered & ordered copy
+func Filter[T any](data []T, check func(i int, e T) bool) []T {
+	if check == nil {
+		return append([]T{}, data...)
+	}
+
+	r := make([]T, 0, len(data))
+	for i, v := range data {
+		if check(i, v) {
+			r = append(r, v)
+		}
+	}
+	return r
 }
 
 // ***
@@ -201,19 +217,24 @@ func Map[T1, T2 any](arr []T1, mapper func(i int, e T1) T2) (r []T2) {
 	return
 }
 
-// *** FilterMap : Filter & Modify A slice, return B slice
+// *** FilterMap : Filter A slice, return A=>B slice. B could be different type from A
 func FilterMap[T1, T2 any](arr []T1, filter func(i int, e T1) bool, mapper func(i int, e T1) T2) (r []T2) {
-	tmp := make([]T1, len(arr))
-	copy(tmp, arr)
-	Filter(&tmp, filter)
-	return Map(tmp, mapper)
+	// tmp := make([]T1, len(arr))
+	// copy(tmp, arr)
+	// FilterFast(&tmp, filter)
+	// return Map(tmp, mapper)
+
+	return Map(Filter(arr, filter), mapper)
 }
 
+// Filter A slice, return A=>B slice. B is the same type as A
 func FilterMap4SglTyp[T any](arr []T, filter func(i int, e T) bool, mapper func(i int, e T) T) (r []T) {
-	tmp := make([]T, len(arr))
-	copy(tmp, arr)
-	Filter(&tmp, filter)
-	return Map4SglTyp(tmp, mapper)
+	// tmp := make([]T, len(arr))
+	// copy(tmp, arr)
+	// FilterFast(&tmp, filter)
+	// return Map4SglTyp(tmp, mapper)
+
+	return Map4SglTyp(Filter(arr, filter), mapper)
 }
 
 // for Map2KVs

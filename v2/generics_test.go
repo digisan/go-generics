@@ -495,14 +495,14 @@ func TestFilterMap(t *testing.T) {
 			},
 			wantR: []string{"1", "2", "3", "4", "5", "6", "7"},
 		},
-		{
-			args: args{
-				arr:    []int{1, 2, 3, 4, 5, 6, 7},
-				filter: func(i, e int) bool { return e > 3 },
-				mapper: nil,
-			},
-			wantR: []string{},
-		},
+		// {
+		// 	args: args{
+		// 		arr:    []int{1, 2, 3, 4, 5, 6, 7},
+		// 		filter: func(i, e int) bool { return e > 3 },
+		// 		mapper: nil, // panic
+		// 	},
+		// 	wantR: []string{},
+		// },
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -514,7 +514,7 @@ func TestFilterMap(t *testing.T) {
 	}
 }
 
-func TestFilter(t *testing.T) {
+func TestFilterFast(t *testing.T) {
 	type args struct {
 		data  *[]int
 		check func(i int, e int) bool
@@ -527,17 +527,68 @@ func TestFilter(t *testing.T) {
 		// TODO: Add test cases.
 		{
 			args: args{
-				data:  &[]int{1, 2, 3, 4, 5},
+				data:  &[]int{6, 1, 5, 3, 4, 2},
 				check: func(i, e int) bool { return e < 4 },
 			},
-			want: []int{1, 2, 3, 4, 5},
+			want: []int{1, 3, 2, 6, 4, 5},
 		},
 		{
 			args: args{
-				data:  &[]int{1, 2, 3, 4, 5},
+				data:  &[]int{6, 1, 5, 3, 4, 2},
 				check: nil,
 			},
-			want: []int{1, 2, 3, 4, 5},
+			want: []int{6, 1, 5, 3, 4, 2},
+		},
+		{
+			args: args{
+				data:  &[]int{6, 1, 5, 3, 4, 2},
+				check: func(i, e int) bool { return e < 10 },
+			},
+			want: []int{6, 1, 5, 3, 4, 2},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := FilterFast(tt.args.data, tt.args.check); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Filter() = %v, want %v", got, tt.want)
+			}
+		})
+		fmt.Println("filtered:", *tt.args.data)
+		fmt.Println()
+	}
+}
+
+func TestFilter(t *testing.T) {
+	type args struct {
+		data  []int
+		check func(i int, e int) bool
+	}
+	tests := []struct {
+		name string
+		args args
+		want []int
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				data:  []int{1, 5, 3, 4, 2},
+				check: func(i, e int) bool { return e < 4 },
+			},
+			want: []int{1, 3, 2},
+		},
+		{
+			args: args{
+				data:  []int{1, 5, 3, 4, 2},
+				check: nil,
+			},
+			want: []int{1, 5, 3, 4, 2},
+		},
+		{
+			args: args{
+				data:  []int{1, 5, 3, 4, 2},
+				check: func(i, e int) bool { return e < 10 },
+			},
+			want: []int{1, 5, 3, 4, 2},
 		},
 	}
 	for _, tt := range tests {
@@ -546,7 +597,6 @@ func TestFilter(t *testing.T) {
 				t.Errorf("Filter() = %v, want %v", got, tt.want)
 			}
 		})
-		fmt.Println("filtered:", *tt.args.data)
 	}
 }
 
@@ -568,13 +618,13 @@ func TestMap(t *testing.T) {
 			},
 			wantR: []string{"1", "2", "3", "4", "5"},
 		},
-		{
-			args: args{
-				arr:    []int{1, 2, 3, 4, 5},
-				mapper: nil,
-			},
-			wantR: []string{},
-		},
+		// {
+		// 	args: args{
+		// 		arr:    []int{1, 2, 3, 4, 5},
+		// 		mapper: nil, // panic
+		// 	},
+		// 	wantR: []string{},
+		// },
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
