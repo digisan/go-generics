@@ -951,7 +951,7 @@ func TestMapCopy(t *testing.T) {
 	}
 }
 
-func TestZipArray(t *testing.T) {
+func TestZipSlice(t *testing.T) {
 	type args struct {
 		arrays [][]int
 	}
@@ -976,8 +976,72 @@ func TestZipArray(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotZipped := ZipArray(tt.args.arrays...); !reflect.DeepEqual(gotZipped, tt.wantZipped) {
-				t.Errorf("ZipArray() = %v, want %v", gotZipped, tt.wantZipped)
+			if gotZipped := ZipSlice(tt.args.arrays...); !reflect.DeepEqual(gotZipped, tt.wantZipped) {
+				t.Errorf("ZipSlice() = %v, want %v", gotZipped, tt.wantZipped)
+			}
+		})
+	}
+}
+
+func TestZipDim2(t *testing.T) {
+	type args struct {
+		arrays [][]int
+	}
+	tests := []struct {
+		name       string
+		args       args
+		wantZipped [][2]int
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				arrays: [][]int{
+					{1, 2, 3},
+					{4, 5, 6},
+					{7, 8, 9},
+				},
+			},
+			wantZipped: [][2]int{
+				{1, 4}, {2, 5}, {3, 6},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if gotZipped := ZipDim2(tt.args.arrays...); !reflect.DeepEqual(gotZipped, tt.wantZipped) {
+				t.Errorf("ZipDim2() = %v, want %v", gotZipped, tt.wantZipped)
+			}
+		})
+	}
+}
+
+func TestZipDim3(t *testing.T) {
+	type args struct {
+		arrays [][]int
+	}
+	tests := []struct {
+		name       string
+		args       args
+		wantZipped [][3]int
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				arrays: [][]int{
+					{1, 2, 3},
+					{4, 5, 6},
+					{7, 8, 9},
+				},
+			},
+			wantZipped: [][3]int{
+				{1, 4, 7}, {2, 5, 8}, {3, 6, 9},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if gotZipped := ZipDim3(tt.args.arrays...); !reflect.DeepEqual(gotZipped, tt.wantZipped) {
+				t.Errorf("ZipDim3() = %v, want %v", gotZipped, tt.wantZipped)
 			}
 		})
 	}

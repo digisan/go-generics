@@ -611,8 +611,8 @@ func Reduce[T any](arr []T, reduce func(e0, e1 T) T) (r T) {
 	return r
 }
 
-// *** ZipArray : [{1,2}, {3,4,5}, {6,7,8,9}] =>  [{1,3,6}, {2,4,7}]
-func ZipArray[T any](arrays ...[]T) (zipped [][]T) {
+// *** ZipSlice : [{1,2}, {3,4,5}, {6,7,8,9}] =>  [{1,3,6}, {2,4,7}]
+func ZipSlice[T any](slices ...[]T) (zipped [][]T) {
 	Min := func(data ...int) int {
 		min := data[0]
 		for i := 1; i < len(data); i++ {
@@ -624,16 +624,37 @@ func ZipArray[T any](arrays ...[]T) (zipped [][]T) {
 	}
 
 	lens := []int{}
-	for _, arr := range arrays {
-		lens = append(lens, len(arr))
+	for _, slc := range slices {
+		lens = append(lens, len(slc))
 	}
 	min := Min(lens...)
 	for i := 0; i < min; i++ {
 		tuple := []T{}
-		for _, arr := range arrays {
-			tuple = append(tuple, arr[i])
+		for _, slc := range slices {
+			tuple = append(tuple, slc[i])
 		}
 		zipped = append(zipped, tuple)
+	}
+	return
+}
+
+func ZipDim2[T any](slices ...[]T) (za [][2]T) {
+	for _, s := range ZipSlice(slices...) {
+		za = append(za, *(*[2]T)(s))
+	}
+	return
+}
+
+func ZipDim3[T any](slices ...[]T) (za [][3]T) {
+	for _, s := range ZipSlice(slices...) {
+		za = append(za, *(*[3]T)(s))
+	}
+	return
+}
+
+func ZipDim4[T any](slices ...[]T) (za [][4]T) {
+	for _, s := range ZipSlice(slices...) {
+		za = append(za, *(*[4]T)(s))
 	}
 	return
 }
