@@ -8,6 +8,14 @@ type Number interface {
 	~int | ~int8 | ~int16 | ~int32 | ~int64 | ~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~float32 | ~float64
 }
 
+func Sum[T Number](arr ...T) T {
+	sum := new(T)
+	for _, a := range arr {
+		*sum += a
+	}
+	return *sum
+}
+
 func InSpan[T Number](n T, nOpen bool, a [2]T) bool {
 	if a[0] > a[1] {
 		log.Fatalf("a[0]-%v must NOT greater than a[1]-%v", a[0], a[1])
@@ -18,7 +26,7 @@ func InSpan[T Number](n T, nOpen bool, a [2]T) bool {
 	return n >= a[0] && n < a[1]
 }
 
-func ArrOverlapped[T Number](a1, a2 [2]T) bool {
+func Overlapped[T Number](a1, a2 [2]T) bool {
 	for i, n1 := range a1 {
 		if InSpan(n1, i%2 == 1, a2) {
 			return true
@@ -35,7 +43,7 @@ func ArrOverlapped[T Number](a1, a2 [2]T) bool {
 func IsOverlapped[T Number](s1, s2 []T) bool {
 	a1 := (*[2]T)(s1)
 	a2 := (*[2]T)(s2)
-	return ArrOverlapped(*a1, *a2)
+	return Overlapped(*a1, *a2)
 }
 
 func SpanJoin[T Number](s1, s2 []T, ocJoin bool) ([]T, bool) {

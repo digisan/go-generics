@@ -4,7 +4,7 @@ import (
 	"os"
 	"strings"
 
-	spt "github.com/digisan/go-generics/support"
+	spt "github.com/digisan/go-generics/obsolete/support"
 )
 
 var mAliasTyp = map[string]string{
