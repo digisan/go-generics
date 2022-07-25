@@ -161,15 +161,15 @@ func Settify[T comparable](arr ...T) (set []T) {
 
 // *** input data will be changed, filtered data keeps order, BUT
 // return RE-ORDERED original set
-func FilterFast[T any](pData *[]T, check func(i int, e T) bool) []T {
-	if check == nil {
+func FilterFast[T any](pData *[]T, filter func(i int, e T) bool) []T {
+	if filter == nil {
 		return *pData
 	}
 
 	p := *pData
 	var k = 0
 	for i, v := range p {
-		if check(i, v) {
+		if filter(i, v) {
 			p[k], p[i] = p[i], p[k]
 			k++
 		}
@@ -179,14 +179,14 @@ func FilterFast[T any](pData *[]T, check func(i int, e T) bool) []T {
 }
 
 // *** input data keeps original, return filtered & ordered copy
-func Filter[T any](data []T, check func(i int, e T) bool) []T {
-	if check == nil {
+func Filter[T any](data []T, filter func(i int, e T) bool) []T {
+	if filter == nil {
 		return append([]T{}, data...)
 	}
 
 	r := make([]T, 0, len(data))
 	for i, v := range data {
-		if check(i, v) {
+		if filter(i, v) {
 			r = append(r, v)
 		}
 	}
@@ -216,24 +216,34 @@ func Map[T1, T2 any](arr []T1, mapper func(i int, e T1) T2) (r []T2) {
 	return
 }
 
-// *** FilterMap : Filter A slice, return A=>B slice. B could be different type from A
+// FilterMap : Filter A slice, return A=>B slice. B could be different type from A
 func FilterMap[T1, T2 any](arr []T1, filter func(i int, e T1) bool, mapper func(i int, e T1) T2) (r []T2) {
-	// tmp := make([]T1, len(arr))
-	// copy(tmp, arr)
-	// FilterFast(&tmp, filter)
-	// return Map(tmp, mapper)
+	if mapper == nil {
+		panic("mapper cannot be nil")
+	}
 
-	return Map(Filter(arr, filter), mapper)
+	r = make([]T2, 0, len(arr))
+	for i, e := range arr {
+		if (filter != nil && filter(i, e)) || (filter == nil) {
+			r = append(r, mapper(i, e))
+		}
+	}
+	return
 }
 
 // Filter A slice, return A=>B slice. B is the same type as A
 func FilterMap4SglTyp[T any](arr []T, filter func(i int, e T) bool, mapper func(i int, e T) T) (r []T) {
-	// tmp := make([]T, len(arr))
-	// copy(tmp, arr)
-	// FilterFast(&tmp, filter)
-	// return Map4SglTyp(tmp, mapper)
-
-	return Map4SglTyp(Filter(arr, filter), mapper)
+	r = make([]T, 0, len(arr))
+	for i, e := range arr {
+		if (filter != nil && filter(i, e)) || (filter == nil) {
+			if mapper != nil {
+				r = append(r, mapper(i, e))
+			} else {
+				r = append(r, e)
+			}
+		}
+	}
+	return
 }
 
 // *** Reorder : any index must less than len(arr); ([4,2,3,1],[2,1,3,0]) => [3,2,1,4]

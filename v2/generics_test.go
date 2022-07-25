@@ -514,6 +514,45 @@ func TestFilterMap(t *testing.T) {
 	}
 }
 
+func TestFilterMap4SglTyp(t *testing.T) {
+	type args struct {
+		arr    []int
+		filter func(i int, e int) bool
+		mapper func(i int, e int) int
+	}
+	tests := []struct {
+		name  string
+		args  args
+		wantR []int
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				arr:    []int{1, 2, 3, 4, 5, 6, 7},
+				filter: func(i, e int) bool { return e > 3 },
+				mapper: func(i, e int) int { return i },
+			},
+			wantR: []int{3, 4, 5, 6},
+		},
+		{
+			args: args{
+				arr:    []int{1, 2, 3, 4, 5, 6, 7},
+				filter: func(i, e int) bool { return e > 3 },
+				mapper: nil,
+			},
+			wantR: []int{4, 5, 6, 7},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if gotR := FilterMap4SglTyp(tt.args.arr, tt.args.filter, tt.args.mapper); !reflect.DeepEqual(gotR, tt.wantR) {
+				t.Errorf("FilterMap4SglTyp() = %v, want %v", gotR, tt.wantR)
+			}
+		})
+		// fmt.Println(tt.args.arr)
+	}
+}
+
 func TestFilterFast(t *testing.T) {
 	type args struct {
 		data  *[]int
