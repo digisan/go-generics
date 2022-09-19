@@ -42,3 +42,16 @@ func TestSlcCvt(t *testing.T) {
 	// s1 := s.([]int)
 	fmt.Println(Sum(s1...))
 }
+
+func TestAny2Slc(t *testing.T) {
+	var s any = []any{1, 2, 3, 4, 5, 6, 7, 8}
+	
+	s1 := Any2Slc[int](s)
+	fmt.Println(Sum(s1...))
+
+	s2 := Nums2Floats(s1...)
+	fmt.Println(Sum(s2...))
+
+	// s2 := s.([]int)
+	// fmt.Println(Sum(s2...))
+}

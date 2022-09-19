@@ -8,6 +8,17 @@ type Number interface {
 	~int | ~int8 | ~int16 | ~int32 | ~int64 | ~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~float32 | ~float64
 }
 
+func Nums2Floats[T Number](numbers ...T) []float64 {
+	if numbers == nil {
+		return nil
+	}
+	rt := make([]float64, 0, len(numbers))
+	for _, a := range numbers {
+		rt = append(rt, float64(a))
+	}
+	return rt
+}
+
 func Sum[T Number](arr ...T) T {
 	sum := new(T)
 	for _, a := range arr {
