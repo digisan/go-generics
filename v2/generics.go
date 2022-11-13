@@ -12,6 +12,13 @@ type Ordered interface {
 		~uintptr | ~float32 | ~float64 | ~string
 }
 
+func AppendIf[T any](ok bool, arr []T, elems ...T) []T {
+	if ok {
+		return append(arr, elems...)
+	}
+	return arr
+}
+
 // last one @ idx=1; first one @ idx=len(arr)
 func Last[T any](arr []T, idx int) T {
 	if len(arr) == 0 {

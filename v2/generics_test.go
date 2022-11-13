@@ -1407,3 +1407,41 @@ func TestMapAllFieldsEmpty(t *testing.T) {
 		})
 	}
 }
+
+func TestAppendIf(t *testing.T) {
+	type args struct {
+		ok    bool
+		arr   []int
+		elems []int
+	}
+	tests := []struct {
+		name string
+		args args
+		want []int
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				ok:    true,
+				arr:   []int{1, 2, 3},
+				elems: []int{4, 5, 6},
+			},
+			want: []int{1, 2, 3, 4, 5, 6},
+		},
+		{
+			args: args{
+				ok:    false,
+				arr:   []int{1, 2, 3},
+				elems: []int{4, 5, 6},
+			},
+			want: []int{1, 2, 3},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := AppendIf(tt.args.ok, tt.args.arr, tt.args.elems...); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("AppendIf() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
