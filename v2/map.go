@@ -1,8 +1,10 @@
 package v2
 
 import (
+	"fmt"
 	"reflect"
 	"sort"
+	"strings"
 )
 
 // for Map2KVs
@@ -42,7 +44,11 @@ func Map2KVs[T1 comparable, T2 any](m map[T1]T2, less4k func(i, j T1) bool, less
 	values = make([]T2, 0, len(m))
 	for _, kvEle := range kvSlc {
 		keys = append(keys, kvEle.key.(T1))
-		values = append(values, kvEle.val.(T2))
+		if kvEle.val != nil {
+			values = append(values, kvEle.val.(T2))
+		} else {
+			values = append(values, *new(T2))
+		}
 	}
 	return
 }
@@ -140,7 +146,7 @@ func MapToArrValAny[T1 comparable, T2 any](m map[T1][]T2) map[T1][]any {
 
 // e.g. [ nil, "", []int{}, XXX ptr(nil) ] are 'empty'
 // [ &[]int{}, &XXX{} ] are NOT 'empty'
-func MapAllEmptyFields[T comparable](m map[T]any) bool {
+func MapAllValuesAreEmpty[T comparable](m map[T]any) bool {
 	for _, v := range m {
 		if sv, ok := v.(string); ok {
 			if len(sv) > 0 {
@@ -163,4 +169,75 @@ func MapAllEmptyFields[T comparable](m map[T]any) bool {
 		}
 	}
 	return true
+}
+
+func dumpMap(pk string, jv any, mflat *map[string]any) {
+
+	switch m := jv.(type) {
+	case float64, float32, string, bool, int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64, complex64, complex128, nil:
+		(*mflat)[pk] = m
+
+	case []any:
+		for i, a := range m {
+			idx := fmt.Sprintf("%s.%d", pk, i)
+			dumpMap(idx, a, mflat)
+		}
+
+	case map[string]any:
+		{
+			for k, v := range m {
+				if pk != "" {
+					k = fmt.Sprintf("%s.%s", pk, k)
+				}
+
+				switch mv := v.(type) {
+				case []any:
+					for i, a := range v.([]any) {
+						idx := fmt.Sprintf("%s.%d", k, i)
+						dumpMap(idx, a, mflat)
+					}
+				default:
+					dumpMap(k, mv, mflat)
+				}
+			}
+		}
+	}
+}
+
+func MapNestedToFlat(m map[string]any) map[string]any {
+	flatMap := make(map[string]any)
+	dumpMap("", m, &flatMap)
+	return flatMap
+}
+
+func SetNestedMap[T comparable](m map[T]any, value any, keySegs ...T) {
+	pM := &m
+	for i, seg := range keySegs {
+		if i < len(keySegs)-1 {
+			if subM, ok := (*pM)[seg]; !ok {
+				deepM := make(map[T]any)
+				(*pM)[seg] = deepM
+				pM = &deepM
+			} else {
+				m := subM.(map[T]any)
+				pM = &m
+			}
+		} else {
+			(*pM)[seg] = value
+		}
+	}
+}
+
+func MapFlatToNested(m map[string]any) map[string]any {
+
+	keys, vals := Map2KVs(m, func(i, j string) bool { return strings.Count(i, ".") < strings.Count(j, ".") }, nil)
+	// fmt.Println(keys)
+	// fmt.Println(vals)
+
+	rt := make(map[string]any)
+	for i, key := range keys {
+		val := vals[i]
+		SetNestedMap(rt, val, strings.Split(key, ".")...)
+	}
+	return rt
 }
