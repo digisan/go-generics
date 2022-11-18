@@ -436,8 +436,10 @@ func TestAllValuesAreEmpty(t *testing.T) {
 
 func TestSetNestedMap(t *testing.T) {
 	m := make(map[string]any)
-	SetNestedMap(m, "ABD", "A", "B", "D")
-	SetNestedMap(m, "ACD", "A", "C", "D")
+	SetNestedMap(m, "ABD", "A", "0")
+	// SetNestedMap(m, "ABD", "A", "B", "0", "D")
+	// SetNestedMap(m, "ACD", "A", "C", "D")
+	// SetNestedMap(m, "ACE", "A", "C", "E")
 	fmt.Println(m)
 }
 
@@ -497,13 +499,30 @@ func TestMapFlatten(t *testing.T) {
 func TestMapFlatToNested(t *testing.T) {
 
 	m := map[string]any{
-		"C1.c2":       100,
-		"C1.C2.p3":    nil,
-		"C1.p2":       "abc",
-		"P1":          "ABC",
-		"C1.C2.z3":    "ok",
-		"C1.C2.C3.t4": 20.0,
-		"C1.C2.C3.m4": "final",
+		"C1.c2":                         100,
+		"C1.C2.C3.arr.1.Z4.3":           false,
+		"C1.C2.p3":                      nil,
+		"C1.C2.Arr.0":                   0,
+		"C1.C2.Arr.2":                   2,
+		"C1.p2":                         "abc",
+		"C1.C2.C3.m4":                   "final",
+		"C1.C2.C3.arr.0.Z3":             "ABCDEFG",
+		"C1.C2.C3.arr.1.Z4.1":           12,
+		"C1.C2.z3":                      "ok",
+		"C1.C2.ArrF.0":                  "A",
+		"C1.C2.ArrF.2":                  "C",
+		"C1.C2.C3.t4":                   20.0,
+		"C1.C2.C3.n4":                   "final",
+		"C1.C2.C3.arr.1.z2":             2000.0,
+		"C1.C2.C3.arr.1.Z4.2":           nil,
+		"C1.C2.C3.arr.1.Z4.4.2.deepest": "real-final3",
+		"C1.C2.Arr.1":                   1,
+		"C1.C2.ArrF.1":                  "B",
+		"P1":                            "ABC",
+		"C1.C2.C3.arr.0.z1":             1000,
+		"C1.C2.C3.arr.1.Z4.0":           "ab",
+		"C1.C2.C3.arr.1.Z4.4.0":         "real-final1",
+		"C1.C2.C3.arr.1.Z4.4.1":         "real-final2",
 	}
 
 	nm := MapFlatToNested(m)
@@ -529,9 +548,23 @@ func TestMapCompare(t *testing.T) {
 					"arr": []map[string]any{
 						{
 							"z1": 1000,
+							"Z3": "ABCDEFG",
 						},
 						{
 							"z2": 2000.0,
+							"Z4": []any{
+								"ab",
+								12,
+								nil,
+								false,
+								[]any{
+									"real-final1",
+									"real-final2",
+									map[string]any{
+										"deepest": "real-final3",
+									},
+								},
+							},
 						},
 					},
 				},
@@ -540,24 +573,41 @@ func TestMapCompare(t *testing.T) {
 	}
 
 	m2 := map[string]any{
-		"C1.c2":       100,
-		"C1.C2.p3":    nil,
-		"C1.p2":       "abc",
-		"P1":          "ABC",
-		"C1.C2.z3":    "ok",
-		"C1.C2.Arr.0": 0,
-		"C1.C2.Arr.1": 1,
-		"C1.C2.Arr.2": 2,
-		"C1.C2.C3.t4": 20.0,
-		"C1.C2.C3.m4": "final",
-		"C1.C2.C3.n4": "final",
+		"C1.c2":                         100,
+		"C1.C2.C3.arr.1.Z4.3":           false,
+		"C1.C2.p3":                      nil,
+		"C1.C2.Arr.0":                   0,
+		"C1.C2.Arr.2":                   2,
+		"C1.p2":                         "abc",
+		"C1.C2.C3.m4":                   "final",
+		"C1.C2.C3.arr.0.Z3":             "ABCDEFG",
+		"C1.C2.C3.arr.1.Z4.1":           12,
+		"C1.C2.z3":                      "ok",
+		"C1.C2.ArrF.0":                  "A",
+		"C1.C2.ArrF.2":                  "C",
+		"C1.C2.C3.t4":                   20.0,
+		"C1.C2.C3.n4":                   "final",
+		"C1.C2.C3.arr.1.z2":             2000.0,
+		"C1.C2.C3.arr.1.Z4.2":           nil,
+		"C1.C2.C3.arr.1.Z4.4.2.deepest": "real-final3",
+		"C1.C2.Arr.1":                   1,
+		"C1.C2.ArrF.1":                  "B",
+		"P1":                            "ABC",
+		"C1.C2.C3.arr.0.z1":             1000,
+		"C1.C2.C3.arr.1.Z4.0":           "ab",
+		"C1.C2.C3.arr.1.Z4.4.0":         "real-final1",
+		"C1.C2.C3.arr.1.Z4.4.1":         "real-final2",
 	}
 
 	fm := MapNestedToFlat(m1)
-	fmt.Println(fm)
+	n := 0
+	for k, v := range fm {
+		fmt.Printf("%2d: %s %v\n", n, k, v)
+		n++
+	}
 	fmt.Println(reflect.DeepEqual(fm, m2))
 
-	nm := MapFlatToNested(m2)
-	fmt.Println(nm)
-	fmt.Println(reflect.DeepEqual(m1, nm))
+	// nm := MapFlatToNested(m2)
+	// fmt.Println(nm)
+	// fmt.Println(reflect.DeepEqual(m1, nm))
 }
