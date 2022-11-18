@@ -449,19 +449,49 @@ func TestMapFlatten(t *testing.T) {
 			"p2": "abc",
 			"c2": 100,
 			"C2": map[string]any{
-				"p3": nil,
-				"z3": "ok",
+				"p3":   nil,
+				"z3":   "ok",
+				"Arr":  []int{0, 1, 2},
+				"ArrF": []string{"A", "B", "C"},
 				"C3": map[string]any{
 					"t4": 20.0,
 					"m4": "final",
+					"n4": "final",
+					"arr": []map[string]any{
+						{
+							"z1": 1000,
+							"Z3": "ABCDEFG",
+						},
+						{
+							"z2": 2000.0,
+							"Z4": []any{
+								"ab",
+								12,
+								nil,
+								false,
+								[]any{
+									"real-final1",
+									"real-final2",
+									map[string]any{
+										"deepest": "real-final3",
+									},
+								},
+							},
+						},
+					},
 				},
 			},
 		},
 	}
 
 	fmt.Println(m)
+
 	fm := MapNestedToFlat(m)
-	fmt.Println(fm)
+	n := 0
+	for k, v := range fm {
+		fmt.Printf("%2d: %s %v\n", n, k, v)
+		n++
+	}
 }
 
 func TestMapFlatToNested(t *testing.T) {
@@ -488,12 +518,22 @@ func TestMapCompare(t *testing.T) {
 			"p2": "abc",
 			"c2": 100,
 			"C2": map[string]any{
-				"p3": nil,
-				"z3": "ok",
+				"p3":   nil,
+				"z3":   "ok",
+				"Arr":  []int{0, 1, 2},
+				"ArrF": []string{"A", "B", "C"},
 				"C3": map[string]any{
 					"t4": 20.0,
 					"m4": "final",
 					"n4": "final",
+					"arr": []map[string]any{
+						{
+							"z1": 1000,
+						},
+						{
+							"z2": 2000.0,
+						},
+					},
 				},
 			},
 		},
@@ -505,14 +545,19 @@ func TestMapCompare(t *testing.T) {
 		"C1.p2":       "abc",
 		"P1":          "ABC",
 		"C1.C2.z3":    "ok",
+		"C1.C2.Arr.0": 0,
+		"C1.C2.Arr.1": 1,
+		"C1.C2.Arr.2": 2,
 		"C1.C2.C3.t4": 20.0,
 		"C1.C2.C3.m4": "final",
 		"C1.C2.C3.n4": "final",
 	}
 
 	fm := MapNestedToFlat(m1)
+	fmt.Println(fm)
 	fmt.Println(reflect.DeepEqual(fm, m2))
 
 	nm := MapFlatToNested(m2)
+	fmt.Println(nm)
 	fmt.Println(reflect.DeepEqual(m1, nm))
 }

@@ -1,6 +1,9 @@
 package v2
 
-import "sync"
+import (
+	"reflect"
+	"sync"
+)
 
 func MapCvt[T1 comparable, T2 any](m map[any]any) map[T1]T2 {
 	if m == nil {
@@ -13,6 +16,7 @@ func MapCvt[T1 comparable, T2 any](m map[any]any) map[T1]T2 {
 	return rt
 }
 
+// T is return type
 func SlcCvt[T any](s []any) []T {
 	if s == nil {
 		return nil
@@ -24,8 +28,8 @@ func SlcCvt[T any](s []any) []T {
 	return rt
 }
 
-// s(any) must be []any. if return nil, convert failed
-func Any2Slc[T any](s any) []T {
+// s(any) must be []any. T is return type. If return nil, convert failed
+func AnySlc2Slc[T any](s any) []T {
 	if s == nil {
 		return nil
 	}
@@ -34,6 +38,22 @@ func Any2Slc[T any](s any) []T {
 		return SlcCvt[T](v)
 	}
 	return nil
+}
+
+// s(any) is any actual type of slice or array
+func Any2AnySlc(s any) (rt []any) {
+	if IsArrayOrSlice(s) {
+		s := reflect.ValueOf(s)
+		for i := 0; i < s.Len(); i++ {
+			rt = append(rt, s.Index(i).Interface())
+		}
+	}
+	return
+}
+
+// s(any) is any actual type of slice or array, T is return type
+func Any2Slc[T any](s any) []T {
+	return AnySlc2Slc[T](Any2AnySlc(s))
 }
 
 func SyncMap2Map[T1 comparable, T2 any](sm sync.Map) map[T1]T2 {

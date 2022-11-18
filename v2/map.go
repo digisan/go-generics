@@ -174,14 +174,9 @@ func MapAllValuesAreEmpty[T comparable](m map[T]any) bool {
 func dumpMap(pk string, jv any, mflat *map[string]any) {
 
 	switch m := jv.(type) {
+
 	case float64, float32, string, bool, int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64, complex64, complex128, nil:
 		(*mflat)[pk] = m
-
-	case []any:
-		for i, a := range m {
-			idx := fmt.Sprintf("%s.%d", pk, i)
-			dumpMap(idx, a, mflat)
-		}
 
 	case map[string]any:
 		{
@@ -189,16 +184,15 @@ func dumpMap(pk string, jv any, mflat *map[string]any) {
 				if pk != "" {
 					k = fmt.Sprintf("%s.%s", pk, k)
 				}
+				dumpMap(k, v, mflat)
+			}
+		}
 
-				switch mv := v.(type) {
-				case []any:
-					for i, a := range v.([]any) {
-						idx := fmt.Sprintf("%s.%d", k, i)
-						dumpMap(idx, a, mflat)
-					}
-				default:
-					dumpMap(k, mv, mflat)
-				}
+	default:
+		if IsArrayOrSlice(m) {
+			for i, a := range Any2AnySlc(m) {
+				idx := fmt.Sprintf("%s.%d", pk, i)
+				dumpMap(idx, a, mflat)
 			}
 		}
 	}

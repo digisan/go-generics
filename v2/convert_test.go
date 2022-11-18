@@ -44,8 +44,8 @@ func TestSlcCvt(t *testing.T) {
 }
 
 func TestAny2Slc(t *testing.T) {
-	var s any = []any{1, 2, 3, 4, 5, 6, 7, 8}
-	
+	s := []int{1, 2, 3, 4, 5, 6, 7, 8}
+
 	s1 := Any2Slc[int](s)
 	fmt.Println(Sum(s1...))
 
@@ -54,4 +54,14 @@ func TestAny2Slc(t *testing.T) {
 
 	// s2 := s.([]int)
 	// fmt.Println(Sum(s2...))
+}
+
+func TestAny2AnySlc(t *testing.T) {
+	s1 := []int{1, 2, 3, 4, 5, 6, 7, 8}
+	gs1 := Any2AnySlc(s1)
+	fmt.Println(gs1)
+
+	s2 := []string{"a1", "b2", "c3", "d4", "e5", "f6", "g7", "h8"}
+	gs2 := Any2AnySlc(s2)
+	fmt.Println(gs2)
 }
