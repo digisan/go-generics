@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-func IsArrayOrSlice(v any) bool {
+func IsArrOrSlc(v any) bool {
 	return In(reflect.TypeOf(v).Kind(), reflect.Slice, reflect.Array)
 }
 

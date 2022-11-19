@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"reflect"
 	"sort"
-	"strings"
 )
 
 // for Map2KVs
@@ -13,8 +12,8 @@ type kv struct {
 	val any
 }
 
-// *** Map2KVs : map to key slice & value slice
-func Map2KVs[T1 comparable, T2 any](m map[T1]T2, less4k func(i, j T1) bool, less4v func(i, j T2) bool) (keys []T1, values []T2) {
+// *** MapToKVs : map to key slice & value slice
+func MapToKVs[T1 comparable, T2 any](m map[T1]T2, less4k func(i, j T1) bool, less4v func(i, j T2) bool) (keys []T1, values []T2) {
 
 	kvSlc := make([]kv, 0, len(m))
 	for k, v := range m {
@@ -66,8 +65,8 @@ func MapSafeMerge[T1 comparable, T2 any](ms ...map[T1]T2) map[T1]T2 {
 	return res
 }
 
-// MapReplaceMerge
-func MapReplaceMerge[T1 comparable, T2 any](ms ...map[T1]T2) map[T1]T2 {
+// MapReplMerge
+func MapReplMerge[T1 comparable, T2 any](ms ...map[T1]T2) map[T1]T2 {
 	res := map[T1]T2{}
 	for _, m := range ms {
 		for k, v := range m {
@@ -124,29 +123,41 @@ func MapCopy[T1 comparable, T2 any](m map[T1]T2) map[T1]T2 {
 }
 
 // MapToValAny:
-func MapToValAny[T1 comparable, T2 any](m map[T1]T2) map[T1]any {
-	ret := make(map[T1]any)
+func MapValTypeToAny[T1 comparable, T2 any](m map[T1]T2) map[T1]any {
+	rt := make(map[T1]any)
 	for k, v := range m {
-		ret[k] = v
+		rt[k] = v
 	}
-	return ret
+	return rt
 }
 
-// MapToArrValAny:
-func MapToArrValAny[T1 comparable, T2 any](m map[T1][]T2) map[T1][]any {
-	ret := make(map[T1][]any)
+func MapValAnyToType[T1 comparable, T2 any](m map[T1]any) map[T1]T2 {
+	rt := make(map[T1]T2)
 	for k, v := range m {
-		ret[k] = make([]any, 0, len(v))
-		for _, item := range v {
-			ret[k] = append(ret[k], item)
-		}
+		rt[k] = v.(T2)
 	}
-	return ret
+	return rt
+}
+
+func MapValTypesToAnys[T1 comparable, T2 any](m map[T1][]T2) map[T1][]any {
+	rt := make(map[T1][]any)
+	for k, v := range m {
+		rt[k] = SlcToAnys(v)
+	}
+	return rt
+}
+
+func MapValAnysToTypes[T1 comparable, T2 any](m map[T1][]any) map[T1][]T2 {
+	rt := make(map[T1][]T2)
+	for k, v := range m {
+		rt[k] = AnysToTypes[T2](v)
+	}
+	return rt
 }
 
 // e.g. [ nil, "", []int{}, XXX ptr(nil) ] are 'empty'
 // [ &[]int{}, &XXX{} ] are NOT 'empty'
-func MapAllValuesAreEmpty[T comparable](m map[T]any) bool {
+func MapAllValAreEmpty[T comparable](m map[T]any) bool {
 	for _, v := range m {
 		if sv, ok := v.(string); ok {
 			if len(sv) > 0 {
@@ -189,8 +200,8 @@ func dumpMap(pk string, jv any, mflat *map[string]any) {
 		}
 
 	default:
-		if IsArrayOrSlice(m) {
-			for i, a := range Any2AnySlc(m) {
+		if IsArrOrSlc(m) {
+			for i, a := range SlcToAnys(m) {
 				idx := fmt.Sprintf("%s.%d", pk, i)
 				dumpMap(idx, a, mflat)
 			}
@@ -204,34 +215,42 @@ func MapNestedToFlat(m map[string]any) map[string]any {
 	return flatMap
 }
 
-func SetNestedMap[T comparable](m map[T]any, value any, keySegs ...T) {
-	pM := &m
-	for i, seg := range keySegs {
-		if i < len(keySegs)-1 {
-			if subM, ok := (*pM)[seg]; !ok {
-				deepM := make(map[T]any)
-				(*pM)[seg] = deepM
-				pM = &deepM
-			} else {
-				m := subM.(map[T]any)
-				pM = &m
-			}
-		} else {
-			(*pM)[seg] = value
-		}
-	}
-}
+///////////////////////////////////////////////////////
 
-func MapFlatToNested(m map[string]any) map[string]any {
+// func MapTryToSlc[T1 comparable, T2 any](m map[T1]T2) ([]T2, bool) {
 
-	keys, vals := Map2KVs(m, func(i, j string) bool { return strings.Count(i, ".") < strings.Count(j, ".") }, nil)
-	// fmt.Println(keys)
-	// fmt.Println(vals)
+// 	keys, values := MapToKVs(m, func() bool {}, nil)
 
-	rt := make(map[string]any)
-	for i, key := range keys {
-		val := vals[i]
-		SetNestedMap(rt, val, strings.Split(key, ".")...)
-	}
-	return rt
-}
+// }
+
+// func SetNestedMap[T comparable](m map[T]any, value any, keySegs ...T) {
+// 	pM := &m
+// 	for i, seg := range keySegs {
+// 		if i < len(keySegs)-1 {
+// 			if subM, ok := (*pM)[seg]; !ok {
+// 				deepM := make(map[T]any)
+// 				(*pM)[seg] = deepM
+// 				pM = &deepM
+// 			} else {
+// 				m := subM.(map[T]any)
+// 				pM = &m
+// 			}
+// 		} else {
+// 			(*pM)[seg] = value
+// 		}
+// 	}
+// }
+
+// func MapFlatToNested(m map[string]any) map[string]any {
+
+// 	keys, vals := Map2KVs(m, func(i, j string) bool { return strings.Count(i, ".") < strings.Count(j, ".") }, nil)
+// 	// fmt.Println(keys)
+// 	// fmt.Println(vals)
+
+// 	rt := make(map[string]any)
+// 	for i, key := range keys {
+// 		val := vals[i]
+// 		SetNestedMap(rt, val, strings.Split(key, ".")...)
+// 	}
+// 	return rt
+// }

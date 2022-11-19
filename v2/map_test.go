@@ -42,7 +42,7 @@ func TestMapReplaceMerge(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := MapReplaceMerge(tt.args.ms...); !reflect.DeepEqual(got, tt.want) {
+			if got := MapReplMerge(tt.args.ms...); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("MapReplaceMerge() = %v, want %v", got, tt.want)
 			}
 		})
@@ -216,7 +216,7 @@ func TestMap2KVs(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotKeys, gotValues := Map2KVs(tt.args.m, tt.args.less4key, tt.args.less4value)
+			gotKeys, gotValues := MapToKVs(tt.args.m, tt.args.less4key, tt.args.less4value)
 			if !reflect.DeepEqual(gotKeys, tt.wantKeys) {
 				t.Errorf("Map2KVs() gotKeys = %v, want %v", gotKeys, tt.wantKeys)
 			}
@@ -334,7 +334,7 @@ func TestMapToValAny(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := MapToValAny(tt.args.m); !reflect.DeepEqual(got, tt.want) {
+			if got := MapValTypeToAny(tt.args.m); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("MapToValAny() = %v, want %v", got, tt.want)
 			}
 		})
@@ -366,7 +366,7 @@ func TestMapToArrValAny(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := MapToArrValAny(tt.args.m); !reflect.DeepEqual(got, tt.want) {
+			if got := MapValTypesToAnys(tt.args.m); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("MapToArrValAny() = %v, want %v", got, tt.want)
 			}
 		})
@@ -427,109 +427,23 @@ func TestAllValuesAreEmpty(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := MapAllValuesAreEmpty(tt.args.m); got != tt.want {
+			if got := MapAllValAreEmpty(tt.args.m); got != tt.want {
 				t.Errorf("MapAllEmptyFields() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestSetNestedMap(t *testing.T) {
-	m := make(map[string]any)
-	SetNestedMap(m, "ABD", "A", "0")
-	// SetNestedMap(m, "ABD", "A", "B", "0", "D")
-	// SetNestedMap(m, "ACD", "A", "C", "D")
-	// SetNestedMap(m, "ACE", "A", "C", "E")
-	fmt.Println(m)
-}
+// func TestSetNestedMap(t *testing.T) {
+// 	m := make(map[string]any)
+// 	SetNestedMap(m, "ABD", "A", "0")
+// 	// SetNestedMap(m, "ABD", "A", "B", "0", "D")
+// 	// SetNestedMap(m, "ACD", "A", "C", "D")
+// 	// SetNestedMap(m, "ACE", "A", "C", "E")
+// 	fmt.Println(m)
+// }
 
-func TestMapFlatten(t *testing.T) {
-
-	m := map[string]any{
-		"P1": "ABC",
-		"C1": map[string]any{
-			"p2": "abc",
-			"c2": 100,
-			"C2": map[string]any{
-				"p3":   nil,
-				"z3":   "ok",
-				"Arr":  []int{0, 1, 2},
-				"ArrF": []string{"A", "B", "C"},
-				"C3": map[string]any{
-					"t4": 20.0,
-					"m4": "final",
-					"n4": "final",
-					"arr": []map[string]any{
-						{
-							"z1": 1000,
-							"Z3": "ABCDEFG",
-						},
-						{
-							"z2": 2000.0,
-							"Z4": []any{
-								"ab",
-								12,
-								nil,
-								false,
-								[]any{
-									"real-final1",
-									"real-final2",
-									map[string]any{
-										"deepest": "real-final3",
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-	}
-
-	fmt.Println(m)
-
-	fm := MapNestedToFlat(m)
-	n := 0
-	for k, v := range fm {
-		fmt.Printf("%2d: %s %v\n", n, k, v)
-		n++
-	}
-}
-
-func TestMapFlatToNested(t *testing.T) {
-
-	m := map[string]any{
-		"C1.c2":                         100,
-		"C1.C2.C3.arr.1.Z4.3":           false,
-		"C1.C2.p3":                      nil,
-		"C1.C2.Arr.0":                   0,
-		"C1.C2.Arr.2":                   2,
-		"C1.p2":                         "abc",
-		"C1.C2.C3.m4":                   "final",
-		"C1.C2.C3.arr.0.Z3":             "ABCDEFG",
-		"C1.C2.C3.arr.1.Z4.1":           12,
-		"C1.C2.z3":                      "ok",
-		"C1.C2.ArrF.0":                  "A",
-		"C1.C2.ArrF.2":                  "C",
-		"C1.C2.C3.t4":                   20.0,
-		"C1.C2.C3.n4":                   "final",
-		"C1.C2.C3.arr.1.z2":             2000.0,
-		"C1.C2.C3.arr.1.Z4.2":           nil,
-		"C1.C2.C3.arr.1.Z4.4.2.deepest": "real-final3",
-		"C1.C2.Arr.1":                   1,
-		"C1.C2.ArrF.1":                  "B",
-		"P1":                            "ABC",
-		"C1.C2.C3.arr.0.z1":             1000,
-		"C1.C2.C3.arr.1.Z4.0":           "ab",
-		"C1.C2.C3.arr.1.Z4.4.0":         "real-final1",
-		"C1.C2.C3.arr.1.Z4.4.1":         "real-final2",
-	}
-
-	nm := MapFlatToNested(m)
-	fmt.Println(nm)
-}
-
-func TestMapCompare(t *testing.T) {
+func TestMapFlattenAndNested(t *testing.T) {
 
 	m1 := map[string]any{
 		"P1": "ABC",
@@ -572,6 +486,13 @@ func TestMapCompare(t *testing.T) {
 		},
 	}
 
+	fm := MapNestedToFlat(m1)
+	n := 0
+	for k, v := range fm {
+		fmt.Printf("%2d: %s %v\n", n, k, v)
+		n++
+	}
+
 	m2 := map[string]any{
 		"C1.c2":                         100,
 		"C1.C2.C3.arr.1.Z4.3":           false,
@@ -599,12 +520,6 @@ func TestMapCompare(t *testing.T) {
 		"C1.C2.C3.arr.1.Z4.4.1":         "real-final2",
 	}
 
-	fm := MapNestedToFlat(m1)
-	n := 0
-	for k, v := range fm {
-		fmt.Printf("%2d: %s %v\n", n, k, v)
-		n++
-	}
 	fmt.Println(reflect.DeepEqual(fm, m2))
 
 	// nm := MapFlatToNested(m2)
