@@ -23,15 +23,21 @@ func IsArrOrSlc(v any) bool {
 	return In(reflect.TypeOf(v).Kind(), reflect.Slice, reflect.Array)
 }
 
-// IsUint : Check str is valid numeric style
+// IsInt : Check v is valid int numeric style
+func IsInt(v any) bool {
+	_, err := strconv.ParseInt(fmt.Sprint(v), 10, 64)
+	return err == nil
+}
+
+// IsUint : Check v is valid uint numeric style
 func IsUint(v any) bool {
 	_, err := strconv.ParseUint(fmt.Sprint(v), 10, 64)
 	return err == nil
 }
 
-// IsNumeric : Check str is valid numeric style
-func IsNumeric(str string) bool {
-	_, err := strconv.ParseFloat(str, 64)
+// IsNumeric : Check v is valid numeric style
+func IsNumeric(v any) bool {
+	_, err := strconv.ParseFloat(fmt.Sprint(v), 64)
 	return err == nil
 }
 
@@ -43,7 +49,6 @@ func IsContinuous[T Integer](numbers ...T) (ok bool, minIfOk T, maxIfOk T) {
 	if len(numbers) == 1 {
 		return true, numbers[0], numbers[0]
 	}
-
 	s, e := numbers[0], numbers[len(numbers)-1]
 	if s < e {
 		return reflect.DeepEqual(IterToSlc(s, e+1), numbers), s, e

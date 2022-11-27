@@ -1,6 +1,8 @@
 package v2
 
 import (
+	"bytes"
+	"encoding/gob"
 	"log"
 	"reflect"
 	"unsafe"
@@ -341,18 +343,31 @@ func ZipDim4[T any](slices ...[]T) (za [][4]T) {
 	return
 }
 
-// *** MergeArray : [{2,2}, {3,3,4}, {6,6,8,8}] => {2,2,3,3,4,6,6,8,8}
-func MergeArray[T any](arrays ...[]T) (merged []T) {
+// *** SmashArrays : [{2,2}, {3,3,4}, {6,6,8,8}] => {2,2,3,3,4,6,6,8,8}
+func SmashArrays[T any](arrays ...[]T) (merged []T) {
 	for _, arr := range arrays {
 		merged = append(merged, arr...)
 	}
 	return
 }
 
-// *** MergeSet : [{2,2}, {3,3,4}, {6,6,8,8}] => {2,3,4,6,8}
-func MergeSet[T comparable](arrays ...[]T) (merged []T) {
+// *** SmashSets : [{2,2}, {3,3,4}, {6,6,8,8}] => {2,3,4,6,8}
+func SmashSets[T comparable](arrays ...[]T) (merged []T) {
 	for _, arr := range arrays {
 		merged = append(merged, arr...)
 	}
 	return Settify(merged...)
+}
+
+func Clone(dst, src any) error {
+	buff := new(bytes.Buffer)
+	enc := gob.NewEncoder(buff)
+	dec := gob.NewDecoder(buff)
+	if err := enc.Encode(src); err != nil {
+		return err
+	}
+	if err := dec.Decode(dst); err != nil {
+		return err
+	}
+	return nil
 }

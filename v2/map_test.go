@@ -434,15 +434,6 @@ func TestAllValuesAreEmpty(t *testing.T) {
 	}
 }
 
-// func TestSetNestedMap(t *testing.T) {
-// 	m := make(map[string]any)
-// 	SetNestedMap(m, "ABD", "A", "0")
-// 	// SetNestedMap(m, "ABD", "A", "B", "0", "D")
-// 	// SetNestedMap(m, "ACD", "A", "C", "D")
-// 	// SetNestedMap(m, "ACE", "A", "C", "E")
-// 	fmt.Println(m)
-// }
-
 func TestMapFlattenAndNested(t *testing.T) {
 
 	m1 := map[string]any{
@@ -525,4 +516,138 @@ func TestMapFlattenAndNested(t *testing.T) {
 	// nm := MapFlatToNested(m2)
 	// fmt.Println(nm)
 	// fmt.Println(reflect.DeepEqual(m1, nm))
+}
+
+func TestMapTryToSlc(t *testing.T) {
+
+	m := map[string]any{
+		"6": map[string]any{"key": 200},
+		"5": map[string]any{"key": 100},
+		"2": "c",
+		"3": "d",
+		"1": "b",
+		"4": "e",
+		"0": "A",
+	}
+
+	fmt.Println(m)
+
+	s, err := MapTryToSlc(m)
+	fmt.Println(err)
+	fmt.Println(s)
+}
+
+func TestSetNestedMapIgnoreIdx(t *testing.T) {
+	m := make(map[string]any)
+	// SetNestedMapIgnoreIdx(m, "ABD", "A")
+	SetNestedMapIgnoreIdx(m, "ABD", "A", "0")
+	SetNestedMapIgnoreIdx(m, "ABD", "A", "1")
+	SetNestedMapIgnoreIdx(m, "ACD", "A", "2", "D")
+	SetNestedMapIgnoreIdx(m, "ACE", "B", "0", "E")
+	fmt.Println(m)
+}
+
+// func TestSetNestedMap(t *testing.T) {
+// 	var m any
+// 	SetNestedMapWithIdx(m, "100", "0")
+
+// 	fmt.Println(m)
+// }
+
+func TestFlatToNested(t *testing.T) {
+
+	m2 := map[string]any{
+		"C1.0": 100,
+		"C1.1": false,
+	}
+
+	fmt.Println(MapFlatToNested(m2))
+
+}
+
+// func TestMakeNestedSlice(t *testing.T) {
+
+// 	// slc, _ = MakeNestedSlice(300, 4, 3)
+// 	// fmt.Println(slc)
+
+// 	// slc, _ = MakeNestedSlice(300, 4)
+// 	// fmt.Println(slc)
+
+// 	// slc, _ = MakeNestedSlice(300, 1)
+// 	// fmt.Println(slc)
+
+// 	slc, _ := MakeNestedSlice(300)
+// 	fmt.Println(1, slc)
+
+// 	slc, _ = MakeNestedSlice(300, 0)
+// 	fmt.Println(2, slc)
+
+// 	slc, _ = MakeNestedSlice(300, 3)
+// 	fmt.Println(3, slc)
+
+// 	slc, _ = MakeNestedSlice(300, 0, 0)
+// 	fmt.Println(4, slc)
+
+// 	slc, _ = MakeNestedSlice(300, 1, 0)
+// 	fmt.Println(5, slc)
+
+// 	slc, _ = MakeNestedSlice(300, 0, 1)
+// 	fmt.Println(6, slc)
+
+// 	slc, _ = MakeNestedSlice(300, 1, 1)
+// 	fmt.Println(7, slc)
+
+// 	slc, _ = MakeNestedSlice(300, 4, 3, 2)
+// 	fmt.Println(8, slc)
+// }
+
+func TestSetNestedSlice(t *testing.T) {
+
+	slc := []any{[]any{2, []any{3, 4}}, 1, []any{"a"}, 3, 8}
+	fmt.Println(slc)
+	fmt.Println()
+
+	paths := TraverseNestedSlice(slc)
+	fmt.Println(paths)
+
+	cap := CapacityForSlice(paths...)
+	fmt.Println(cap)
+
+	dest := InitNestedSlice(cap...)
+	fmt.Println(dest)
+
+	paths = TraverseNestedSlice(dest)
+	fmt.Println(paths)
+
+	ok := SetNestedSlice(dest, "OK", 2, 1, 0)
+	fmt.Println(ok)
+	fmt.Println(dest)
+
+	ok = SetNestedSlice(slc, "OKey", 0, 1, 1)
+	fmt.Println(ok)
+	fmt.Println(slc)
+}
+
+func TestInitNestedSlice(t *testing.T) {
+	slc := InitNestedSlice(5, 2, 2)
+	fmt.Println(slc)
+
+	// SetNestedSlice(slc, "OK", 2, 1, 0)
+	// SetNestedSlice(slc, "OK", 1, 0, 0)
+	// fmt.Println(slc)
+}
+
+// func TestMergeNestedSlice(t *testing.T) {
+// 	slc1 := []any{[]any{300, nil}, 300}
+// 	slc2 := []any{[]any{nil, 300}, nil, nil, nil, 300}
+// 	fmt.Println(MergeTwoSlices(slc1, slc2))
+// }
+
+func TestTemp(t *testing.T) {
+
+	p := make([]int, 10, 100)
+	p[4] = 100
+	p[15] = 200
+	fmt.Println(p)
+
 }

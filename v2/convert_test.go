@@ -65,3 +65,37 @@ func TestSlc2Anys(t *testing.T) {
 	gs2 := SlcToAnys(s2)
 	fmt.Println(gs2)
 }
+
+func TestAnyTryToType(t *testing.T) {
+
+	f, ok := AnyTryToType[float32]("1")
+	if ok {
+		fmt.Println(f + 100.0)
+	}
+
+	u, ok := AnyTryToType[uint]("123")
+	if ok {
+		fmt.Println(u + 100.0)
+	}
+
+	u64, ok := AnyTryToType[uint64]("123")
+	if ok {
+		fmt.Println(u64 + 100.0)
+	}
+
+	c64, ok := AnyTryToType[complex64]("(2+3i)")
+	if ok {
+		fmt.Println(c64 + 100.0)
+	}
+
+	c128, ok := AnyTryToType[complex128](2 + 3i)
+	if ok {
+		fmt.Println(c128 + 200.0)
+	}
+
+	str, ok := AnyTryToType[string](2 + 3i)
+	if ok {
+		fmt.Println("hello " + str)
+	}
+
+}

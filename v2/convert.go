@@ -1,9 +1,112 @@
 package v2
 
 import (
+	"fmt"
 	"reflect"
+	"strconv"
 	"sync"
+	"unsafe"
 )
+
+func AnyTryToType[T any](v any) (T, bool) {
+
+	sv := fmt.Sprint(v)
+
+	fv, errF := strconv.ParseFloat(sv, 64)
+	iv, errI := strconv.ParseInt(sv, 10, 64)
+	uv, errU := strconv.ParseUint(sv, 10, 64)
+	bv, errB := strconv.ParseBool(sv)
+	cv, errC := strconv.ParseComplex(sv, 128)
+
+	switch fmt.Sprintf("%T", new(T)) {
+
+	case "*float64":
+		if errF == nil {
+			r := float64(fv)
+			return *(*T)(unsafe.Pointer(&r)), true
+		}
+	case "*float32":
+		if errF == nil {
+			r := float32(fv)
+			return *(*T)(unsafe.Pointer(&r)), true
+		}
+
+	case "*int":
+		if errI == nil {
+			r := int(iv)
+			return *(*T)(unsafe.Pointer(&r)), true
+		}
+	case "*int8":
+		if errI == nil {
+			r := int8(iv)
+			return *(*T)(unsafe.Pointer(&r)), true
+		}
+	case "*int16":
+		if errI == nil {
+			r := int16(iv)
+			return *(*T)(unsafe.Pointer(&r)), true
+		}
+	case "*int32":
+		if errI == nil {
+			r := int32(iv)
+			return *(*T)(unsafe.Pointer(&r)), true
+		}
+	case "*int64":
+		if errI == nil {
+			r := int64(iv)
+			return *(*T)(unsafe.Pointer(&r)), true
+		}
+
+	case "*uint":
+		if errU == nil {
+			r := uint(uv)
+			return *(*T)(unsafe.Pointer(&r)), true
+		}
+	case "*uint8":
+		if errU == nil {
+			r := uint8(uv)
+			return *(*T)(unsafe.Pointer(&r)), true
+		}
+	case "*uint16":
+		if errU == nil {
+			r := uint16(uv)
+			return *(*T)(unsafe.Pointer(&r)), true
+		}
+	case "*uint32":
+		if errU == nil {
+			r := uint32(uv)
+			return *(*T)(unsafe.Pointer(&r)), true
+		}
+	case "*uint64":
+		if errU == nil {
+			r := uint64(uv)
+			return *(*T)(unsafe.Pointer(&r)), true
+		}
+
+	case "*bool":
+		if errB == nil {
+			r := bv
+			return *(*T)(unsafe.Pointer(&r)), true
+		}
+
+	case "*complex64":
+		if errC == nil {
+			r := complex64(cv)
+			return *(*T)(unsafe.Pointer(&r)), true
+		}
+
+	case "*complex128":
+		if errC == nil {
+			r := complex128(cv)
+			return *(*T)(unsafe.Pointer(&r)), true
+		}
+
+	case "*string":
+		return *(*T)(unsafe.Pointer(&sv)), true
+	}
+
+	return *new(T), false
+}
 
 // T is return type
 func AnysToTypes[T any](s []any) []T {

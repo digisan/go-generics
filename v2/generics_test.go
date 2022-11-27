@@ -947,8 +947,8 @@ func TestMergeArray(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotMerged := MergeArray(tt.args.arrays...); !reflect.DeepEqual(gotMerged, tt.wantMerged) {
-				t.Errorf("MergeArray() = %v, want %v", gotMerged, tt.wantMerged)
+			if gotMerged := SmashArrays(tt.args.arrays...); !reflect.DeepEqual(gotMerged, tt.wantMerged) {
+				t.Errorf("SmashArrays() = %v, want %v", gotMerged, tt.wantMerged)
 			}
 		})
 	}
@@ -973,8 +973,8 @@ func TestMergeSet(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotMerged := MergeSet(tt.args.arrays...); !reflect.DeepEqual(gotMerged, tt.wantMerged) {
-				t.Errorf("MergeSet() = %v, want %v", gotMerged, tt.wantMerged)
+			if gotMerged := SmashSets(tt.args.arrays...); !reflect.DeepEqual(gotMerged, tt.wantMerged) {
+				t.Errorf("SmashSets() = %v, want %v", gotMerged, tt.wantMerged)
 			}
 		})
 	}
