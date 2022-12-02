@@ -5,7 +5,6 @@ import (
 	"reflect"
 	"sort"
 	"strconv"
-	"strings"
 )
 
 // for Map2KVs
@@ -102,7 +101,6 @@ func MapMergeOnValSlc[T1, T2 comparable](ms ...map[T1][]T2) map[T1][]T2 {
 	for _, m := range ms {
 		for k, v := range m {
 			res[k] = append(res[k], v...)
-			res[k] = Settify(res[k]...)
 		}
 	}
 	return res
@@ -259,195 +257,76 @@ func SetNestedMapIgnoreIdx[T comparable](m map[T]any, value any, keySegs ...T) e
 	return nil
 }
 
-// This can only set single value in nested slice, useless for further assignment
-//
-// func MakeNestedSlice(value any, idxSegs ...any) (slc []any, err error) {
-// 	if len(idxSegs) == 0 {
-// 		return []any{value}, nil
-// 	}
-// 	for _, seg := range idxSegs {
-// 		if !IsUint(seg) {
-// 			return nil, fmt.Errorf("index path (idxSegs) must can be converted to unsigned int")
-// 		}
-// 	}
-
-// 	for i, seg := range Reverse(idxSegs) {
-// 		idx, _ := AnyTryToType[int](seg)
-
-// 		if i == 0 { // value seg
-
-// 			nNil := idx - len(slc)
-// 			for i := 0; i < nNil; i++ {
-// 				slc = append(slc, nil)
-// 			}
-// 			slc = append(slc, value)
-
-// 		} else { // path seg
-
-// 			slc = []any{slc}
-
-// 			nNil := idx - len(slc)
-// 			for i := 0; i <= nNil; i++ {
-// 				slc = append(slc, []any{})
-// 			}
-// 			slc = Reverse(slc)
-// 		}
-// 	}
-// 	return
-// }
-
-func traverseNestedSlice(slc []any, path string, sb *strings.Builder) {
-	for i, e := range slc {
-		if IsArrOrSlc(e) {
-			traverseNestedSlice(e.([]any), fmt.Sprintf("%v.%d", path, i), sb)
-		} else {
-
-			// **
-			// with value
-			// **
-			// path := fmt.Sprintf("%v @ %v.%d", e, path, i)
-			// path = strings.Replace(path, "@ .", "@ ", 1)
-
-			// **
-			// without value
-			// **
-			path := fmt.Sprintf("%v.%d", path, i)
-			path = strings.TrimPrefix(path, ".")
-
-			sb.WriteString(path + "\n")
-
-			// debug
-			// if e != nil {
-			// 	fmt.Printf("%v @%p %s\n", slc[i], &slc[i], path)
-			// } else {
-			// 	fmt.Printf("%v %s\n", slc[i], path)
-			// }
-		}
+// m MUST have enough indexed space for elements in nested array
+func SetNestedMap[T comparable](m map[T]any, value any, kiSegs ...T) error {
+	if len(kiSegs) == 0 {
+		return fmt.Errorf("key path (kiSegs) must be provided")
 	}
-}
 
-func TraverseNestedSlice(slc []any) []string {
-	var (
-		path = ""
-		sb   = &strings.Builder{}
-	)
-	traverseNestedSlice(slc, path, sb)
-	return strings.Split(strings.TrimSpace(sb.String()), "\n")
-}
+	var pM any = m
+	for pair := range IterPair(kiSegs...) {
 
-// path is like '1.2.3'
-func CapacityForSlice(paths ...string) []int {
+		if ki := pair.a; pair.validA {
 
-	mLvlIndices := make(map[int][]int)
-	for _, path := range paths {
-		// fmt.Println(i, path)
-		for lvl, seg := range strings.Split(path, ".") {
-			if n, ok := AnyTryToType[int](seg); ok {
-				mLvlIndices[lvl] = append(mLvlIndices[lvl], n)
+			if pair.first && IsNumeric(ki) {
+				return fmt.Errorf("cannot set nested map on 1st level key as number, (want to set a slice?)")
 			}
-		}
-	}
 
-	mLvlCap := make(map[int]int)
-	for lvl, indices := range mLvlIndices {
-		mLvlCap[lvl] = Max(indices...) + 1
-	}
+			if pair.last && !pair.validB {
 
-	_, values := MapToKVs(mLvlCap, func(ki int, kj int) bool { return ki < kj }, nil)
-	return values
-}
+				if !IsUint(ki) {
+					pM.(map[T]any)[ki] = value
+				} else {
+					idx, _ := AnyTryToType[int](ki)
+					pM.([]any)[idx] = value
+				}
 
-func initNestedSlice(slc *any, caps ...int) {
-	for lvl, c := range caps {
-		*slc = make([]any, c)
-		if lvl < len(caps)-1 {
-			for i := 0; i < c; i++ {
-				initNestedSlice(&((*slc).([]any))[i], caps[1:]...)
-			}
-		} else if lvl == len(caps)-1 {
-			for i := 0; i < c; i++ {
-				((*slc).([]any))[i] = struct{}{}
-			}
-		}
-		break
-	}
-}
-
-func InitNestedSlice(caps ...int) []any {
-	var slc any = []any{}
-	initNestedSlice(&slc, caps...)
-	return slc.([]any)
-}
-
-// slc must have enough capacity for all element
-func SetNestedSlice(slc []any, value any, idxSegs ...any) (ok bool) {
-	if len(idxSegs) == 0 {
-		return false
-	}
-	for _, seg := range idxSegs {
-		if !IsUint(seg) {
-			return false
-		}
-	}
-
-	for i, seg := range idxSegs {
-		if idx, _ := AnyTryToType[int](seg); idx < len(slc) {
-
-			if i == len(idxSegs)-1 {
-				slc[idx] = value
-				return true
 			} else {
-				var ok bool
-				if slc, ok = slc[idx].([]any); !ok {
-					return false
+
+				switch {
+				case !IsUint(ki) && !IsUint(pair.b): // e.g. "A", "B"
+					if _, ok := pM.(map[T]any)[ki]; !ok {
+						pM.(map[T]any)[ki] = make(map[T]any)
+					}
+					pM = pM.(map[T]any)[ki]
+
+				case !IsUint(ki) && IsUint(pair.b): // e.g. "B", "0"
+					idx, _ := AnyTryToType[int](pair.b)
+					if _, ok := pM.(map[T]any)[ki]; !ok {
+						pM.(map[T]any)[ki] = InitNestedSlice(idx + 1) // here once only, allocate enough space
+					}
+					pM = pM.(map[T]any)[ki]
+
+				case IsUint(ki) && !IsUint(pair.b): // e.g. "0", "C"
+					idx, _ := AnyTryToType[int](ki)
+					pM.([]any)[idx] = make(map[T]any)
+					pM = pM.([]any)[idx]
+
+				case IsUint(ki) && IsUint(pair.b): // e.g. "0", "1"
+					idx1, _ := AnyTryToType[int](ki)
+					idx2, _ := AnyTryToType[int](pair.b)
+					if pM.([]any)[idx1] == struct{}{} {
+						pM.([]any)[idx1] = InitNestedSlice(idx2 + 1) // here once only, allocate enough space
+					}
+					pM = pM.([]any)[idx1]
 				}
 			}
-
-		} else {
-			return false
 		}
 	}
-	return true
+
+	return nil
 }
 
-// func SetNestedMapWithIdx[T comparable](m any, value any, keySegs ...T) any {
-// 	if len(keySegs) == 0 {
-// 		panic("key path (keySegs) must be provided")
+// func MapFlatToNested(m map[string]any) map[string]any {
+
+// 	keys, vals := MapToKVs(m, func(i, j string) bool { return strings.Count(i, ".") < strings.Count(j, ".") }, nil)
+// 	// fmt.Println(keys)
+// 	// fmt.Println(vals)
+
+// 	rt := make(map[string]any)
+// 	for i, key := range keys {
+// 		val := vals[i]
+// 		SetNestedMapIgnoreIdx(rt, val, strings.Split(key, ".")...)
 // 	}
-// 	for _, seg := range keySegs {
-// 		if IsNumeric(seg) {
-
-// 			idx, _ := strconv.ParseInt(fmt.Sprint(seg), 10, 64)
-// 			if idx == 0 {
-
-// 				rt = []any{value}
-
-// 			} else {
-
-// 				if int(idx) != len(rt.([]any)) {
-// 					panic("error index order")
-// 				}
-// 				pM = append(pM.([]any), value)
-// 			}
-
-// 		} else {
-
-// 		}
-// 	}
-
-// return rt
+// 	return rt
 // }
-
-func MapFlatToNested(m map[string]any) map[string]any {
-
-	keys, vals := MapToKVs(m, func(i, j string) bool { return strings.Count(i, ".") < strings.Count(j, ".") }, nil)
-	// fmt.Println(keys)
-	// fmt.Println(vals)
-
-	rt := make(map[string]any)
-	for i, key := range keys {
-		val := vals[i]
-		SetNestedMapIgnoreIdx(rt, val, strings.Split(key, ".")...)
-	}
-	return rt
-}

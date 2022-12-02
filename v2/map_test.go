@@ -554,100 +554,50 @@ func TestSetNestedMapIgnoreIdx(t *testing.T) {
 // 	fmt.Println(m)
 // }
 
-func TestFlatToNested(t *testing.T) {
-
-	m2 := map[string]any{
-		"C1.0": 100,
-		"C1.1": false,
-	}
-
-	fmt.Println(MapFlatToNested(m2))
-
-}
-
-// func TestMakeNestedSlice(t *testing.T) {
-
-// 	// slc, _ = MakeNestedSlice(300, 4, 3)
-// 	// fmt.Println(slc)
-
-// 	// slc, _ = MakeNestedSlice(300, 4)
-// 	// fmt.Println(slc)
-
-// 	// slc, _ = MakeNestedSlice(300, 1)
-// 	// fmt.Println(slc)
-
-// 	slc, _ := MakeNestedSlice(300)
-// 	fmt.Println(1, slc)
-
-// 	slc, _ = MakeNestedSlice(300, 0)
-// 	fmt.Println(2, slc)
-
-// 	slc, _ = MakeNestedSlice(300, 3)
-// 	fmt.Println(3, slc)
-
-// 	slc, _ = MakeNestedSlice(300, 0, 0)
-// 	fmt.Println(4, slc)
-
-// 	slc, _ = MakeNestedSlice(300, 1, 0)
-// 	fmt.Println(5, slc)
-
-// 	slc, _ = MakeNestedSlice(300, 0, 1)
-// 	fmt.Println(6, slc)
-
-// 	slc, _ = MakeNestedSlice(300, 1, 1)
-// 	fmt.Println(7, slc)
-
-// 	slc, _ = MakeNestedSlice(300, 4, 3, 2)
-// 	fmt.Println(8, slc)
-// }
-
-func TestSetNestedSlice(t *testing.T) {
-
-	slc := []any{[]any{2, []any{3, 4}}, 1, []any{"a"}, 3, 8}
-	fmt.Println(slc)
-	fmt.Println()
-
-	paths := TraverseNestedSlice(slc)
-	fmt.Println(paths)
-
-	cap := CapacityForSlice(paths...)
-	fmt.Println(cap)
-
-	dest := InitNestedSlice(cap...)
-	fmt.Println(dest)
-
-	paths = TraverseNestedSlice(dest)
-	fmt.Println(paths)
-
-	ok := SetNestedSlice(dest, "OK", 2, 1, 0)
-	fmt.Println(ok)
-	fmt.Println(dest)
-
-	ok = SetNestedSlice(slc, "OKey", 0, 1, 1)
-	fmt.Println(ok)
-	fmt.Println(slc)
-}
-
-func TestInitNestedSlice(t *testing.T) {
-	slc := InitNestedSlice(5, 2, 2)
-	fmt.Println(slc)
-
-	// SetNestedSlice(slc, "OK", 2, 1, 0)
-	// SetNestedSlice(slc, "OK", 1, 0, 0)
-	// fmt.Println(slc)
-}
-
-// func TestMergeNestedSlice(t *testing.T) {
-// 	slc1 := []any{[]any{300, nil}, 300}
-// 	slc2 := []any{[]any{nil, 300}, nil, nil, nil, 300}
-// 	fmt.Println(MergeTwoSlices(slc1, slc2))
-// }
-
 func TestTemp(t *testing.T) {
 
-	p := make([]int, 10, 100)
-	p[4] = 100
-	p[15] = 200
-	fmt.Println(p)
+	// arr := InitNestedSlice(5, 1, 2)
+	// SetNestedSlice(arr, 20, 4)
+	// fmt.Println(arr)
+
+	m := make(map[string]any)
+
+	err := SetNestedMap(m, "XXX", "A", "B", "5", "D")
+	fmt.Println(m)
+	fmt.Println(err)
+
+	err = SetNestedMap(m, "XX", "A", "B", "1", "C")
+	fmt.Println(m)
+	fmt.Println(err)
+
+	err = SetNestedMap(m, "ZZZ", "B", "C", "3")
+	fmt.Println(m)
+	fmt.Println(err)
+
+	err = SetNestedMap(m, "TTT", "B", "D", "3")
+	fmt.Println(m)
+	fmt.Println(err)
+
+	err = SetNestedMap(m, "13", "BB", "1", "3")
+	fmt.Println(m)
+	fmt.Println(err)
+
+	err = SetNestedMap(m, 02, "BB", "1", "2", "1", "E")
+	fmt.Println(m)
+	fmt.Println(err)
+
+	err = SetNestedMap(m, "XXX", "D", "1", "2", "M", "N")
+	fmt.Println(m)
+	fmt.Println(err)
+}
+
+func TestFlatToNested(t *testing.T) {
+
+	// m2 := map[string]any{
+	// 	"C1.0": 100,
+	// 	"C1.1": false,
+	// }
+
+	// fmt.Println(MapFlatToNested(m2))
 
 }

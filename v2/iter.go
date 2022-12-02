@@ -64,3 +64,116 @@ func IterToSlc[T Integer](params ...T) (slc []T) {
 	}
 	return
 }
+
+type Pair[T any] struct {
+	a      T
+	b      T
+	first  bool
+	last   bool
+	validA bool
+	validB bool
+}
+
+// 1,2,3,4... => (1,2), (2,3), (3,4)...
+func IterPair[T any](params ...T) <-chan Pair[T] {
+	ch := make(chan Pair[T])
+	go func() {
+		defer close(ch)
+		if len(params) > 1 {
+			for i, p := range params[1:] {
+				ch <- Pair[T]{
+					a:      params[i],
+					b:      p,
+					first:  IF(i == 0, true, false),
+					last:   IF(i == len(params)-2, true, false),
+					validA: true,
+					validB: true,
+				}
+			}
+			ch <- Pair[T]{
+				a:      params[len(params)-1],
+				b:      *new(T),
+				first:  false,
+				last:   true,
+				validA: true,
+				validB: false,
+			}
+		} else if len(params) == 1 {
+			ch <- Pair[T]{
+				a:      params[0],
+				b:      *new(T),
+				first:  true,
+				last:   true,
+				validA: true,
+				validB: false,
+			}
+		} else {
+			ch <- Pair[T]{
+				a:      *new(T),
+				b:      *new(T),
+				first:  false,
+				last:   false,
+				validA: false,
+				validB: false,
+			}
+		}
+	}()
+	return ch
+}
+
+// type Triple[T any] struct {
+// 	a     T
+// 	b     T
+// 	c     T
+// 	first bool
+// 	last  bool
+// 	ok    bool
+// }
+
+// // 1,2,3,4,5,6,7... => (1,2,3), (2,3,4), (3,4,5)...
+// func IterTriple[T any](params ...T) <-chan Triple[T] {
+// 	ch := make(chan Triple[T])
+// 	go func() {
+// 		defer close(ch)
+// 		if len(params) > 2 {
+// 			for i, p := range params[2:] {
+// 				ch <- Triple[T]{
+// 					a:     params[i],
+// 					b:     params[i+1],
+// 					c:     p,
+// 					first: IF(i == 0, true, false),
+// 					last:  IF(i == len(params)-3, true, false),
+// 					ok:    true,
+// 				}
+// 			}
+// 		} else if len(params) == 2 {
+// 			ch <- Triple[T]{
+// 				a:     *new(T),
+// 				b:     params[0],
+// 				c:     params[1],
+// 				first: true,
+// 				last:  true,
+// 				ok:    false,
+// 			}
+// 		} else if len(params) == 1 {
+// 			ch <- Triple[T]{
+// 				a:     *new(T),
+// 				b:     *new(T),
+// 				c:     params[0],
+// 				first: true,
+// 				last:  true,
+// 				ok:    false,
+// 			}
+// 		} else {
+// 			ch <- Triple[T]{
+// 				a:     *new(T),
+// 				b:     *new(T),
+// 				c:     *new(T),
+// 				first: false,
+// 				last:  false,
+// 				ok:    false,
+// 			}
+// 		}
+// 	}()
+// 	return ch
+// }
