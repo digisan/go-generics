@@ -467,6 +467,13 @@ func TestMapFlattenAndNested(t *testing.T) {
 									"real-final2",
 									map[string]any{
 										"deepest": "real-final3",
+										"X": []any{
+											"XXX",
+											[]any{0.001, "", nil, []any{[]any{}}},
+											nil,
+											struct{}{},
+										},
+										"Y": "YYY",
 									},
 								},
 							},
@@ -476,6 +483,9 @@ func TestMapFlattenAndNested(t *testing.T) {
 			},
 		},
 	}
+
+	fmt.Printf("m1: %+v\n", m1)
+	str1 := fmt.Sprint(m1)
 
 	fm := MapNestedToFlat(m1)
 	n := 0
@@ -502,6 +512,14 @@ func TestMapFlattenAndNested(t *testing.T) {
 		"C1.C2.C3.arr.1.z2":             2000.0,
 		"C1.C2.C3.arr.1.Z4.2":           nil,
 		"C1.C2.C3.arr.1.Z4.4.2.deepest": "real-final3",
+		"C1.C2.C3.arr.1.Z4.4.2.Y":       "YYY",
+		"C1.C2.C3.arr.1.Z4.4.2.X.0":     "XXX",
+		"C1.C2.C3.arr.1.Z4.4.2.X.1.0":   0.001,
+		"C1.C2.C3.arr.1.Z4.4.2.X.1.1":   "",
+		"C1.C2.C3.arr.1.Z4.4.2.X.1.2":   nil,
+		"C1.C2.C3.arr.1.Z4.4.2.X.1.3.0": []any{},
+		"C1.C2.C3.arr.1.Z4.4.2.X.2":     nil,
+		"C1.C2.C3.arr.1.Z4.4.2.X.3":     struct{}{},
 		"C1.C2.Arr.1":                   1,
 		"C1.C2.ArrF.1":                  "B",
 		"P1":                            "ABC",
@@ -511,11 +529,20 @@ func TestMapFlattenAndNested(t *testing.T) {
 		"C1.C2.C3.arr.1.Z4.4.1":         "real-final2",
 	}
 
-	fmt.Println(reflect.DeepEqual(fm, m2))
+	fmt.Println("fm == m1 ?", reflect.DeepEqual(fm, m2))
 
-	// nm := MapFlatToNested(m2)
-	// fmt.Println(nm)
-	// fmt.Println(reflect.DeepEqual(m1, nm))
+	///////////////////////////////////////////////////
+
+	fmt.Println("MapFlatToNested")
+
+	nm := MapFlatToNested(m2)
+	fmt.Printf("nm: %+v\n", nm)
+	str2 := fmt.Sprint(nm)
+
+	///////////////////////////////////////////////////
+
+	// fmt.Println("m1 == nm ?", reflect.DeepEqual(m1, nm))
+	fmt.Println("m1Str == nmStr ?", str1 == str2)
 }
 
 func TestMapTryToSlc(t *testing.T) {
@@ -594,11 +621,8 @@ func TestTemp(t *testing.T) {
 func TestMapFlatToNested(t *testing.T) {
 
 	m2 := map[string]any{
-		"C1.2":     100,
-		"C1.5.0.a": 500,
-		"C1.5.3.A": 550,
-		"C1.3":     false,
-		"C":        "ok",
+		"X.1":   "XXX",
+		"X.0.0": 0,
 	}
 
 	fmt.Println(MapFlatToNested(m2))

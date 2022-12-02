@@ -5,10 +5,10 @@ import (
 	"strings"
 )
 
-func traverseNestedSlice(slc []any, path string, sb *strings.Builder) {
+func traverseSlice(slc []any, path string, sb *strings.Builder) {
 	for i, e := range slc {
 		if IsArrOrSlc(e) {
-			traverseNestedSlice(e.([]any), fmt.Sprintf("%v.%d", path, i), sb)
+			traverseSlice(e.([]any), fmt.Sprintf("%v.%d", path, i), sb)
 		} else {
 
 			// **
@@ -35,12 +35,12 @@ func traverseNestedSlice(slc []any, path string, sb *strings.Builder) {
 	}
 }
 
-func TraverseNestedSlice(slc []any) []string {
+func TraverseSlice(slc []any) []string {
 	var (
 		path = ""
 		sb   = &strings.Builder{}
 	)
-	traverseNestedSlice(slc, path, sb)
+	traverseSlice(slc, path, sb)
 	return strings.Split(strings.TrimSpace(sb.String()), "\n")
 }
 
@@ -66,12 +66,12 @@ func CapacityForSlice(paths ...string) []int {
 	return values
 }
 
-func initNestedSlice(slc *any, caps ...int) {
+func initSlice(slc *any, caps ...int) {
 	for lvl, c := range caps {
 		*slc = make([]any, c)
 		if lvl < len(caps)-1 {
 			for i := 0; i < c; i++ {
-				initNestedSlice(&((*slc).([]any))[i], caps[1:]...)
+				initSlice(&((*slc).([]any))[i], caps[1:]...)
 			}
 		} else if lvl == len(caps)-1 {
 			for i := 0; i < c; i++ {
@@ -82,14 +82,14 @@ func initNestedSlice(slc *any, caps ...int) {
 	}
 }
 
-func InitNestedSlice(caps ...int) []any {
+func InitSlice(caps ...int) []any {
 	var slc any = []any{}
-	initNestedSlice(&slc, caps...)
+	initSlice(&slc, caps...)
 	return slc.([]any)
 }
 
 // slc must have enough capacity for all element
-func SetNestedSlice(slc []any, value any, idxSegs ...any) (ok bool) {
+func SetSlice(slc []any, value any, idxSegs ...any) (ok bool) {
 	if len(idxSegs) == 0 {
 		return false
 	}
@@ -121,7 +121,7 @@ func SetNestedSlice(slc []any, value any, idxSegs ...any) (ok bool) {
 
 // This can only set single value in nested slice, useless for further assignment
 //
-// func MakeNestedSlice(value any, idxSegs ...any) (slc []any, err error) {
+// func MakeSlice(value any, idxSegs ...any) (slc []any, err error) {
 // 	if len(idxSegs) == 0 {
 // 		return []any{value}, nil
 // 	}

@@ -23,6 +23,10 @@ func IsArrOrSlc(v any) bool {
 	return In(reflect.TypeOf(v).Kind(), reflect.Slice, reflect.Array)
 }
 
+func LenOfMustArrOrSlc(v any) int {
+	return reflect.ValueOf(v).Len()
+}
+
 // IsInt : Check v is valid int numeric style
 func IsInt(v any) bool {
 	_, err := strconv.ParseInt(fmt.Sprint(v), 10, 64)

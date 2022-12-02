@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"reflect"
 	"sort"
-	"strconv"
 	"strings"
 )
 
@@ -183,11 +182,11 @@ func MapAllValAreEmpty[T comparable](m map[T]any) bool {
 	return true
 }
 
-func dumpMap(pk string, jv any, mflat *map[string]any) {
+func dumpMap(pk string, v any, mflat *map[string]any) {
 
-	switch m := jv.(type) {
+	switch m := v.(type) {
 
-	case float64, float32, string, bool, int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64, complex64, complex128, nil:
+	case float64, float32, string, bool, int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64, complex64, complex128, nil, struct{}:
 		(*mflat)[pk] = m
 
 	case map[string]any:
@@ -201,7 +200,15 @@ func dumpMap(pk string, jv any, mflat *map[string]any) {
 		}
 
 	default:
+
+		// otherwise, jump into next...
 		if IsArrOrSlc(m) {
+
+			// empty slice or array is leaf
+			if LenOfMustArrOrSlc(m) == 0 {
+				(*mflat)[pk] = m
+			}
+
 			for i, a := range SlcToAnys(m) {
 				idx := fmt.Sprintf("%s.%d", pk, i)
 				dumpMap(idx, a, mflat)
@@ -230,7 +237,7 @@ func MapTryToSlc[T1 comparable, T2 any](m map[T1]T2) ([]T2, bool) {
 		return i < j
 	}, nil)
 	for i, k := range keys {
-		if ik, err := strconv.ParseInt(fmt.Sprint(k), 10, 64); err != nil || int64(i) != ik {
+		if ik, ok := AnyTryToType[int](k); !ok || ik != i {
 			return nil, false
 		}
 	}
@@ -294,7 +301,7 @@ func SetNestedMap[T comparable](m map[T]any, value any, kiSegs ...T) error {
 				case !IsUint(ki) && IsUint(pair.b): // e.g. "B", "0"
 					idx, _ := AnyTryToType[int](pair.b)
 					if _, ok := pM.(map[T]any)[ki]; !ok {
-						pM.(map[T]any)[ki] = InitNestedSlice(idx + 1) // here once only, allocate enough space
+						pM.(map[T]any)[ki] = InitSlice(idx + 1) // here once only, allocate enough space
 					}
 					pM = pM.(map[T]any)[ki]
 
@@ -309,7 +316,7 @@ func SetNestedMap[T comparable](m map[T]any, value any, kiSegs ...T) error {
 					idx1, _ := AnyTryToType[int](ki)
 					idx2, _ := AnyTryToType[int](pair.b)
 					if pM.([]any)[idx1] == struct{}{} {
-						pM.([]any)[idx1] = InitNestedSlice(idx2 + 1) // here once only, allocate enough space
+						pM.([]any)[idx1] = InitSlice(idx2 + 1) // here once only, allocate enough space
 					}
 					pM = pM.([]any)[idx1]
 				}
@@ -322,29 +329,62 @@ func SetNestedMap[T comparable](m map[T]any, value any, kiSegs ...T) error {
 
 func MapFlatToNested(m map[string]any) map[string]any {
 
+	// *** ERROR if put less segment path at top. if so, following short segment path may have bigger index
+	//
+
+	// keys, vals := MapToKVs(m,
+	// 	func(pathi, pathj string) bool {
+	// 		ni, nj := strings.Count(pathi, "."), strings.Count(pathj, ".")
+	// 		if ni == nj {
+	// 			ssi, ssj := strings.Split(pathi, "."), strings.Split(pathj, ".")
+	// 		NEXT:
+	// 			for i := 0; i < ni+1; i++ {
+	// 				si, sj := ssi[i], ssj[i]
+	// 				if si == sj {
+	// 					continue NEXT
+	// 				}
+	// 				if IsUint(si) && IsUint(sj) {
+	// 					idxI, _ := AnyTryToType[uint](si)
+	// 					idxJ, _ := AnyTryToType[uint](sj)
+	// 					if idxI == idxJ {
+	// 						continue NEXT
+	// 					}
+	// 					return idxI > idxJ
+	// 				}
+	// 				return si < sj // ascii ASC, uppercase first
+	// 			}
+	// 		}
+	// 		return ni > nj
+	// 	},
+	// 	nil,
+	// )
+
+	// ***
+	// re-order path-keys for aim nested map has enough space to be filled
+	// bigger array index path to be top area
+	//
+
 	keys, vals := MapToKVs(m,
 		func(pathi, pathj string) bool {
-			ni, nj := strings.Count(pathi, "."), strings.Count(pathj, ".")
-			if ni == nj {
-				ssi, ssj := strings.Split(pathi, "."), strings.Split(pathj, ".")
-			NEXT:
-				for i := 0; i < ni+1; i++ {
-					si, sj := ssi[i], ssj[i]
-					if si == sj {
+			ni := strings.Count(pathi, ".")
+			ssi, ssj := strings.Split(pathi, "."), strings.Split(pathj, ".")
+		NEXT:
+			for i := 0; i < ni+1; i++ {
+				si, sj := ssi[i], ssj[i]
+				if si == sj {
+					continue NEXT
+				}
+				if IsUint(si) && IsUint(sj) {
+					idxI, _ := AnyTryToType[uint](si)
+					idxJ, _ := AnyTryToType[uint](sj)
+					if idxI == idxJ {
 						continue NEXT
 					}
-					if IsUint(si) && IsUint(sj) {
-						idxI, _ := AnyTryToType[uint](si)
-						idxJ, _ := AnyTryToType[uint](sj)
-						if idxI == idxJ {
-							continue NEXT
-						}
-						return idxI > idxJ
-					}
-					return si < sj // ascii ASC, uppercase first
+					return idxI > idxJ
 				}
+				return si < sj // ascii ASC, uppercase first
 			}
-			return ni > nj
+			return true // keep original order
 		},
 		nil,
 	)
