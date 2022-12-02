@@ -591,13 +591,16 @@ func TestTemp(t *testing.T) {
 	fmt.Println(err)
 }
 
-func TestFlatToNested(t *testing.T) {
+func TestMapFlatToNested(t *testing.T) {
 
-	// m2 := map[string]any{
-	// 	"C1.0": 100,
-	// 	"C1.1": false,
-	// }
+	m2 := map[string]any{
+		"C1.2":     100,
+		"C1.5.0.a": 500,
+		"C1.5.3.A": 550,
+		"C1.3":     false,
+		"C":        "ok",
+	}
 
-	// fmt.Println(MapFlatToNested(m2))
+	fmt.Println(MapFlatToNested(m2))
 
 }

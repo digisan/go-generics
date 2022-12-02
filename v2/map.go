@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"sort"
 	"strconv"
+	"strings"
 )
 
 // for Map2KVs
@@ -299,7 +300,9 @@ func SetNestedMap[T comparable](m map[T]any, value any, kiSegs ...T) error {
 
 				case IsUint(ki) && !IsUint(pair.b): // e.g. "0", "C"
 					idx, _ := AnyTryToType[int](ki)
-					pM.([]any)[idx] = make(map[T]any)
+					if pM.([]any)[idx] == struct{}{} {
+						pM.([]any)[idx] = make(map[T]any)
+					}
 					pM = pM.([]any)[idx]
 
 				case IsUint(ki) && IsUint(pair.b): // e.g. "0", "1"
@@ -317,16 +320,43 @@ func SetNestedMap[T comparable](m map[T]any, value any, kiSegs ...T) error {
 	return nil
 }
 
-// func MapFlatToNested(m map[string]any) map[string]any {
+func MapFlatToNested(m map[string]any) map[string]any {
 
-// 	keys, vals := MapToKVs(m, func(i, j string) bool { return strings.Count(i, ".") < strings.Count(j, ".") }, nil)
-// 	// fmt.Println(keys)
-// 	// fmt.Println(vals)
+	keys, vals := MapToKVs(m,
+		func(pathi, pathj string) bool {
+			ni, nj := strings.Count(pathi, "."), strings.Count(pathj, ".")
+			if ni == nj {
+				ssi, ssj := strings.Split(pathi, "."), strings.Split(pathj, ".")
+			NEXT:
+				for i := 0; i < ni+1; i++ {
+					si, sj := ssi[i], ssj[i]
+					if si == sj {
+						continue NEXT
+					}
+					if IsUint(si) && IsUint(sj) {
+						idxI, _ := AnyTryToType[uint](si)
+						idxJ, _ := AnyTryToType[uint](sj)
+						if idxI == idxJ {
+							continue NEXT
+						}
+						return idxI > idxJ
+					}
+					return si < sj // ascii ASC, uppercase first
+				}
+			}
+			return ni > nj
+		},
+		nil,
+	)
 
-// 	rt := make(map[string]any)
-// 	for i, key := range keys {
-// 		val := vals[i]
-// 		SetNestedMapIgnoreIdx(rt, val, strings.Split(key, ".")...)
-// 	}
-// 	return rt
-// }
+	// fmt.Println(keys)
+	// fmt.Println(vals)
+	// fmt.Println()
+
+	rt := make(map[string]any)
+	for i, key := range keys {
+		val := vals[i]
+		SetNestedMap(rt, val, strings.Split(key, ".")...)
+	}
+	return rt
+}
