@@ -69,7 +69,7 @@ func SetFieldValue(object any, field string, value any) (err error) {
 		v := reflect.ValueOf(object)
 		if f := v.Elem().FieldByName(field); f.IsValid() {
 
-			switch fmt.Sprint(f.Type()) {
+			switch f.Type().String() {
 
 			case "string":
 				if val, ok := AnyTryToType[string](value); ok {
@@ -170,7 +170,7 @@ func SetFieldValue(object any, field string, value any) (err error) {
 				goto ERR
 
 			default:
-				log.Fatalf("need type [%v] for setting '%v' value @ [%v]", fmt.Sprint(f.Type()), field, value)
+				log.Fatalf("need type [%v] for setting '%v' value @ [%v]", f.Type().String(), field, value)
 			}
 		}
 	}
