@@ -4,6 +4,10 @@ import (
 	"reflect"
 )
 
+func KindOf(v any) string {
+	return reflect.ValueOf(v).Kind().String()
+}
+
 // slowest
 // func TypeOf1(v any) string {
 // 	return fmt.Sprintf("%T", v)

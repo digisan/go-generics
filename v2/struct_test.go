@@ -15,19 +15,39 @@ type TEST struct {
 	sub  SUB
 	RUNE rune
 	BYTE byte
+	Arr  []int
 }
 
 type SUB struct {
-	c    int
-	C    int
-	d    complex128
-	D    complex128
-	M    string
-	Ssub SSUB
+	c      int
+	C      int
+	d      complex128
+	D      complex128
+	M      string
+	Ssub   SSUB
+	SubArr []SSUB
 }
 
 type SSUB struct {
 	Z float64
+}
+
+type TA struct {
+	A int
+}
+
+type TB struct {
+	B float64
+}
+
+type TC struct {
+	C string
+}
+
+type ABC struct {
+	TA
+	TB
+	TC
 }
 
 func TestPartialAsMap(t *testing.T) {
@@ -73,16 +93,30 @@ func TestFields(t *testing.T) {
 		s: "s",
 		S: "SS",
 		Sub: SUB{
-			c: 9,
-			C: 99,
-			d: 4 + 5i,
-			D: 5 + 6i,
+			c:      9,
+			C:      99,
+			d:      4 + 5i,
+			D:      5 + 6i,
+			SubArr: []SSUB{{Z: 1.111}, {Z: 2.222}, {Z: 3.333}, {Z: 4.444}},
 		},
 		sub: SUB{},
+		Arr: []int{11, 22, 33},
 	}
 
 	v, err := PathValue(test, "Sub.C")
 	fmt.Printf("Sub.C: %v\n", v)
+	fmt.Printf("Err: %v\n", err)
+
+	fmt.Println()
+
+	v, err = PathValue(test, "Arr.2")
+	fmt.Printf("Arr.2: %v\n", v)
+	fmt.Printf("Err: %v\n", err)
+
+	fmt.Println()
+
+	v, err = PathValue(test, "Sub.SubArr.2.Z")
+	fmt.Printf("Sub.SubArr.2.Z: %v\n", v)
 	fmt.Printf("Err: %v\n", err)
 
 	fmt.Println()
@@ -121,7 +155,7 @@ func TestFields(t *testing.T) {
 
 func TestSetFieldValue(t *testing.T) {
 
-	test := &TEST{
+	test := TEST{
 		a: 1,
 		A: 12.1,
 		s: "s",
@@ -133,20 +167,38 @@ func TestSetFieldValue(t *testing.T) {
 			D: 5 + 6i,
 		},
 		sub: SUB{},
+		Arr: []int{11, 22, 33},
 	}
 
-	if err := SetFieldValue(test, "RUNE", "1233335"); err != nil {
-		fmt.Println(err)		
+	if err := SetFieldValue(&test, "RUNE", "1233335"); err != nil {
+		fmt.Println(err)
+		return
 	}
-	fmt.Printf("%+v\n", *test)
+	fmt.Printf("%+v\n", test)
 
-	if err := SetFieldValue(test, "BYTE", "1725.6"); err != nil {
-		fmt.Println(err)		
+	testArr := []int{9, 8, 7}
+	if err := SetFieldValue(testArr, "1", 888); err != nil {
+		fmt.Println(err)
+		return
 	}
-	// fmt.Printf("%+v\n", *test)
+	fmt.Printf("%+v\n", testArr)
 
-	if err := SetFieldValue(test, "NOFIELD", "NONONO"); err != nil {
-		fmt.Println(err)		
+	abc := ABC{}
+	if err := SetFieldValue(&abc, "A", 1000); err != nil {
+		fmt.Println(err)
+		return
 	}
-	// fmt.Printf("%+v\n", *test)
+	fmt.Printf("%+v\n", abc)
+
+	// if err := SetFieldValue(&test, "BYTE", "1725.6"); err != nil {
+	// 	fmt.Println(err)
+	// 	return
+	// }
+	// fmt.Printf("%+v\n", test)
+
+	if err := SetFieldValue(&test, "NOFIELD", "NONONO"); err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("%+v\n", test)
 }

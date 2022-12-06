@@ -30,13 +30,22 @@ func FieldValue(object any, field string) (any, error) {
 			log.Printf("Cannot get field '%s' in struct '%v'\n", field, reflect.TypeOf(object))
 		}
 	}()
-	if reflect.ValueOf(object).Kind() == reflect.Ptr {
-		ptr := reflect.ValueOf(object).Elem()
-		object = ptr.Interface()
+
+	if IsArrOrSlc(object) {
+		arr := SlcToAnys(object)
+		idx, ok := AnyTryToType[int](field)
+		if !ok {
+			return nil, fmt.Errorf("field for array must be number")
+		}
+		if idx >= len(arr) {
+			return nil, fmt.Errorf("field(idx) is out of range of object(array/slice)")
+		}
+		return arr[idx], nil
 	}
+
 	if len(field) > 0 && unicode.IsUpper(rune(field[0])) {
-		r := reflect.ValueOf(object)
-		f := reflect.Indirect(r).FieldByName(field)
+		ov := reflect.ValueOf(object)
+		f := reflect.Indirect(ov).FieldByName(field)
 		if !f.IsValid() || f.Kind() == 0 {
 			return nil, fmt.Errorf("field '%s' is NOT in struct '%v'", field, reflect.TypeOf(object))
 		}
@@ -55,19 +64,46 @@ func PathValue(object any, path string) (v any, err error) {
 	return v, err
 }
 
-// field must be exported, AND param value type must be identical to field' value type.
+// field must be exported, AND param value type can be converted to field value type.
 func SetFieldValue(object any, field string, value any) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = r.(error)
 		}
 	}()
-	if reflect.ValueOf(object).Kind() != reflect.Ptr {
-		return fmt.Errorf("object need pointer type")
+
+	ov := reflect.ValueOf(object)
+
+	if IsArrOrSlc(object) {
+		idx, ok := AnyTryToType[int](field)
+		if !ok {
+			return fmt.Errorf("field for array must be number")
+		}
+		if idx >= len(SlcToAnys(object)) {
+			return fmt.Errorf("field(idx) is out of range of object(array/slice)")
+		}
+		if e := ov.Index(idx); e.IsValid() {
+			e.Set(reflect.ValueOf(value))
+			return nil
+		}
+		goto ERR
 	}
+
 	if len(field) > 0 && unicode.IsUpper(rune(field[0])) {
-		v := reflect.ValueOf(object)
-		if f := v.Elem().FieldByName(field); f.IsValid() {
+
+		if ov.Kind() != reflect.Ptr {
+			return fmt.Errorf("object need to pass its address")
+		}
+
+		if f := reflect.Indirect(ov).FieldByName(field); f.IsValid() {
+
+			switch f.Kind().String() {
+			case "struct", "slice", "array", "map", "ptr", "interface":
+				f.Set(reflect.ValueOf(value))
+				return nil
+			}
+
+			///////////////////////////////////////////////////
 
 			switch f.Type().String() {
 
@@ -178,10 +214,6 @@ func SetFieldValue(object any, field string, value any) (err error) {
 ERR:
 	return fmt.Errorf("field '%v' failed to set value @ [%v]", field, value)
 }
-
-// TODO:
-// func SetPathValue(object any, path string, value any) (ok bool) {
-// }
 
 // func PartialAsMap(object any, fields ...string) (any, error) {
 // 	part := make(map[string]any)
