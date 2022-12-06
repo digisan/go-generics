@@ -56,23 +56,127 @@ func PathValue(object any, path string) (v any, err error) {
 }
 
 // field must be exported, AND param value type must be identical to field' value type.
-func SetFieldValue(object any, field string, value any) (ok bool) {
+func SetFieldValue(object any, field string, value any) (ok bool, err error) {
 	defer func() {
 		if r := recover(); r != nil {
-			ok = false
+			ok, err = false, r.(error)
 		}
 	}()
 	if reflect.ValueOf(object).Kind() != reflect.Ptr {
-		return false
+		return false, fmt.Errorf("object need pointer type")
 	}
 	if len(field) > 0 && unicode.IsUpper(rune(field[0])) {
 		v := reflect.ValueOf(object)
 		if f := v.Elem().FieldByName(field); f.IsValid() {
-			f.Set(reflect.ValueOf(value))
-			return true
+
+			switch fmt.Sprint(f.Type()) {
+
+			case "string":
+				if val, ok := AnyTryToType[string](value); ok {
+					f.Set(reflect.ValueOf(val))
+					return true, nil
+				}
+				goto ERR
+
+			case "int":
+				if val, ok := AnyTryToType[int](value); ok {
+					f.Set(reflect.ValueOf(val))
+					return true, nil
+				}
+				goto ERR
+
+			case "int8":
+				if val, ok := AnyTryToType[int8](value); ok {
+					f.Set(reflect.ValueOf(val))
+					return true, nil
+				}
+				goto ERR
+
+			case "int16":
+				if val, ok := AnyTryToType[int16](value); ok {
+					f.Set(reflect.ValueOf(val))
+					return true, nil
+				}
+				goto ERR
+
+			case "int32":
+				if val, ok := AnyTryToType[int32](value); ok {
+					f.Set(reflect.ValueOf(val))
+					return true, nil
+				}
+				goto ERR
+
+			case "int64":
+				if val, ok := AnyTryToType[int64](value); ok {
+					f.Set(reflect.ValueOf(val))
+					return true, nil
+				}
+				goto ERR
+
+			case "uint":
+				if val, ok := AnyTryToType[uint](value); ok {
+					f.Set(reflect.ValueOf(val))
+					return true, nil
+				}
+				goto ERR
+
+			case "uint8":
+				if val, ok := AnyTryToType[uint8](value); ok {
+					f.Set(reflect.ValueOf(val))
+					return true, nil
+				}
+				goto ERR
+
+			case "uint16":
+				if val, ok := AnyTryToType[uint16](value); ok {
+					f.Set(reflect.ValueOf(val))
+					return true, nil
+				}
+				goto ERR
+
+			case "uint32":
+				if val, ok := AnyTryToType[uint32](value); ok {
+					f.Set(reflect.ValueOf(val))
+					return true, nil
+				}
+				goto ERR
+
+			case "uint64":
+				if val, ok := AnyTryToType[uint64](value); ok {
+					f.Set(reflect.ValueOf(val))
+					return true, nil
+				}
+				goto ERR
+
+			case "float64":
+				if val, ok := AnyTryToType[float64](value); ok {
+					f.Set(reflect.ValueOf(val))
+					return true, nil
+				}
+				goto ERR
+
+			case "float32":
+				if val, ok := AnyTryToType[float32](value); ok {
+					f.Set(reflect.ValueOf(val))
+					return true, nil
+				}
+				goto ERR
+
+			case "bool":
+				if val, ok := AnyTryToType[bool](value); ok {
+					f.Set(reflect.ValueOf(val))
+					return true, nil
+				}
+				goto ERR
+
+			default:
+				log.Fatalf("need type [%v] for setting '%v' value @ [%v]", fmt.Sprint(f.Type()), field, value)
+			}
 		}
 	}
-	return false
+
+ERR:
+	return false, fmt.Errorf("field '%v' failed to set value @ [%v]", field, value)
 }
 
 // TODO:

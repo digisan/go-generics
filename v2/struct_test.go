@@ -6,13 +6,15 @@ import (
 )
 
 type TEST struct {
-	a   int `json:"email0" validate:"required,email,email-db"`
-	A   int `json:"email1" validate:"email1,email-db"`
-	B   int
-	s   string `json:"email2" validate:"email2,email-db"`
-	S   string `json:"email3" validate:"email3,email-db"`
-	Sub SUB
-	sub SUB
+	a    int     `json:"email0" validate:"required,email,email-db"`
+	A    float64 `json:"email1" validate:"email1,email-db"`
+	B    uint
+	s    string `json:"email2" validate:"email2,email-db"`
+	S    string `json:"email3" validate:"email3,email-db"`
+	Sub  SUB
+	sub  SUB
+	RUNE rune
+	BYTE byte
 }
 
 type SUB struct {
@@ -121,7 +123,7 @@ func TestSetFieldValue(t *testing.T) {
 
 	test := &TEST{
 		a: 1,
-		A: 12,
+		A: 12.1,
 		s: "s",
 		S: "SS",
 		Sub: SUB{
@@ -133,12 +135,15 @@ func TestSetFieldValue(t *testing.T) {
 		sub: SUB{},
 	}
 
-	ok := SetFieldValue(test, "SSS", "ZZZ")
-	if !ok {
-		fmt.Println("error!!!")
+	if ok, err := SetFieldValue(test, "RUNE", "1233335"); !ok {
+		fmt.Println(err)
 		return
 	}
+	fmt.Printf("%+v\n", *test)
 
-	fmt.Printf("%+v", *test)
-
+	if ok, err := SetFieldValue(test, "BYTE", "1725"); !ok {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("%+v\n", *test)
 }
