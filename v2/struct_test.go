@@ -135,15 +135,18 @@ func TestSetFieldValue(t *testing.T) {
 		sub: SUB{},
 	}
 
-	if ok, err := SetFieldValue(test, "RUNE", "1233335"); !ok {
-		fmt.Println(err)
-		return
+	if err := SetFieldValue(test, "RUNE", "1233335"); err != nil {
+		fmt.Println(err)		
 	}
 	fmt.Printf("%+v\n", *test)
 
-	if ok, err := SetFieldValue(test, "BYTE", "1725"); !ok {
-		fmt.Println(err)
-		return
+	if err := SetFieldValue(test, "BYTE", "1725.6"); err != nil {
+		fmt.Println(err)		
 	}
-	fmt.Printf("%+v\n", *test)
+	// fmt.Printf("%+v\n", *test)
+
+	if err := SetFieldValue(test, "NOFIELD", "NONONO"); err != nil {
+		fmt.Println(err)		
+	}
+	// fmt.Printf("%+v\n", *test)
 }
