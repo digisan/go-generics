@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"testing"
+	"time"
 )
 
 func BenchmarkTypeOf(b *testing.B) {
@@ -202,5 +203,26 @@ func TestIsNil(t *testing.T) {
 }
 
 func TestIsEmail(t *testing.T) {
-	fmt.Println(IsEmailFormat("abdf@asd.com"))
+	fmt.Println(IsEmail("abdf@asd.com"))
+	fmt.Println(IsEmail(""))
+}
+
+func TestIsURL(t *testing.T) {
+	fmt.Println(IsURL("http://golangcode.com"))
+	fmt.Println(IsURL(""))
+}
+
+func TestIsDate(t *testing.T) {
+	fmt.Println(IsDateUS("12/22/1902"))
+	fmt.Println(IsDateUK("12/12/1902"))
+
+	fmt.Println(IsTime("03:43:23 P.M."))
+
+	str := "2022-12-09T19:16:09+08:00"
+	fmt.Println(IsDateTime(str))
+	_, err := time.Parse(time.RFC3339, str)
+	fmt.Println(err)
+
+	fmt.Println(time.Now().Format(time.RFC3339))
+	fmt.Println(time.Now().UTC().Format(time.RFC3339))
 }

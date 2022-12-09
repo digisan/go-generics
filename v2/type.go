@@ -3,8 +3,10 @@ package v2
 import (
 	"fmt"
 	"net/mail"
+	"net/url"
 	"reflect"
 	"strconv"
+	"time"
 )
 
 func KindOf(v any) string {
@@ -99,7 +101,7 @@ func IsNumeric(v any) bool {
 }
 
 // IsContinuous : check numbers is continuous int slice
-func IsContinuous[T Integer](numbers ...T) (ok bool, minIfOk T, maxIfOk T) {
+func IsContinuous[T Integer](numbers ...T) (ok bool, rtMin T, rtMax T) {
 	if len(numbers) == 0 {
 		return false, *new(T), *new(T)
 	}
@@ -119,7 +121,90 @@ func IsNil(i any) bool {
 }
 
 // check string format is email
-func IsEmailFormat(str string) bool {
+func IsEmail(str string) bool {
 	_, err := mail.ParseAddress(str)
 	return err == nil
+}
+
+func IsURL(str string) bool {
+	_, err := url.ParseRequestURI(str)
+	return err == nil
+}
+
+func IsDateTime(str string) bool {
+	var layouts = []string{
+		// standard
+		time.ANSIC,
+		time.UnixDate,
+		time.RubyDate,
+		time.RFC822,
+		time.RFC822Z,
+		time.RFC850,
+		time.RFC1123,
+		time.RFC1123Z,
+		time.RFC3339,
+		time.RFC3339Nano,
+		time.Kitchen,
+		// Handy time stamps.
+		time.Stamp,
+		time.StampMilli,
+		time.StampMicro,
+		time.StampNano,
+	}
+	for _, lo := range layouts {
+		if _, err := time.Parse(lo, str); err == nil {
+			return true
+		}
+	}
+	return false
+}
+
+func IsDateUS(str string) bool {
+	var layouts = []string{
+		"January 2, 2006",
+		"Jan 2, 2006",
+		"01/02/06",
+		"01/02/2006",
+		"Jan-02-06",
+	}
+	for _, lo := range layouts {
+		if _, err := time.Parse(lo, str); err == nil {
+			return true
+		}
+	}
+	return false
+}
+
+func IsDateUK(str string) bool {
+	var layouts = []string{
+		"2 January, 2006",
+		"2 Jan, 2006",
+		"02/01/06",
+		"02/01/2006",
+		"02-Jan-06",
+	}
+	for _, lo := range layouts {
+		if _, err := time.Parse(lo, str); err == nil {
+			return true
+		}
+	}
+	return false
+}
+
+func IsTime(str string) bool {
+	var layouts = []string{
+		"15:04:05",
+		"3:04:05PM",
+		"3:04:05 PM",
+		"3:04:05pm",
+		"3:04:05 pm",
+		"3:04:05 P.M.",
+		"3:04:05 p.m.",
+	}
+	for _, lo := range layouts {
+		if _, err := time.Parse(lo, str); err == nil {
+			return true
+		}
+	}
+	return false
 }
