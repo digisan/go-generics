@@ -6,6 +6,16 @@ import (
 	"testing"
 )
 
+func TestConstBytesToStr(t *testing.T) {
+	bytes := []byte{65, 66, 67}
+	fmt.Println(ConstBytesToStr(bytes))
+}
+
+func TestStrToConstBytes(t *testing.T) {
+	str := "ABC"
+	fmt.Println(StrToConstBytes(str))
+}
+
 func TestMapCvt(t *testing.T) {
 	m := map[any]any{
 		1: "11",
