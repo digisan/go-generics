@@ -236,7 +236,7 @@ func PartialAsMap(object any, paths ...string) (any, error) {
 		}
 		mFlat[path] = v
 	}
-	return MapFlatToNested(mFlat), nil
+	return MapFlatToNested(mFlat, nil), nil
 }
 
 // get all tags

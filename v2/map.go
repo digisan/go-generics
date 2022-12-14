@@ -327,7 +327,8 @@ func SetNestedMap[T comparable](m map[T]any, value any, kiSegs ...T) error {
 	return nil
 }
 
-func MapFlatToNested(m map[string]any) map[string]any {
+// if fm return's 'p' is "", then ignore this (path-value) being into Nested.
+func MapFlatToNested(m map[string]any, fm func(path string, value any) (p string, v any)) map[string]any {
 
 	// *** ERROR if put less segment path at top. if so, following short segment path may have bigger index
 	//
@@ -396,7 +397,13 @@ func MapFlatToNested(m map[string]any) map[string]any {
 	rt := make(map[string]any)
 	for i, key := range keys {
 		val := vals[i]
-		SetNestedMap(rt, val, strings.Split(key, ".")...)
+		if fm != nil {
+			if p, v := fm(key, val); len(p) > 0 {
+				SetNestedMap(rt, v, strings.Split(p, ".")...)
+			}
+		} else {
+			SetNestedMap(rt, val, strings.Split(key, ".")...)
+		}
 	}
 	return rt
 }

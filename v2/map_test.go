@@ -3,6 +3,7 @@ package v2
 import (
 	"fmt"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -535,7 +536,7 @@ func TestMapFlattenAndNested(t *testing.T) {
 
 	fmt.Println("MapFlatToNested")
 
-	nm := MapFlatToNested(m2)
+	nm := MapFlatToNested(m2, nil)
 	fmt.Printf("nm: %+v\n", nm)
 	str2 := fmt.Sprint(nm)
 
@@ -621,10 +622,19 @@ func TestTemp(t *testing.T) {
 func TestMapFlatToNested(t *testing.T) {
 
 	m2 := map[string]any{
-		"X.1":   "XXX",
+		"X.1.1": "XXX",
 		"X.0.0": 0,
 	}
 
-	fmt.Println(MapFlatToNested(m2))
+	fmt.Println(MapFlatToNested(m2, nil))
 
+	fmt.Println(MapFlatToNested(m2, func(path string, value any) (p string, v any) {
+		if strings.HasSuffix(path, ".1") {
+			return "", nil
+		}
+		if strings.HasSuffix(path, ".0") {
+			return path, value.(int) + 1
+		}
+		return path, value
+	}))
 }
