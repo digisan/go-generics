@@ -30,92 +30,97 @@ func AnyTryToType[T any](v any) (T, bool) {
 	uv, errU := strconv.ParseUint(sv, 10, 64)
 	bv, errB := strconv.ParseBool(sv)
 	cv, errC := strconv.ParseComplex(sv, 128)
+	tm, okT := TryToDateTime(sv)
 
-	switch fmt.Sprintf("%T", new(T)) {
+	switch fmt.Sprintf("%T", *new(T)) {
 
-	case "*float64":
+	case "float64":
 		if errF == nil {
 			r := float64(fv)
 			return *(*T)(unsafe.Pointer(&r)), true
 		}
-	case "*float32":
+	case "float32":
 		if errF == nil {
 			r := float32(fv)
 			return *(*T)(unsafe.Pointer(&r)), true
 		}
 
-	case "*int":
+	case "int":
 		if errI == nil {
 			r := int(iv)
 			return *(*T)(unsafe.Pointer(&r)), true
 		}
-	case "*int8":
+	case "int8":
 		if errI == nil {
 			r := int8(iv)
 			return *(*T)(unsafe.Pointer(&r)), true
 		}
-	case "*int16":
+	case "int16":
 		if errI == nil {
 			r := int16(iv)
 			return *(*T)(unsafe.Pointer(&r)), true
 		}
-	case "*int32":
+	case "int32":
 		if errI == nil {
 			r := int32(iv)
 			return *(*T)(unsafe.Pointer(&r)), true
 		}
-	case "*int64":
+	case "int64":
 		if errI == nil {
 			r := int64(iv)
 			return *(*T)(unsafe.Pointer(&r)), true
 		}
 
-	case "*uint":
+	case "uint":
 		if errU == nil {
 			r := uint(uv)
 			return *(*T)(unsafe.Pointer(&r)), true
 		}
-	case "*uint8":
+	case "uint8":
 		if errU == nil {
 			r := uint8(uv)
 			return *(*T)(unsafe.Pointer(&r)), true
 		}
-	case "*uint16":
+	case "uint16":
 		if errU == nil {
 			r := uint16(uv)
 			return *(*T)(unsafe.Pointer(&r)), true
 		}
-	case "*uint32":
+	case "uint32":
 		if errU == nil {
 			r := uint32(uv)
 			return *(*T)(unsafe.Pointer(&r)), true
 		}
-	case "*uint64":
+	case "uint64":
 		if errU == nil {
 			r := uint64(uv)
 			return *(*T)(unsafe.Pointer(&r)), true
 		}
 
-	case "*bool":
+	case "bool":
 		if errB == nil {
 			r := bv
 			return *(*T)(unsafe.Pointer(&r)), true
 		}
 
-	case "*complex64":
+	case "complex64":
 		if errC == nil {
 			r := complex64(cv)
 			return *(*T)(unsafe.Pointer(&r)), true
 		}
-
-	case "*complex128":
+	case "complex128":
 		if errC == nil {
 			r := complex128(cv)
 			return *(*T)(unsafe.Pointer(&r)), true
 		}
 
-	case "*string":
+	case "string":
 		return *(*T)(unsafe.Pointer(&sv)), true
+
+	case "time.Time":
+		if okT {
+			return *(*T)(unsafe.Pointer(&tm)), true
+		}
 	}
 
 	return *new(T), false

@@ -3,6 +3,7 @@ package v2
 import (
 	"fmt"
 	"testing"
+	"time"
 )
 
 type TEST struct {
@@ -16,6 +17,7 @@ type TEST struct {
 	RUNE rune
 	BYTE byte
 	Arr  []int
+	Tm   time.Time
 }
 
 type SUB struct {
@@ -169,6 +171,12 @@ func TestSetFieldValue(t *testing.T) {
 		sub: SUB{},
 		Arr: []int{11, 22, 33},
 	}
+
+	if err := SetFieldValue(&test, "Tm", "1988-03-01 13:02:11"); err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("%+v\n", test)
 
 	if err := SetFieldValue(&test, "RUNE", "1233335"); err != nil {
 		fmt.Println(err)

@@ -6,7 +6,6 @@ import (
 	"net/url"
 	"reflect"
 	"strconv"
-	"time"
 )
 
 func KindOf(v any) string {
@@ -121,90 +120,32 @@ func IsNil(i any) bool {
 }
 
 // check string format is email
-func IsEmail(str string) bool {
-	_, err := mail.ParseAddress(str)
+func IsEmail(s string) bool {
+	_, err := mail.ParseAddress(s)
 	return err == nil
 }
 
-func IsURL(str string) bool {
-	_, err := url.ParseRequestURI(str)
+func IsURL(s string) bool {
+	_, err := url.ParseRequestURI(s)
 	return err == nil
 }
 
-func IsDateTime(str string) bool {
-	var layouts = []string{
-		// standard
-		time.ANSIC,
-		time.UnixDate,
-		time.RubyDate,
-		time.RFC822,
-		time.RFC822Z,
-		time.RFC850,
-		time.RFC1123,
-		time.RFC1123Z,
-		time.RFC3339,
-		time.RFC3339Nano,
-		time.Kitchen,
-		// Handy time stamps.
-		time.Stamp,
-		time.StampMilli,
-		time.StampMicro,
-		time.StampNano,
-	}
-	for _, lo := range layouts {
-		if _, err := time.Parse(lo, str); err == nil {
-			return true
-		}
-	}
-	return false
+func IsDateTime(s string) bool {
+	_, ok := TryToDateTime(s)
+	return ok
 }
 
-func IsDateUS(str string) bool {
-	var layouts = []string{
-		"January 2, 2006",
-		"Jan 2, 2006",
-		"01/02/06",
-		"01/02/2006",
-		"Jan-02-06",
-	}
-	for _, lo := range layouts {
-		if _, err := time.Parse(lo, str); err == nil {
-			return true
-		}
-	}
-	return false
+func IsDateUS(s string) bool {
+	_, ok := TryToDateUS(s)
+	return ok
 }
 
-func IsDateUK(str string) bool {
-	var layouts = []string{
-		"2 January, 2006",
-		"2 Jan, 2006",
-		"02/01/06",
-		"02/01/2006",
-		"02-Jan-06",
-	}
-	for _, lo := range layouts {
-		if _, err := time.Parse(lo, str); err == nil {
-			return true
-		}
-	}
-	return false
+func IsDateUK(s string) bool {
+	_, ok := TryToDateUK(s)
+	return ok
 }
 
-func IsTime(str string) bool {
-	var layouts = []string{
-		"15:04:05",
-		"3:04:05PM",
-		"3:04:05 PM",
-		"3:04:05pm",
-		"3:04:05 pm",
-		"3:04:05 P.M.",
-		"3:04:05 p.m.",
-	}
-	for _, lo := range layouts {
-		if _, err := time.Parse(lo, str); err == nil {
-			return true
-		}
-	}
-	return false
+func IsTime(s string) bool {
+	_, ok := TryToTime(s)
+	return ok
 }

@@ -5,6 +5,7 @@ import (
 	"log"
 	"reflect"
 	"strings"
+	"time"
 	"unicode"
 )
 
@@ -97,15 +98,19 @@ func SetFieldValue(object any, field string, value any) (err error) {
 
 		if f := reflect.Indirect(ov).FieldByName(field); f.IsValid() {
 
-			switch f.Kind().String() {
+			fKind, fType := f.Kind().String(), f.Type().String()
+
+			switch fKind {
 			case "struct", "slice", "array", "map", "ptr", "interface":
-				f.Set(reflect.ValueOf(value))
-				return nil
+				if fType != "time.Time" {
+					f.Set(reflect.ValueOf(value))
+					return nil
+				}
 			}
 
 			///////////////////////////////////////////////////
 
-			switch f.Type().String() {
+			switch fType {
 
 			case "string":
 				if val, ok := AnyTryToType[string](value); ok {
@@ -205,8 +210,15 @@ func SetFieldValue(object any, field string, value any) (err error) {
 				}
 				goto ERR
 
+			case "time.Time":
+				if val, ok := AnyTryToType[time.Time](value); ok {
+					f.Set(reflect.ValueOf(val))
+					return nil
+				}
+				goto ERR
+
 			default:
-				log.Fatalf("need type [%v] for setting '%v' value @ [%v]", f.Type().String(), field, value)
+				log.Fatalf("need type [%v] for setting '%v' value @ [%v]", fType, field, value)
 			}
 		}
 	}

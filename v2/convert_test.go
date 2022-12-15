@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sync"
 	"testing"
+	"time"
 )
 
 func TestConstBytesToStr(t *testing.T) {
@@ -85,31 +86,71 @@ func TestAnyTryToType(t *testing.T) {
 	f, ok := AnyTryToType[float32]("1")
 	if ok {
 		fmt.Println(f + 100.0)
+	} else {
+		panic("")
 	}
 
 	u, ok := AnyTryToType[uint]("123")
 	if ok {
 		fmt.Println(u + 100.0)
+	} else {
+		panic("")
 	}
 
 	u64, ok := AnyTryToType[uint64]("123")
 	if ok {
 		fmt.Println(u64 + 100.0)
+	} else {
+		panic("")
 	}
 
 	c64, ok := AnyTryToType[complex64]("(2+3i)")
 	if ok {
 		fmt.Println(c64 + 100.0)
+	} else {
+		panic("")
 	}
 
 	c128, ok := AnyTryToType[complex128](2 + 3i)
 	if ok {
 		fmt.Println(c128 + 200.0)
+	} else {
+		panic("")
 	}
 
 	str, ok := AnyTryToType[string](2 + 3i)
 	if ok {
 		fmt.Println("hello " + str)
+	} else {
+		panic("")
 	}
 
+	boolean, ok := AnyTryToType[bool]("TRUE")
+	if ok {
+		fmt.Print("bool ")
+		fmt.Println(boolean)
+	} else {
+		panic("")
+	}
+
+	tm, ok := AnyTryToType[time.Time]("2022-12-16 09:11:51")
+	if ok {
+		fmt.Print("TM OK: ")
+		fmt.Println(tm)
+	} else {
+		panic("")
+	}
+}
+
+func TestTryToTime(t *testing.T) {
+	fmt.Println(time.Now())
+	if tm, ok := TryToDateTime("2022-12-16 09:11:51"); ok {
+		fmt.Println(tm)
+	}
+	if tm, ok := TryToDateTime("2022-12-16 09:11:51.0"); ok {
+		fmt.Println(tm)
+	}
+	if tm, ok := TryToDateTime("2022-12-16 09:11:51.123"); ok {
+		fmt.Println(tm)
+	}
 }
