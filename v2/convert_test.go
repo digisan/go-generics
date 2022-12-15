@@ -51,6 +51,10 @@ func TestSlcCvt(t *testing.T) {
 	s1 := AnysToTypes[int](s)
 	// s1 := s.([]int)
 	fmt.Println(Sum(s1...))
+
+	S := []any{"1", 2, "3", 4, "5"}
+	S1, ok := AnysTryToTypes[int](S)
+	fmt.Println(Sum(S1...), ok)
 }
 
 func TestSlc2Types(t *testing.T) {

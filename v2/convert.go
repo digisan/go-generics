@@ -133,6 +133,22 @@ func AnysToTypes[T any](s []any) []T {
 	return rt
 }
 
+func AnysTryToTypes[T any](s []any) ([]T, bool) {
+	if s == nil {
+		return nil, false
+	}
+	rt, flag := make([]T, 0, len(s)), true
+	for _, a := range s {
+		if r, ok := AnyTryToType[T](a); ok {
+			rt = append(rt, r)
+		} else {
+			rt = append(rt, *new(T))
+			flag = false
+		}
+	}
+	return rt, flag
+}
+
 // s(any) must be []any. T is return type. If return nil, convert failed
 func AnysAsAnyToTypes[T any](s any) []T {
 	if s == nil {
@@ -143,6 +159,17 @@ func AnysAsAnyToTypes[T any](s any) []T {
 		return AnysToTypes[T](v)
 	}
 	return nil
+}
+
+func AnysAsAnyTryToTypes[T any](s any) ([]T, bool) {
+	if s == nil {
+		return nil, false
+	}
+	switch v := s.(type) {
+	case []any:
+		return AnysTryToTypes[T](v)
+	}
+	return nil, false
 }
 
 // s(any) is any actual type of slice or array
