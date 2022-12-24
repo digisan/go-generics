@@ -83,6 +83,20 @@ func TestSlc2Anys(t *testing.T) {
 
 func TestAnyTryToType(t *testing.T) {
 
+	primitive, ok := AnyTryToType[float32]([]byte("123.0"))
+	if ok {
+		fmt.Println(primitive + 222)
+	} else {
+		panic("")
+	}
+
+	b, ok := AnyTryToType[[]byte](123)
+	if ok {
+		fmt.Println(b, "string as", string(b))
+	} else {
+		panic("")
+	}
+
 	f, ok := AnyTryToType[float32]("1")
 	if ok {
 		fmt.Println(f + 100.0)

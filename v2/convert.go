@@ -21,9 +21,16 @@ func ConstBytesToStr(b []byte) string {
 	return *(*string)(unsafe.Pointer(&b))
 }
 
+// if return type 'T' is []byte, then return value is v's printed string as []byte, NOT binary encoding
 func AnyTryToType[T any](v any) (T, bool) {
 
-	sv := fmt.Sprint(v)
+	sv := ""
+
+	if TypeOf(v) == "[]uint8" {
+		sv = ConstBytesToStr(v.([]byte))
+	} else {
+		sv = fmt.Sprint(v)
+	}
 
 	fv, errF := strconv.ParseFloat(sv, 64)
 	iv, errI := strconv.ParseInt(sv, 10, 64)
@@ -32,7 +39,8 @@ func AnyTryToType[T any](v any) (T, bool) {
 	cv, errC := strconv.ParseComplex(sv, 128)
 	tm, okT := TryToDateTime(sv)
 
-	switch fmt.Sprintf("%T", *new(T)) {
+	rType := fmt.Sprintf("%T", *new(T))
+	switch rType {
 
 	case "float64":
 		if errF == nil {
@@ -114,7 +122,7 @@ func AnyTryToType[T any](v any) (T, bool) {
 			return *(*T)(unsafe.Pointer(&r)), true
 		}
 
-	case "string":
+	case "string", "[]uint8":
 		return *(*T)(unsafe.Pointer(&sv)), true
 
 	case "time.Time":
