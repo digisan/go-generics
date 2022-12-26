@@ -1,6 +1,7 @@
 package v2
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"sort"
@@ -406,4 +407,27 @@ func MapFlatToNested(m map[string]any, fm func(path string, value any) (p string
 		}
 	}
 	return rt
+}
+
+func ObjsonToMap(o any) (map[string]any, error) {
+
+	data, err := json.Marshal(o)
+	if err != nil {
+		return nil, err
+	}
+
+	rt := make(map[string]any)
+	err = json.Unmarshal(data, &rt)
+	if err != nil {
+		return nil, err
+	}
+	return rt, nil
+}
+
+func ObjsonToFlatMap(o any) (map[string]any, error) {
+	m, err := ObjsonToMap(o)
+	if err != nil {
+		return nil, err
+	}
+	return MapNestedToFlat(m), nil
 }

@@ -638,3 +638,18 @@ func TestMapFlatToNested(t *testing.T) {
 		return path, value
 	}))
 }
+
+func TestObjsonToFlatMap(t *testing.T) {
+
+	type myStruct struct {
+		A int
+		B float64
+	}
+
+	myData := myStruct{
+		A: 100,
+		B: 0.123,
+	}
+
+	fmt.Println(ObjsonToFlatMap(myData))
+}
