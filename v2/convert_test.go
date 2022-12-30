@@ -2,6 +2,7 @@ package v2
 
 import (
 	"fmt"
+	"reflect"
 	"sync"
 	"testing"
 	"time"
@@ -22,7 +23,7 @@ func TestMapCvt(t *testing.T) {
 		1: "11",
 		2: "22",
 	}
-	m1 := MapAnyToType[int, string](m)
+	m1 := MapCvtKVAnyToType[int, string](m)
 	// m1 := m.(map[int]string)
 	fmt.Println(m1[1] + m1[2])
 }
@@ -166,5 +167,71 @@ func TestTryToTime(t *testing.T) {
 	}
 	if tm, ok := TryToDateTime("2022-12-16 09:11:51.123"); ok {
 		fmt.Println(tm)
+	}
+}
+
+func TestMapToValAny(t *testing.T) {
+	type args struct {
+		m map[int]int
+	}
+	tests := []struct {
+		name string
+		args args
+		want map[int]any
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				m: map[int]int{
+					1: 1,
+					2: 2,
+					3: 3,
+				},
+			},
+			want: map[int]any{
+				1: 1,
+				2: 2,
+				3: 3,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := MapCvtVTypeToAny(tt.args.m); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("MapToValAny() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestMapToArrValAny(t *testing.T) {
+	type args struct {
+		m map[int][]int
+	}
+	tests := []struct {
+		name string
+		args args
+		want map[int][]any
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				m: map[int][]int{
+					1: {1, 2, 3},
+					2: {4, 5, 6},
+				},
+			},
+			want: map[int][]any{
+				1: {1, 2, 3},
+				2: {4, 5, 6},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := MapCvtVTypesToAnys(tt.args.m); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("MapToArrValAny() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }

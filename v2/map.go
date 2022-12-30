@@ -123,39 +123,6 @@ func MapCopy[T1 comparable, T2 any](m map[T1]T2) map[T1]T2 {
 	return MapFilter(m, func(k T1, v T2) bool { return true })
 }
 
-// MapToValAny:
-func MapValTypeToAny[T1 comparable, T2 any](m map[T1]T2) map[T1]any {
-	rt := make(map[T1]any)
-	for k, v := range m {
-		rt[k] = v
-	}
-	return rt
-}
-
-func MapValAnyToType[T1 comparable, T2 any](m map[T1]any) map[T1]T2 {
-	rt := make(map[T1]T2)
-	for k, v := range m {
-		rt[k] = v.(T2)
-	}
-	return rt
-}
-
-func MapValTypesToAnys[T1 comparable, T2 any](m map[T1][]T2) map[T1][]any {
-	rt := make(map[T1][]any)
-	for k, v := range m {
-		rt[k] = SlcToAnys(v)
-	}
-	return rt
-}
-
-func MapValAnysToTypes[T1 comparable, T2 any](m map[T1][]any) map[T1][]T2 {
-	rt := make(map[T1][]T2)
-	for k, v := range m {
-		rt[k] = AnysToTypes[T2](v)
-	}
-	return rt
-}
-
 // e.g. [ nil, "", []int{}, XXX ptr(nil) ] are 'empty'
 // [ &[]int{}, &XXX{} ] are NOT 'empty'
 func MapAllValAreEmpty[T comparable](m map[T]any) bool {
@@ -430,4 +397,47 @@ func ObjsonToFlatMap(o any) (map[string]any, error) {
 		return nil, err
 	}
 	return MapNestedToFlat(m), nil
+}
+
+func FlatMapValTryToType[T any](m map[string]any, path string) (T, bool) {
+	if len(m) == 0 {
+		return *new(T), false
+	}
+	v, ok := m[path]
+	if !ok {
+		return *new(T), false
+	}
+	return AnyTryToType[T](v)
+}
+
+func FlatMapValsTryToTypes[T any](m map[string]any, path string) ([]T, bool) {
+	if len(m) == 0 {
+		return nil, false
+	}
+
+	// collect every path.idx to paths
+	paths := []string{}
+	prefix := path + "."
+	for k := range m {
+		if strings.HasPrefix(k, prefix) {
+			if IsUint(strings.TrimPrefix(k, prefix)) {
+				paths = append(paths, k)
+			}
+		}
+	}
+
+	sort.Slice(paths, func(i, j int) bool {
+		idxL, _ := AnyTryToType[uint](strings.TrimPrefix(paths[i], prefix))
+		idxR, _ := AnyTryToType[uint](strings.TrimPrefix(paths[j], prefix))
+		return idxL < idxR
+	})
+
+	rt := make([]T, len(paths))
+	var ok bool
+	for i, p := range paths {
+		if rt[i], ok = AnyTryToType[T](m[p]); !ok {
+			return nil, false
+		}
+	}
+	return rt, true
 }

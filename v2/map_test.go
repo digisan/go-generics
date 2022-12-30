@@ -308,72 +308,6 @@ func TestMapMerge4ValSlc(t *testing.T) {
 	}
 }
 
-func TestMapToValAny(t *testing.T) {
-	type args struct {
-		m map[int]int
-	}
-	tests := []struct {
-		name string
-		args args
-		want map[int]any
-	}{
-		// TODO: Add test cases.
-		{
-			args: args{
-				m: map[int]int{
-					1: 1,
-					2: 2,
-					3: 3,
-				},
-			},
-			want: map[int]any{
-				1: 1,
-				2: 2,
-				3: 3,
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := MapValTypeToAny(tt.args.m); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("MapToValAny() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestMapToArrValAny(t *testing.T) {
-	type args struct {
-		m map[int][]int
-	}
-	tests := []struct {
-		name string
-		args args
-		want map[int][]any
-	}{
-		// TODO: Add test cases.
-		{
-			args: args{
-				m: map[int][]int{
-					1: {1, 2, 3},
-					2: {4, 5, 6},
-				},
-			},
-			want: map[int][]any{
-				1: {1, 2, 3},
-				2: {4, 5, 6},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := MapValTypesToAnys(tt.args.m); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("MapToArrValAny() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func TestAllValuesAreEmpty(t *testing.T) {
 
 	type P struct {
@@ -644,12 +578,46 @@ func TestObjsonToFlatMap(t *testing.T) {
 	type myStruct struct {
 		A int
 		B float64
+		C []string
 	}
 
 	myData := myStruct{
 		A: 100,
 		B: 0.123,
+		C: []string{"11", "1.2", "43.76"},
 	}
 
-	fmt.Println(ObjsonToFlatMap(myData))
+	fm, err := ObjsonToFlatMap(myData)
+	if err != nil {
+		panic("Fatal: ObjsonToFlatMap")
+	}
+	fmt.Printf("%+v\n", fm)
+
+	fmt.Println(FlatMapValTryToType[float64](fm, "A"))
+	fmt.Println(FlatMapValsTryToTypes[float32](fm, "C"))
+}
+
+func TestMapValTryToType(t *testing.T) {
+
+	m := map[string]any{
+		"C1.0.z1":     "1000",
+		"C1.1.Z4.0":   "ab",
+		"C1.1.Z4.4.0": "real-final1",
+		"C1.1.Z4.4.1": "real-final2",
+		"C1.2a.0":     "777",
+		"C1.2a.1":     "666",
+	}
+
+	v, ok := FlatMapValTryToType[int](m, "C1.0.z1")
+	fmt.Println(ok)
+	fmt.Println(v)
+
+	v, ok = FlatMapValTryToType[int](m, "C1.2a.0")
+	fmt.Println(ok)
+	fmt.Println(v)
+
+	vs, ok := FlatMapValsTryToTypes[int](m, "C1.2a")
+	fmt.Println(ok)
+	fmt.Println(vs)
+
 }

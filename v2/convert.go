@@ -220,13 +220,45 @@ func MapToSyncMap[T1 comparable, T2 any](m map[T1]T2) sync.Map {
 	return rt
 }
 
-func MapAnyToType[T1 comparable, T2 any](m map[any]any) map[T1]T2 {
+func MapCvtKVAnyToType[T1 comparable, T2 any](m map[any]any) map[T1]T2 {
 	if m == nil {
 		return nil
 	}
 	rt := make(map[T1]T2)
 	for k, v := range m {
 		rt[k.(T1)] = v.(T2)
+	}
+	return rt
+}
+
+func MapCvtVTypeToAny[T1 comparable, T2 any](m map[T1]T2) map[T1]any {
+	rt := make(map[T1]any)
+	for k, v := range m {
+		rt[k] = v
+	}
+	return rt
+}
+
+func MapCvtVAnyToType[T1 comparable, T2 any](m map[T1]any) map[T1]T2 {
+	rt := make(map[T1]T2)
+	for k, v := range m {
+		rt[k] = v.(T2)
+	}
+	return rt
+}
+
+func MapCvtVTypesToAnys[T1 comparable, T2 any](m map[T1][]T2) map[T1][]any {
+	rt := make(map[T1][]any)
+	for k, v := range m {
+		rt[k] = SlcToAnys(v)
+	}
+	return rt
+}
+
+func MapCvtVAnysToTypes[T1 comparable, T2 any](m map[T1][]any) map[T1][]T2 {
+	rt := make(map[T1][]T2)
+	for k, v := range m {
+		rt[k] = AnysToTypes[T2](v)
 	}
 	return rt
 }
