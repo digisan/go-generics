@@ -14,6 +14,10 @@ type Ordered interface {
 		~uintptr | ~float32 | ~float64 | ~string
 }
 
+func AppendBytes(blocks ...[]byte) []byte {
+	return bytes.Join(blocks, []byte{})
+}
+
 func AppendIf[T any](ok bool, arr []T, elems ...T) []T {
 	if ok {
 		return append(arr, elems...)

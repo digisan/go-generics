@@ -172,6 +172,12 @@ func TestSetFieldValue(t *testing.T) {
 		Arr: []int{11, 22, 33},
 	}
 
+	if err := SetFieldValue(&test, "s", "1988-03-01 13:02:11"); err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("%+v\n", test)
+
 	if err := SetFieldValue(&test, "Tm", "1988-03-01 13:02:11"); err != nil {
 		fmt.Println(err)
 		return

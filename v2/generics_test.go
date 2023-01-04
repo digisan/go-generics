@@ -6,6 +6,10 @@ import (
 	"testing"
 )
 
+func TestAppendBytes(t *testing.T) {
+	fmt.Println(string(AppendBytes([]byte{49, 50, 51}, []byte{58, 36, 73, 100})))
+}
+
 func TestMaxMin(t *testing.T) {
 	{
 		type f32 float32
