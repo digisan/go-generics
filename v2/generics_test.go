@@ -10,6 +10,13 @@ func TestAppendBytes(t *testing.T) {
 	fmt.Println(string(AppendBytes([]byte{49, 50, 51}, []byte{58, 36, 73, 100})))
 }
 
+func TestCount(t *testing.T) {
+	arr := []int{1, 2, 3, 4, 1}
+	fmt.Println(Count(arr, 1))
+	fmt.Println(Count(arr, 3))
+	fmt.Println(Count(arr, 0))
+}
+
 func TestMaxMin(t *testing.T) {
 	{
 		type f32 float32

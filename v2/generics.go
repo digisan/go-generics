@@ -25,6 +25,18 @@ func AppendIf[T any](ok bool, arr []T, elems ...T) []T {
 	return arr
 }
 
+func Count[T comparable](arr []T, elem T) (n int) {
+	if len(arr) == 0 {
+		return 0
+	}
+	for _, a := range arr {
+		if a == elem {
+			n++
+		}
+	}
+	return
+}
+
 // last one @ idx=1; first one @ idx=len(arr)
 func Last[T any](arr []T, idx int) T {
 	if len(arr) == 0 {
