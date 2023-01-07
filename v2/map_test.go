@@ -604,8 +604,12 @@ func TestMapValTryToType(t *testing.T) {
 		"C1.1.Z4.0":   "ab",
 		"C1.1.Z4.4.0": "real-final1",
 		"C1.1.Z4.4.1": "real-final2",
-		"C1.2a.0":     "777",
 		"C1.2a.1":     "666",
+		"C1.2a.0":     "777",
+		"C1.3a.x.1":   "7277",
+		"C1.3a.x.0":   "2277",
+		"C1.3a.y.0":   "6466.2",
+		"C1.3a.y.1":   "6426.2",
 	}
 
 	v, ok := FlatMapValTryToType[int](m, "C1.0.z1")
@@ -620,4 +624,14 @@ func TestMapValTryToType(t *testing.T) {
 	fmt.Println(ok)
 	fmt.Println(vs)
 
+	vm, ok := FlatMapValsTryToMap[float32](m, "C1.3a")
+	fmt.Println(ok)
+	fmt.Println(vm)
+
+	vk := FlatMapSubKeys(m, "C1.3a")
+	fmt.Println(vk)
+
+	for _, k := range vk {
+		fmt.Println(FlatMapValsTryToTypes[float32](m, "C1.3a."+k))
+	}
 }

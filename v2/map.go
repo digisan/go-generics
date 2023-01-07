@@ -441,3 +441,55 @@ func FlatMapValsTryToTypes[T any](m map[string]any, path string) ([]T, bool) {
 	}
 	return rt, true
 }
+
+func FlatMapValsTryToMap[T any](m map[string]any, path string) (map[string]T, bool) {
+	if len(m) == 0 {
+		return nil, false
+	}
+
+	// collect every path.key to paths
+	paths := []string{}
+	prefix := path + "."
+	for k := range m {
+		if strings.HasPrefix(k, prefix) {
+			paths = append(paths, k)
+		}
+	}
+
+	rt := make(map[string]T)
+	var ok bool
+	for _, p := range paths {
+		k := strings.TrimPrefix(p, prefix)
+		if rt[k], ok = AnyTryToType[T](m[p]); !ok {
+			return nil, false
+		}
+	}
+	return rt, true
+}
+
+// e.g. m has "a.b.c.c1", "a.b.d.d1", path is "a.b", get "[c,d]"
+func FlatMapSubKeys(m map[string]any, path string) []string {
+	if len(m) == 0 {
+		return []string{}
+	}
+
+	// collect every path.key to paths
+	paths := []string{}
+	prefix := path + "."
+	for k := range m {
+		if strings.HasPrefix(k, prefix) {
+			paths = append(paths, k)
+		}
+	}
+
+	rt := []string{}
+	for _, p := range paths {
+		k := strings.TrimPrefix(p, prefix)
+		if pos := strings.Index(k, "."); pos != -1 {
+			rt = append(rt, k[:pos])
+		} else {
+			rt = append(rt, k)
+		}
+	}
+	return Settify(rt...)
+}
