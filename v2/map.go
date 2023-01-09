@@ -8,6 +8,16 @@ import (
 	"strings"
 )
 
+func MapVal[T1 comparable, T2 any](m map[T1]T2, key T1, defaultVal T2) T2 {
+	if len(m) == 0 {
+		return defaultVal
+	}
+	if val, ok := m[key]; ok {
+		return val
+	}
+	return defaultVal
+}
+
 // for Map2KVs
 type kv struct {
 	key any

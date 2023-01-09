@@ -7,6 +7,18 @@ import (
 	"testing"
 )
 
+func TestMapVal(t *testing.T) {
+	m := map[string]int{
+		"1": 111,
+		"2": 222,
+		"3": 333,
+	}
+	fmt.Println(MapVal(m, "3", 0))
+	fmt.Println(MapVal(m, "1", 0))
+	fmt.Println(MapVal(nil, "1", 0.55))
+	fmt.Println(MapVal(m, "4", 4))
+}
+
 func TestMapReplaceMerge(t *testing.T) {
 	type args struct {
 		ms []map[string]int
