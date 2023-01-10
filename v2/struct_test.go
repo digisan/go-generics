@@ -172,45 +172,45 @@ func TestSetFieldValue(t *testing.T) {
 		Arr: []int{11, 22, 33},
 	}
 
-	if err := SetFieldValue(&test, "s", "1988-03-01 13:02:11"); err != nil {
+	if err := SetField(&test, "s", "1988-03-01 13:02:11"); err != nil {
 		fmt.Println(err)
 		return
 	}
 	fmt.Printf("%+v\n", test)
 
-	if err := SetFieldValue(&test, "Tm", "1988-03-01 13:02:11"); err != nil {
+	if err := SetField(&test, "Tm", "1988-03-01 13:02:11"); err != nil {
 		fmt.Println(err)
 		return
 	}
 	fmt.Printf("%+v\n", test)
 
-	if err := SetFieldValue(&test, "RUNE", "1233335"); err != nil {
+	if err := SetField(&test, "RUNE", "1233335"); err != nil {
 		fmt.Println(err)
 		return
 	}
 	fmt.Printf("%+v\n", test)
 
 	testArr := []int{9, 8, 7}
-	if err := SetFieldValue(testArr, "1", 888); err != nil {
+	if err := SetField(testArr, "1", 888); err != nil {
 		fmt.Println(err)
 		return
 	}
 	fmt.Printf("%+v\n", testArr)
 
 	abc := ABC{}
-	if err := SetFieldValue(&abc, "A", 1000); err != nil {
+	if err := SetField(&abc, "A", 1000); err != nil {
 		fmt.Println(err)
 		return
 	}
 	fmt.Printf("%+v\n", abc)
 
-	// if err := SetFieldValue(&test, "BYTE", "1725.6"); err != nil {
+	// if err := SetField(&test, "BYTE", "1725.6"); err != nil {
 	// 	fmt.Println(err)
 	// 	return
 	// }
 	// fmt.Printf("%+v\n", test)
 
-	if err := SetFieldValue(&test, "NOFIELD", "NONONO"); err != nil {
+	if err := SetField(&test, "NOFIELD", "NONONO"); err != nil {
 		fmt.Println(err)
 		return
 	}

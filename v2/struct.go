@@ -66,7 +66,7 @@ func PathValue(object any, path string) (v any, err error) {
 }
 
 // field must be exported, AND param value type can be converted to field value type.
-func SetFieldValue(object any, field string, value any) (err error) {
+func SetField(object any, field string, value any) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = r.(error)
@@ -225,6 +225,72 @@ func SetFieldValue(object any, field string, value any) (err error) {
 
 ERR:
 	return fmt.Errorf("field '%v' failed to set value @ [%v]", field, value)
+}
+
+// set simple primitive
+func SetFieldViaFlatMap[T any](object any, fm map[string]any, field string) error {
+	if v, ok := FlatMapValTryToType[T](fm, field); ok {
+		if err := SetField(object, field, v); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("[%v] cannot be found or set as [%T]", field, *new(T))
+	}
+	return nil
+}
+
+// set primitive array or slice
+func SetFieldAsSlcViaFlatMap[T any](object any, fm map[string]any, field string) error {
+	if v, ok := FlatMapValsTryToTypes[T](fm, field); ok {
+		if err := SetField(object, field, v); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("[%v] cannot be found or set as [[]%T]", field, *new(T))
+	}
+	return nil
+}
+
+// set map of primitive key & value
+func SetFieldAsMapViaFlatMap[T1 comparable, T2 any](object any, fm map[string]any, field string) error {
+	m := make(map[T1]T2)
+	for _, k := range FlatMapSubKeys(fm, field) {
+		pk := field + "." + k
+		if v, ok := FlatMapValTryToType[T2](fm, pk); ok {
+			if key, ok := AnyTryToType[T1](k); ok {
+				m[key] = v
+			} else {
+				return fmt.Errorf("map key cannot be converted to type %T", *new(T1))
+			}
+		} else {
+			return fmt.Errorf("[%v] cannot be found or set as [map[%T]%T]", field, *new(T1), *new(T2))
+		}
+	}
+	if len(m) > 0 {
+		return SetField(object, field, m)
+	}
+	return nil
+}
+
+// set map of primitive key & slice of primitive value
+func SetFieldAsSlcValMapViaFlatMap[T1 comparable, T2 any](object any, fm map[string]any, field string) error {
+	m := make(map[T1][]T2)
+	for _, k := range FlatMapSubKeys(fm, field) {
+		pk := field + "." + k
+		if v, ok := FlatMapValsTryToTypes[T2](fm, pk); ok {
+			if key, ok := AnyTryToType[T1](k); ok {
+				m[key] = v
+			} else {
+				return fmt.Errorf("map key cannot be converted to type %T", *new(T1))
+			}
+		} else {
+			return fmt.Errorf("[%v] cannot be found or set as [map[%T][]%T]", field, *new(T1), *new(T2))
+		}
+	}
+	if len(m) > 0 {
+		return SetField(object, field, m)
+	}
+	return nil
 }
 
 // func PartialAsMap(object any, fields ...string) (any, error) {
