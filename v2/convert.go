@@ -201,6 +201,16 @@ func SlcToTypes[T any](s any) []T {
 	return AnysToTypes[T](SlcToAnys(s))
 }
 
+func SlcToPtrSlc[T any](s ...T) (rt []*T) {
+	if s == nil {
+		return nil
+	}
+	for i := 0; i < len(s); i++ {
+		rt = append(rt, &s[i])
+	}
+	return rt
+}
+
 /////////////////////////////////////////////////////////////////
 
 func SyncMapToMap[T1 comparable, T2 any](sm sync.Map) map[T1]T2 {

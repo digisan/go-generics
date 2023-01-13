@@ -80,6 +80,9 @@ func TestSlc2Anys(t *testing.T) {
 	s2 := []string{"a1", "b2", "c3", "d4", "e5", "f6", "g7", "h8"}
 	gs2 := SlcToAnys(s2)
 	fmt.Println(gs2)
+
+	addresses := SlcToPtrSlc(s2...)
+	fmt.Println(addresses)
 }
 
 func TestAnyTryToType(t *testing.T) {
