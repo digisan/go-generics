@@ -228,7 +228,7 @@ ERR:
 }
 
 // set simple primitive
-func SetFieldViaFlatMap[T any](object any, fm map[string]any, field string) error {
+func FlatMapSetField[T any](fm map[string]any, object any, field string) error {
 	if v, ok := FlatMapValTryToType[T](fm, field); ok {
 		if err := SetField(object, field, v); err != nil {
 			return err
@@ -240,7 +240,7 @@ func SetFieldViaFlatMap[T any](object any, fm map[string]any, field string) erro
 }
 
 // set primitive array or slice
-func SetFieldAsSlcViaFlatMap[T any](object any, fm map[string]any, field string) error {
+func FlatMapSetFieldAsSlc[T any](fm map[string]any, object any, field string) error {
 	if v, ok := FlatMapValsTryToTypes[T](fm, field); ok {
 		if err := SetField(object, field, v); err != nil {
 			return err
@@ -252,7 +252,7 @@ func SetFieldAsSlcViaFlatMap[T any](object any, fm map[string]any, field string)
 }
 
 // set map of primitive key & value
-func SetFieldAsMapViaFlatMap[T1 comparable, T2 any](object any, fm map[string]any, field string) error {
+func FlatMapSetFieldAsMap[T1 comparable, T2 any](fm map[string]any, object any, field string) error {
 	m := make(map[T1]T2)
 	for _, k := range FlatMapSubKeys(fm, field) {
 		pk := field + "." + k
@@ -273,7 +273,7 @@ func SetFieldAsMapViaFlatMap[T1 comparable, T2 any](object any, fm map[string]an
 }
 
 // set map of primitive key & slice of primitive value
-func SetFieldAsSlcValMapViaFlatMap[T1 comparable, T2 any](object any, fm map[string]any, field string) error {
+func FlatMapSetFieldAsSlcValMap[T1 comparable, T2 any](fm map[string]any, object any, field string) error {
 	m := make(map[T1][]T2)
 	for _, k := range FlatMapSubKeys(fm, field) {
 		pk := field + "." + k
