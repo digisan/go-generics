@@ -73,6 +73,7 @@ func TestSlc2Types(t *testing.T) {
 }
 
 func TestSlc2Anys(t *testing.T) {
+	
 	s1 := []int{1, 2, 3, 4, 5, 6, 7, 8}
 	gs1 := SlcToAnys(s1)
 	fmt.Println(gs1)
@@ -80,9 +81,26 @@ func TestSlc2Anys(t *testing.T) {
 	s2 := []string{"a1", "b2", "c3", "d4", "e5", "f6", "g7", "h8"}
 	gs2 := SlcToAnys(s2)
 	fmt.Println(gs2)
+}
 
-	addresses := SlcToPtrSlc(s2...)
-	fmt.Println(addresses)
+func TestPtrSlcToSlc(t *testing.T) {
+
+	s1 := []int{1, 2, 3, 4, 5, 6, 7, 8}
+	s2 := []string{"a1", "b2", "c3", "d4", "e5", "f6", "g7", "h8"}
+
+	addressesInt := SlcToPtrSlc(s1...)
+	fmt.Println(addressesInt)
+
+	valsInt := PtrSlcToSlc(addressesInt...)
+	fmt.Println(valsInt)
+
+	///
+
+	addressesStr := SlcToPtrSlc(s2...)
+	fmt.Println(addressesStr)
+
+	valsStr := PtrSlcToSlc(addressesStr...)
+	fmt.Println(valsStr)
 }
 
 func TestAnyTryToType(t *testing.T) {
