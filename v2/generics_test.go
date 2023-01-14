@@ -1028,3 +1028,25 @@ func TestAppendIf(t *testing.T) {
 		})
 	}
 }
+
+func TestAllSameEle(t *testing.T) {
+	arrBool := []bool{true, true}
+	fmt.Println(AllSameEle(arrBool...))
+	fmt.Println(AllSameEleAs(arrBool, false))
+	fmt.Println(AllSameEleAs(arrBool, true))
+
+	arrBool = []bool{}
+	fmt.Println(AllSameEle(arrBool...))
+	fmt.Println(AllSameEleAs(arrBool, false))
+	fmt.Println(AllSameEleAs(arrBool, true))
+
+	arrBool = nil
+	fmt.Println(AllSameEle(arrBool...))
+	fmt.Println(AllSameEleAs(arrBool, false))
+	fmt.Println(AllSameEleAs(arrBool, true))
+
+	arrFloat := []float64{0, 0, 0, 0}
+	fmt.Println(AllSameEle(arrFloat...))
+	fmt.Println(AllSameEleAs(arrFloat, 0))
+	fmt.Println(AllSameEleAs(arrFloat, 0.0))
+}

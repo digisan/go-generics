@@ -37,6 +37,22 @@ func Count[T comparable](arr []T, elem T) (n int) {
 	return
 }
 
+func AllSameEle[T comparable](arr ...T) bool {
+	if len(arr) == 0 {
+		return false
+	}
+	for i := 1; i < len(arr); i++ {
+		if arr[0] != arr[i] {
+			return false
+		}
+	}
+	return true
+}
+
+func AllSameEleAs[T comparable](arr []T, e T) bool {
+	return AllSameEle(arr...) && arr[0] == e
+}
+
 // last one @ idx=1; first one @ idx=len(arr)
 func Last[T any](arr []T, idx int) T {
 	if len(arr) == 0 {
