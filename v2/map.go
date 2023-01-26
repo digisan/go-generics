@@ -201,6 +201,79 @@ func MapNestedToFlat(m map[string]any) map[string]any {
 	return flatMap
 }
 
+// primitives keep together at leaves
+// if string slice, use html escape symbols [&nbsp ;] (no space before ;) to replace space. use [&#9 ;] (no space before ;) to replace table.
+func MapNestedToHalfFlat(m map[string]any) (map[string]any, error) {
+
+	const (
+		S1 = "&nbsp;"
+		S2 = "&ensp;"
+		S4 = "&emsp;"
+		T  = "&#9;"
+	)
+
+	fm := MapNestedToFlat(m)
+
+	mPathCnt := make(map[string]int)
+	elePaths := []string{}
+
+	for path := range fm {
+		if p := strings.LastIndex(path, "."); p > -1 {
+			if _, ok := AnyTryToType[int](path[p+1:]); ok {
+				path2slc := path[:p]
+				mPathCnt[path2slc]++
+				// for deleting below
+				elePaths = append(elePaths, path)
+			}
+		}
+	}
+
+	// check slice path
+	for p1 := range mPathCnt {
+		for p2 := range mPathCnt {
+			if p1 != p2 && strings.HasPrefix(p1, p2+".") {
+				return nil, fmt.Errorf("cannot merge different type elements into one array, at '%v' with '%v'", p1, p2)
+			}
+		}
+	}
+
+	mPathSlc := make(map[string][]any)
+	for path, cnt := range mPathCnt {
+		mPathSlc[path] = make([]any, cnt)
+	}
+
+	for path, val := range fm {
+		for p := range mPathSlc {
+			prefix := p + "."
+			if strings.HasPrefix(path, prefix) {
+				if idx, ok := AnyTryToType[int](strings.TrimPrefix(path, prefix)); ok {
+					if TypeOf(val) == "string" {
+						val = strings.ReplaceAll(val.(string), "    ", S4)
+						val = strings.ReplaceAll(val.(string), "  ", S2)
+						val = strings.ReplaceAll(val.(string), " ", S1)
+						val = strings.ReplaceAll(val.(string), "\t", T)
+					}
+					mPathSlc[p][idx] = val
+				}
+			}
+		}
+	}
+
+	// delete element paths
+	for path := range fm {
+		if In(path, elePaths...) {
+			delete(fm, path)
+		}
+	}
+
+	// append slice elements
+	for p, s := range mPathSlc {
+		fm[p] = s
+	}
+
+	return fm, nil
+}
+
 ///////////////////////////////////////////////////////
 
 func MapTryToSlc[T1 comparable, T2 any](m map[T1]T2) ([]T2, bool) {
@@ -385,6 +458,8 @@ func MapFlatToNested(m map[string]any, fm func(path string, value any) (p string
 	}
 	return rt
 }
+
+///////////////////////////////////////////////////////
 
 func ObjsonToMap(o any) (map[string]any, error) {
 

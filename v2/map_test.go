@@ -399,7 +399,7 @@ func TestMapFlattenAndNested(t *testing.T) {
 					"n4": "final",
 					"arr": []map[string]any{
 						{
-							"z1": 1000,
+							"z1": 10000,
 							"Z3": "ABCDEFG",
 						},
 						{
@@ -470,7 +470,7 @@ func TestMapFlattenAndNested(t *testing.T) {
 		"C1.C2.Arr.1":                   1,
 		"C1.C2.ArrF.1":                  "B",
 		"P1":                            "ABC",
-		"C1.C2.C3.arr.0.z1":             1000,
+		"C1.C2.C3.arr.0.z1":             10000,
 		"C1.C2.C3.arr.1.Z4.0":           "ab",
 		"C1.C2.C3.arr.1.Z4.4.0":         "real-final1",
 		"C1.C2.C3.arr.1.Z4.4.1":         "real-final2",
@@ -490,6 +490,11 @@ func TestMapFlattenAndNested(t *testing.T) {
 
 	// fmt.Println("m1 == nm ?", reflect.DeepEqual(m1, nm))
 	fmt.Println("m1Str == nmStr ?", str1 == str2)
+	if str1 != str2 {
+		panic("Flat or Nested Error")
+	}
+
+	///////////////////////////////////////////////////
 }
 
 func TestMapTryToSlc(t *testing.T) {
@@ -645,5 +650,38 @@ func TestMapValTryToType(t *testing.T) {
 
 	for _, k := range vk {
 		fmt.Println(FlatMapValsTryToTypes[float32](m, "C1.3a."+k))
+	}
+}
+
+func TestHalfFlat(t *testing.T) {
+
+	m := map[string]any{
+		"P1": "ABC",
+		"C1": map[string]any{
+			"p2": "abc",
+			"c2": []float32{23, 45, -03},
+			"C2": map[string]any{
+				"p3":   nil,
+				"z3":   "ok",
+				"Arr":  []int{0, 1, 2},
+				"ArrF": []string{"A a", "B  b", "C    c", "D   d", "E	e"},
+			},
+		},
+	}
+
+	fm := MapNestedToFlat(m)
+	for path, val := range fm {
+		fmt.Println(path, val)
+	}
+
+	fmt.Println()
+
+	hfm, err := MapNestedToHalfFlat(m)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	for path, val := range hfm {
+		fmt.Println(path, val)
 	}
 }
