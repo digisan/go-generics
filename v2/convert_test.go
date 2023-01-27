@@ -73,7 +73,7 @@ func TestSlc2Types(t *testing.T) {
 }
 
 func TestSlc2Anys(t *testing.T) {
-	
+
 	s1 := []int{1, 2, 3, 4, 5, 6, 7, 8}
 	gs1 := SlcToAnys(s1)
 	fmt.Println(gs1)

@@ -378,7 +378,7 @@ func SetNestedMap[T comparable](m map[T]any, value any, kiSegs ...T) error {
 	return nil
 }
 
-// if fm return's 'p' is "", then ignore this (path-value) being into Nested.
+// if fm return 'p' is "", then ignore this (path-value) to be into Nested.
 func MapFlatToNested(m map[string]any, fm func(path string, value any) (p string, v any)) map[string]any {
 
 	// *** ERROR if put less segment path at top. if so, following short segment path may have bigger index
@@ -457,6 +457,29 @@ func MapFlatToNested(m map[string]any, fm func(path string, value any) (p string
 		}
 	}
 	return rt
+}
+
+// if fm return 'p' is "", then ignore this (path-value) to be into Nested.
+func MapHalfFlatToNested(m map[string]any, fm func(path string, value any) (p string, v any)) map[string]any {
+	const (
+		S1 = "&nbsp;"
+		S2 = "&ensp;"
+		S4 = "&emsp;"
+		T  = "&#9;"
+	)
+	return MapFlatToNested(m, func(path string, value any) (p string, v any) {
+		if ss, ok := AnysAsAnyTryToTypes[string](value); ok {
+			rt := make([]string, len(ss))
+			for i := 0; i < len(ss); i++ {
+				rt[i] = strings.ReplaceAll(ss[i], T, "\t")
+				rt[i] = strings.ReplaceAll(rt[i], S4, "    ")
+				rt[i] = strings.ReplaceAll(rt[i], S2, "  ")
+				rt[i] = strings.ReplaceAll(rt[i], S1, " ")
+			}
+			return fm(path, rt)
+		}
+		return fm(path, value)
+	})
 }
 
 ///////////////////////////////////////////////////////

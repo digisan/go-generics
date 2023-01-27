@@ -2,6 +2,7 @@ package v2
 
 import (
 	"fmt"
+	"log"
 	"net/mail"
 	"net/url"
 	"reflect"
@@ -74,10 +75,16 @@ type UInteger interface {
 }
 
 func IsArrOrSlc(v any) bool {
+	if v == nil {
+		return false
+	}
 	return In(reflect.TypeOf(v).Kind(), reflect.Slice, reflect.Array)
 }
 
 func LenOfMustArrOrSlc(v any) int {
+	if v == nil {
+		log.Fatalf("[%v] is NOT Slice or Array Type", v)
+	}
 	return reflect.ValueOf(v).Len()
 }
 

@@ -664,7 +664,7 @@ func TestHalfFlat(t *testing.T) {
 				"p3":   nil,
 				"z3":   "ok",
 				"Arr":  []int{0, 1, 2},
-				"ArrF": []string{"A a", "B  b", "C    c", "D   d", "E	e"},
+				"ArrF": []string{"A a", "B  b", "C    c", "D   d", "E	e", "F	 f"},
 			},
 		},
 	}
@@ -684,4 +684,24 @@ func TestHalfFlat(t *testing.T) {
 	for path, val := range hfm {
 		fmt.Println(path, val)
 	}
+
+	////////////////////////////////
+
+	fmt.Println()
+
+	nm := MapHalfFlatToNested(hfm, func(path string, value any) (p string, v any) {
+		
+		if path == "P1" {
+			return "", nil
+		}
+
+		fmt.Println("--->", path, value)
+		
+		return path, value
+	})
+
+	fmt.Println(nm)
+	fmt.Println(m)
+
+	fmt.Println()
 }

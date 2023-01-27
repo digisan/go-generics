@@ -226,3 +226,18 @@ func TestIsDate(t *testing.T) {
 	fmt.Println(time.Now().Format(time.RFC3339))
 	fmt.Println(time.Now().UTC().Format(time.RFC3339))
 }
+
+func TestIsArrOrSlc(t *testing.T) {
+
+	a := []any{1, 2, 3, []int{4, 5, 6}}
+	fmt.Println(IsArrOrSlc(a))
+
+	var b any = []any{1, 2, 3, []int{4, 5, 6}}
+	fmt.Println(IsArrOrSlc(b))
+
+	fmt.Println(IsArrOrSlc(nil))
+}
+
+func TestLenOfMustArrOrSlc(t *testing.T) {
+	fmt.Println(LenOfMustArrOrSlc(nil))
+}
