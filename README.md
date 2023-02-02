@@ -1,2 +1,4 @@
 # go-generics
-golang types template for common used function
+
+golang generics for common used function,
+should be the lowest level
