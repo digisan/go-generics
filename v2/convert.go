@@ -186,7 +186,7 @@ func AnysAsAnyTryToTypes[T any](s any) ([]T, bool) {
 }
 
 // s(any) is any actual type of slice or array
-func SlcToAnys(s any) (rt []any) {
+func TypesAsAnyToAnys(s any) (rt []any) {
 	if IsArrOrSlc(s) {
 		s := reflect.ValueOf(s)
 		for i := 0; i < s.Len(); i++ {
@@ -197,8 +197,12 @@ func SlcToAnys(s any) (rt []any) {
 }
 
 // s(any) is any actual type of slice or array, T is return type
-func SlcToTypes[T any](s any) []T {
-	return AnysToTypes[T](SlcToAnys(s))
+func TypesAsAnyToTypes[T any](s any) []T {
+	return AnysToTypes[T](TypesAsAnyToAnys(s))
+}
+
+func TypesAsAnyTryToTypes[T any](s any) ([]T, bool) {
+	return AnysTryToTypes[T](TypesAsAnyToAnys(s))
 }
 
 func SlcToPtrSlc[T any](s ...T) (rt []*T) {
@@ -270,7 +274,7 @@ func MapCvtVAnyToType[T1 comparable, T2 any](m map[T1]any) map[T1]T2 {
 func MapCvtVTypesToAnys[T1 comparable, T2 any](m map[T1][]T2) map[T1][]any {
 	rt := make(map[T1][]any)
 	for k, v := range m {
-		rt[k] = SlcToAnys(v)
+		rt[k] = TypesAsAnyToAnys(v)
 	}
 	return rt
 }

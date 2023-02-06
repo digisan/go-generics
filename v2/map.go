@@ -187,7 +187,7 @@ func dumpMap(pk string, v any, mflat *map[string]any) {
 				(*mflat)[pk] = m
 			}
 
-			for i, a := range SlcToAnys(m) {
+			for i, a := range TypesAsAnyToAnys(m) {
 				idx := fmt.Sprintf("%s.%d", pk, i)
 				dumpMap(idx, a, mflat)
 			}

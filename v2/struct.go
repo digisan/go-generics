@@ -33,7 +33,7 @@ func FieldValue(object any, field string) (any, error) {
 	}()
 
 	if IsArrOrSlc(object) {
-		arr := SlcToAnys(object)
+		arr := TypesAsAnyToAnys(object)
 		idx, ok := AnyTryToType[int](field)
 		if !ok {
 			return nil, fmt.Errorf("field for array must be number")
@@ -80,7 +80,7 @@ func SetField(object any, field string, value any) (err error) {
 		if !ok {
 			return fmt.Errorf("field for array must be number")
 		}
-		if idx >= len(SlcToAnys(object)) {
+		if idx >= len(TypesAsAnyToAnys(object)) {
 			return fmt.Errorf("field(idx) is out of range of object(array/slice)")
 		}
 		if e := ov.Index(idx); e.IsValid() {

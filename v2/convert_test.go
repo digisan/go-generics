@@ -62,11 +62,15 @@ func TestSlcCvt(t *testing.T) {
 func TestSlc2Types(t *testing.T) {
 	s := []int{1, 2, 3, 4, 5, 6, 7, 8}
 
-	s1 := SlcToTypes[int](s)
-	fmt.Println(Sum(s1...))
+	s1, ok1 := TypesAsAnyTryToTypes[uint16](s)
+	if ok1 {
+		fmt.Println(Sum(s1...))
+	}
 
-	s2 := Nums2Floats(s1...)
-	fmt.Println(Sum(s2...))
+	s3, ok3 := TypesAsAnyTryToTypes[float32](s1)
+	if ok3 {
+		fmt.Println(Sum(s3...))
+	}
 
 	// s2 := s.([]int)
 	// fmt.Println(Sum(s2...))
@@ -75,11 +79,11 @@ func TestSlc2Types(t *testing.T) {
 func TestSlc2Anys(t *testing.T) {
 
 	s1 := []int{1, 2, 3, 4, 5, 6, 7, 8}
-	gs1 := SlcToAnys(s1)
+	gs1 := TypesAsAnyToAnys(s1)
 	fmt.Println(gs1)
 
 	s2 := []string{"a1", "b2", "c3", "d4", "e5", "f6", "g7", "h8"}
-	gs2 := SlcToAnys(s2)
+	gs2 := TypesAsAnyToAnys(s2)
 	fmt.Println(gs2)
 }
 
