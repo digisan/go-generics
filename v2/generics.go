@@ -78,6 +78,42 @@ func Max[T Ordered](arr ...T) T {
 	return m
 }
 
+func MaxCeiling[T Ordered](ceiling T, close bool, arr ...T) (m T, ok bool) {
+	if len(arr) == 0 {
+		panic("Max args at least has one element")
+	}
+	var idx int
+	m = arr[0]
+	if close {
+		for i, a := range arr {
+			if a <= ceiling {
+				idx, m = i, a
+				ok = true
+				break
+			}
+		}
+		for _, a := range arr[idx:] {
+			if a > m && a <= ceiling {
+				m = a
+			}
+		}
+	} else {
+		for i, a := range arr {
+			if a < ceiling {
+				idx, m = i, a
+				ok = true
+				break
+			}
+		}
+		for _, a := range arr[idx:] {
+			if a > m && a < ceiling {
+				m = a
+			}
+		}
+	}
+	return
+}
+
 // ***
 func MaxIdx[T Ordered](arr ...T) (T, int) {
 	if len(arr) == 0 {
@@ -105,6 +141,42 @@ func Min[T Ordered](arr ...T) T {
 		}
 	}
 	return m
+}
+
+func MinFloor[T Ordered](floor T, close bool, arr ...T) (m T, ok bool) {
+	if len(arr) == 0 {
+		panic("Min args at least has one element")
+	}
+	var idx int
+	m = arr[0]
+	if close {
+		for i, a := range arr {
+			if a >= floor {
+				idx, m = i, a
+				ok = true
+				break
+			}
+		}
+		for _, a := range arr[idx:] {
+			if a < m && a >= floor {
+				m = a
+			}
+		}
+	} else {
+		for i, a := range arr {
+			if a > floor {
+				idx, m = i, a
+				ok = true
+				break
+			}
+		}
+		for _, a := range arr[idx:] {
+			if a < m && a > floor {
+				m = a
+			}
+		}
+	}
+	return
 }
 
 // ***

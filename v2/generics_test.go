@@ -1050,3 +1050,119 @@ func TestAllSameEle(t *testing.T) {
 	fmt.Println(AllSameEleAs(arrFloat, 0))
 	fmt.Println(AllSameEleAs(arrFloat, 0.0))
 }
+
+func TestMaxCeiling(t *testing.T) {
+	type args struct {
+		ceiling int
+		arr     []int
+	}
+	tests := []struct {
+		name   string
+		args   args
+		wantM  int
+		wantOk bool
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				ceiling: 10,
+				arr:     []int{3, 5, 33, 2, 1, 12, 66},
+			},
+			wantM:  5,
+			wantOk: true,
+		},
+		{
+			args: args{
+				ceiling: -1,
+				arr:     []int{3, 5, 33, 2, 1, 12, 66},
+			},
+			wantM:  3,
+			wantOk: false,
+		},
+		{
+			args: args{
+				ceiling: 60,
+				arr:     []int{60, 3, 5, 33, 2, 1, 12, 66, 59},
+			},
+			wantM:  59,
+			wantOk: true,
+		},
+		{
+			args: args{
+				ceiling: 50,
+				arr:     []int{60},
+			},
+			wantM:  60,
+			wantOk: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotM, gotOk := MaxCeiling(tt.args.ceiling, false, tt.args.arr...)
+			if !reflect.DeepEqual(gotM, tt.wantM) {
+				t.Errorf("MaxCeiling() gotM = %v, want %v", gotM, tt.wantM)
+			}
+			if gotOk != tt.wantOk {
+				t.Errorf("MaxCeiling() gotOk = %v, want %v", gotOk, tt.wantOk)
+			}
+		})
+	}
+}
+
+func TestMinFloor(t *testing.T) {
+	type args struct {
+		floor int
+		arr   []int
+	}
+	tests := []struct {
+		name   string
+		args   args
+		wantM  int
+		wantOk bool
+	}{
+		// TODO: Add test cases.
+		{
+			args: args{
+				floor: 10,
+				arr:   []int{3, 5, 33, 2, 1, 12, 66, 10},
+			},
+			wantM:  10,
+			wantOk: true,
+		},
+		{
+			args: args{
+				floor: 60,
+				arr:   []int{3, 5, 33, 2, 1, 12, 66},
+			},
+			wantM:  66,
+			wantOk: true,
+		},
+		{
+			args: args{
+				floor: 90,
+				arr:   []int{3, 5, 33, 2, 1, 12, 66},
+			},
+			wantM:  3,
+			wantOk: false,
+		},
+		{
+			args: args{
+				floor: 4,
+				arr:   []int{3},
+			},
+			wantM:  3,
+			wantOk: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotM, gotOk := MinFloor(tt.args.floor, true, tt.args.arr...)
+			if !reflect.DeepEqual(gotM, tt.wantM) {
+				t.Errorf("MinFloor() gotM = %v, want %v", gotM, tt.wantM)
+			}
+			if gotOk != tt.wantOk {
+				t.Errorf("MinFloor() gotOk = %v, want %v", gotOk, tt.wantOk)
+			}
+		})
+	}
+}
