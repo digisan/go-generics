@@ -65,6 +65,8 @@ func IterToSlc[T Integer](params ...T) (slc []T) {
 	return
 }
 
+////////////////////////////////////////////////////////////////////////
+
 type Pair[T any] struct {
 	a      T
 	b      T
@@ -74,40 +76,43 @@ type Pair[T any] struct {
 	validB bool
 }
 
-// 1,2,3,4... => (1,2), (2,3), (3,4)...
-func IterPair[T any](params ...T) <-chan Pair[T] {
+// 1,2,3,4 => (1,2), (2,3), (3,4), (4, junk)
+func IterPair[T any](data []T) <-chan Pair[T] {
 	ch := make(chan Pair[T])
 	go func() {
 		defer close(ch)
-		if len(params) > 1 {
-			for i, p := range params[1:] {
+		switch {
+		case len(data) >= 2:
+			for i, p := range data[1:] {
 				ch <- Pair[T]{
-					a:      params[i],
+					a:      data[i],
 					b:      p,
 					first:  IF(i == 0, true, false),
-					last:   IF(i == len(params)-2, true, false),
+					last:   false,
 					validA: true,
 					validB: true,
 				}
 			}
 			ch <- Pair[T]{
-				a:      params[len(params)-1],
+				a:      data[len(data)-1],
 				b:      *new(T),
 				first:  false,
 				last:   true,
 				validA: true,
 				validB: false,
 			}
-		} else if len(params) == 1 {
+
+		case len(data) == 1:
 			ch <- Pair[T]{
-				a:      params[0],
+				a:      data[0],
 				b:      *new(T),
 				first:  true,
 				last:   true,
 				validA: true,
 				validB: false,
 			}
-		} else {
+
+		default:
 			ch <- Pair[T]{
 				a:      *new(T),
 				b:      *new(T),
@@ -121,59 +126,152 @@ func IterPair[T any](params ...T) <-chan Pair[T] {
 	return ch
 }
 
-// type Triple[T any] struct {
-// 	a     T
-// 	b     T
-// 	c     T
-// 	first bool
-// 	last  bool
-// 	ok    bool
-// }
+type Triple[T any] struct {
+	a      T
+	b      T
+	c      T
+	first  bool
+	last   bool
+	validA bool
+	validB bool
+	validC bool
+}
 
-// // 1,2,3,4,5,6,7... => (1,2,3), (2,3,4), (3,4,5)...
-// func IterTriple[T any](params ...T) <-chan Triple[T] {
-// 	ch := make(chan Triple[T])
-// 	go func() {
-// 		defer close(ch)
-// 		if len(params) > 2 {
-// 			for i, p := range params[2:] {
-// 				ch <- Triple[T]{
-// 					a:     params[i],
-// 					b:     params[i+1],
-// 					c:     p,
-// 					first: IF(i == 0, true, false),
-// 					last:  IF(i == len(params)-3, true, false),
-// 					ok:    true,
-// 				}
-// 			}
-// 		} else if len(params) == 2 {
-// 			ch <- Triple[T]{
-// 				a:     *new(T),
-// 				b:     params[0],
-// 				c:     params[1],
-// 				first: true,
-// 				last:  true,
-// 				ok:    false,
-// 			}
-// 		} else if len(params) == 1 {
-// 			ch <- Triple[T]{
-// 				a:     *new(T),
-// 				b:     *new(T),
-// 				c:     params[0],
-// 				first: true,
-// 				last:  true,
-// 				ok:    false,
-// 			}
-// 		} else {
-// 			ch <- Triple[T]{
-// 				a:     *new(T),
-// 				b:     *new(T),
-// 				c:     *new(T),
-// 				first: false,
-// 				last:  false,
-// 				ok:    false,
-// 			}
-// 		}
-// 	}()
-// 	return ch
-// }
+// 1,2,3,4 => (1,2,3), (2,3,4), (3,4,junk), (4,junk,junk)
+func IterTriple[T any](data []T) <-chan Triple[T] {
+	ch := make(chan Triple[T])
+	go func() {
+		defer close(ch)
+		switch {
+		case len(data) >= 3:
+			for i, p := range data[2:] {
+				ch <- Triple[T]{
+					a:      data[i],
+					validA: true,
+					b:      data[i+1],
+					validB: true,
+					c:      p,
+					validC: true,
+					first:  IF(i == 0, true, false),
+					last:   false,
+				}
+			}
+			ch <- Triple[T]{
+				a:      data[len(data)-2],
+				validA: true,
+				b:      data[len(data)-1],
+				validB: true,
+				c:      *new(T),
+				validC: false,
+				first:  false,
+				last:   false,
+			}
+			ch <- Triple[T]{
+				a:      data[len(data)-1],
+				validA: true,
+				b:      *new(T),
+				validB: false,
+				c:      *new(T),
+				validC: false,
+				first:  false,
+				last:   true,
+			}
+
+		case len(data) == 2:
+			ch <- Triple[T]{
+				a:      data[0],
+				validA: true,
+				b:      data[1],
+				validB: true,
+				c:      *new(T),
+				validC: false,
+				first:  true,
+				last:   false,
+			}
+			ch <- Triple[T]{
+				a:      data[1],
+				validA: true,
+				b:      *new(T),
+				validB: false,
+				c:      *new(T),
+				validC: false,
+				first:  false,
+				last:   true,
+			}
+
+		case len(data) == 1:
+			ch <- Triple[T]{
+				a:      data[0],
+				validA: true,
+				b:      *new(T),
+				validB: false,
+				c:      *new(T),
+				validC: false,
+				first:  true,
+				last:   true,
+			}
+
+		default:
+			ch <- Triple[T]{
+				a:      *new(T),
+				validA: false,
+				b:      *new(T),
+				validB: false,
+				c:      *new(T),
+				validC: false,
+				first:  false,
+				last:   false,
+			}
+		}
+	}()
+	return ch
+}
+
+type Cache[T any] struct {
+	elem  T
+	cache []T
+	first bool
+	last  bool
+}
+
+func IterCache[T any](data []T, nPrev, nNext int, junk T) <-chan Cache[T] {
+	ch := make(chan Cache[T])
+	go func() {
+		defer close(ch)
+		for i, e := range data {
+			var (
+				cache     []T
+				idxS      int
+				idxE      int
+				nHeadJunk = 0
+				nTailJunk = 0
+				headJunk  []T
+				tailJunk  []T
+			)
+			if i-nPrev < 0 {
+				nHeadJunk = nPrev - i
+				for i := 0; i < nHeadJunk; i++ {
+					headJunk = append(headJunk, junk)
+				}
+			}
+			if i+nNext >= len(data) {
+				nTailJunk = i + nNext - len(data) + 1
+				for i := 0; i < nTailJunk; i++ {
+					tailJunk = append(tailJunk, junk)
+				}
+			}
+			idxS = IF(i-nPrev >= 0, i-nPrev, 0)
+			idxE = IF(i+nNext < len(data), i+nNext+1, len(data))
+			cache = append(cache, headJunk...)
+			cache = append(cache, data[idxS:idxE]...)
+			cache = append(cache, tailJunk...)
+			ch <- Cache[T]{
+				elem:  e,
+				cache: cache,
+				first: IF(i == 0, true, false),
+				last:  IF(i == len(data)-1, true, false),
+			}
+		}
+	}()
+	return ch
+}

@@ -323,7 +323,7 @@ func SetNestedMap[T comparable](m map[T]any, value any, kiSegs ...T) error {
 	}
 
 	var pM any = m
-	for pair := range IterPair(kiSegs...) {
+	for pair := range IterPair(kiSegs) {
 
 		if ki := pair.a; pair.validA {
 
