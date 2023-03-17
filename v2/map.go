@@ -325,13 +325,13 @@ func SetNestedMap[T comparable](m map[T]any, value any, kiSegs ...T) error {
 	var pM any = m
 	for pair := range IterPair(kiSegs) {
 
-		if ki := pair.a; pair.validA {
+		if ki := pair.A; pair.ValidA {
 
-			if pair.first && IsNumeric(ki) {
+			if pair.First && IsNumeric(ki) {
 				return fmt.Errorf("cannot set nested map on 1st level key as number, (want to set a slice?)")
 			}
 
-			if pair.last && !pair.validB {
+			if pair.Last && !pair.ValidB {
 
 				if !IsUint(ki) {
 					pM.(map[T]any)[ki] = value
@@ -343,29 +343,29 @@ func SetNestedMap[T comparable](m map[T]any, value any, kiSegs ...T) error {
 			} else {
 
 				switch {
-				case !IsUint(ki) && !IsUint(pair.b): // e.g. "A", "B"
+				case !IsUint(ki) && !IsUint(pair.B): // e.g. "A", "B"
 					if _, ok := pM.(map[T]any)[ki]; !ok {
 						pM.(map[T]any)[ki] = make(map[T]any)
 					}
 					pM = pM.(map[T]any)[ki]
 
-				case !IsUint(ki) && IsUint(pair.b): // e.g. "B", "0"
-					idx, _ := AnyTryToType[int](pair.b)
+				case !IsUint(ki) && IsUint(pair.B): // e.g. "B", "0"
+					idx, _ := AnyTryToType[int](pair.B)
 					if _, ok := pM.(map[T]any)[ki]; !ok {
 						pM.(map[T]any)[ki] = InitSlice(idx + 1) // here once only, allocate enough space
 					}
 					pM = pM.(map[T]any)[ki]
 
-				case IsUint(ki) && !IsUint(pair.b): // e.g. "0", "C"
+				case IsUint(ki) && !IsUint(pair.B): // e.g. "0", "C"
 					idx, _ := AnyTryToType[int](ki)
 					if pM.([]any)[idx] == struct{}{} {
 						pM.([]any)[idx] = make(map[T]any)
 					}
 					pM = pM.([]any)[idx]
 
-				case IsUint(ki) && IsUint(pair.b): // e.g. "0", "1"
+				case IsUint(ki) && IsUint(pair.B): // e.g. "0", "1"
 					idx1, _ := AnyTryToType[int](ki)
-					idx2, _ := AnyTryToType[int](pair.b)
+					idx2, _ := AnyTryToType[int](pair.B)
 					if pM.([]any)[idx1] == struct{}{} {
 						pM.([]any)[idx1] = InitSlice(idx2 + 1) // here once only, allocate enough space
 					}
