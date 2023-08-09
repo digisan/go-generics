@@ -6,16 +6,31 @@ import (
 	"sync"
 	"testing"
 	"time"
+	"unsafe"
 )
 
 func TestConstBytesToStr(t *testing.T) {
 	bytes := []byte{65, 66, 67}
-	fmt.Println(ConstBytesToStr(bytes))
+	str := ConstBytesToStr(bytes)
+	fmt.Println(str)
+	bPtr := unsafe.SliceData(bytes)
+	sPtr := unsafe.StringData(str)
+	fmt.Printf("%p %p\n", bPtr, sPtr)
+	if bPtr != sPtr {
+		panic("error")
+	}
 }
 
 func TestStrToConstBytes(t *testing.T) {
 	str := "ABC"
-	fmt.Println(StrToConstBytes(str))
+	bytes := StrToConstBytes(str)
+	fmt.Println(bytes)
+	bPtr := unsafe.SliceData(bytes)
+	sPtr := unsafe.StringData(str)
+	fmt.Printf("%p %p\n", bPtr, sPtr)
+	if bPtr != sPtr {
+		panic("error")
+	}
 }
 
 func TestMapCvt(t *testing.T) {

@@ -10,10 +10,7 @@ import (
 
 // StrToConstBytes converts string to byte slice without a memory allocation.
 func StrToConstBytes(s string) (b []byte) {
-	sh := *(*reflect.StringHeader)(unsafe.Pointer(&s))
-	bh := (*reflect.SliceHeader)(unsafe.Pointer(&b))
-	bh.Data, bh.Len, bh.Cap = sh.Data, sh.Len, sh.Len
-	return b
+	return unsafe.Slice(unsafe.StringData(s), len(s))
 }
 
 // ConstBytesToStr converts byte slice to string without a memory allocation.
