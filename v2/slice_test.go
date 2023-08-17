@@ -34,11 +34,15 @@ func TestSetNestedSlice(t *testing.T) {
 
 func TestInitNestedSlice(t *testing.T) {
 
-	slc := InitSlice(5, 2, 2)
-	fmt.Println(slc)
+	slc := InitSlice(5, 2, 2, 1)
+	fmt.Printf("%+v\n", slc)
 
-	SetSlice(slc, "OK0", 2, 1, 0)
-	SetSlice(slc, "OK1", 1, 0, 0)
+	if !SetSlice(slc, "OK0", 2, 1, 0, 0) {
+		panic("Error SetSlice OK0")
+	}
+	if !SetSlice(slc, "OK1", 1, 0, 1, 0) {
+		panic("Error SetSlice OK1")
+	}
 
-	fmt.Println(slc)
+	fmt.Printf("%+v\n", slc)
 }

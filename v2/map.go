@@ -160,12 +160,12 @@ func MapAllValAreEmpty[T comparable](m map[T]any) bool {
 	return true
 }
 
-func dumpMap(pk string, v any, mflat *map[string]any) {
+func dumpMap(pk string, v any, mFlat *map[string]any) {
 
 	switch m := v.(type) {
 
 	case float64, float32, string, bool, int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64, complex64, complex128, nil, struct{}:
-		(*mflat)[pk] = m
+		(*mFlat)[pk] = m
 
 	case map[string]any:
 		{
@@ -173,7 +173,7 @@ func dumpMap(pk string, v any, mflat *map[string]any) {
 				if pk != "" {
 					k = fmt.Sprintf("%s.%s", pk, k)
 				}
-				dumpMap(k, v, mflat)
+				dumpMap(k, v, mFlat)
 			}
 		}
 
@@ -184,12 +184,12 @@ func dumpMap(pk string, v any, mflat *map[string]any) {
 
 			// empty slice or array is leaf
 			if LenOfMustArrOrSlc(m) == 0 {
-				(*mflat)[pk] = m
+				(*mFlat)[pk] = m
 			}
 
 			for i, a := range TypesAsAnyToAnys(m) {
 				idx := fmt.Sprintf("%s.%d", pk, i)
-				dumpMap(idx, a, mflat)
+				dumpMap(idx, a, mFlat)
 			}
 		}
 	}
@@ -202,7 +202,7 @@ func MapNestedToFlat(m map[string]any) map[string]any {
 }
 
 // primitives keep together at leaves
-// if string slice, use html escape symbols [&nbsp ;] (no space before ;) to replace space. use [&#9 ;] (no space before ;) to replace table.
+// if string slice, use html escape symbols [&nbsp;] to replace space. use [&#9;] to replace table.
 func MapNestedToHalfFlat(m map[string]any) (map[string]any, error) {
 
 	const (

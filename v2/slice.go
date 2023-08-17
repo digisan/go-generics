@@ -82,27 +82,29 @@ func initSlice(slc *any, caps ...int) {
 	}
 }
 
+// init multiple dimension slice
 func InitSlice(caps ...int) []any {
 	var slc any = []any{}
 	initSlice(&slc, caps...)
 	return slc.([]any)
 }
 
-// slc must have enough capacity for all element
-func SetSlice(slc []any, value any, idxSegs ...any) (ok bool) {
-	if len(idxSegs) == 0 {
+// slc must have enough dimension & capacity for all element,
+// use 'InitSlice' to allocate multiple dimension slice before setting
+func SetSlice(slc []any, value any, indicesDim ...any) (ok bool) {
+	if len(indicesDim) == 0 {
 		return false
 	}
-	for _, seg := range idxSegs {
-		if !IsUint(seg) {
+	for _, idxDim := range indicesDim {
+		if !IsUint(idxDim) {
 			return false
 		}
 	}
 
-	for i, seg := range idxSegs {
-		if idx, _ := AnyTryToType[int](seg); idx < len(slc) {
+	for i, idxDim := range indicesDim {
+		if idx, _ := AnyTryToType[int](idxDim); idx < len(slc) {
 
-			if i == len(idxSegs)-1 {
+			if i == len(indicesDim)-1 {
 				slc[idx] = value
 				return true
 			} else {
@@ -121,18 +123,18 @@ func SetSlice(slc []any, value any, idxSegs ...any) (ok bool) {
 
 // This can only set single value in nested slice, useless for further assignment
 //
-// func MakeSlice(value any, idxSegs ...any) (slc []any, err error) {
-// 	if len(idxSegs) == 0 {
+// func MakeSlice(value any, indicesDim ...any) (slc []any, err error) {
+// 	if len(indicesDim) == 0 {
 // 		return []any{value}, nil
 // 	}
-// 	for _, seg := range idxSegs {
-// 		if !IsUint(seg) {
-// 			return nil, fmt.Errorf("index path (idxSegs) must can be converted to unsigned int")
+// 	for _, idxDim := range indicesDim {
+// 		if !IsUint(idxDim) {
+// 			return nil, fmt.Errorf("index path (indicesDim) must can be converted to unsigned int")
 // 		}
 // 	}
 
-// 	for i, seg := range Reverse(idxSegs) {
-// 		idx, _ := AnyTryToType[int](seg)
+// 	for i, idxDim := range Reverse(indicesDim) {
+// 		idx, _ := AnyTryToType[int](idxDim)
 
 // 		if i == 0 { // value seg
 
