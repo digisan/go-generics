@@ -3,6 +3,7 @@ package v2
 import (
 	"fmt"
 	"log"
+	"net"
 	"net/mail"
 	"net/url"
 	"reflect"
@@ -130,6 +131,11 @@ func IsNil(i any) bool {
 func IsEmail(s string) bool {
 	_, err := mail.ParseAddress(s)
 	return err == nil
+}
+
+// check string is valid IP
+func IsIP(s string) bool {
+	return net.ParseIP(s) != nil
 }
 
 func IsURL(s string) bool {
