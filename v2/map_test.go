@@ -197,6 +197,26 @@ func TestMapMerge(t *testing.T) {
 	}
 }
 
+func TestMapPushMerge(t *testing.T) {
+	m1 := map[int][]string{
+		6: {"66", "77"},
+		1: {"11"},
+		2: {"22"},
+		3: {"AA"},
+		4: {"BB"},
+		5: {"55"},
+	}
+	m2 := map[int]string{
+		66: "6",
+		1: "1",
+		2: "2",
+		3: "A",
+		4: "B",
+		5: "5",
+	}
+	fmt.Println(MapPushMerge(m1, m2))
+}
+
 func TestMap2KVs(t *testing.T) {
 	type args struct {
 		m          map[int]string
@@ -690,13 +710,13 @@ func TestHalfFlat(t *testing.T) {
 	fmt.Println()
 
 	nm := MapHalfFlatToNested(hfm, func(path string, value any) (p string, v any) {
-		
+
 		if path == "P1" {
 			return "", nil
 		}
 
 		fmt.Println("--->", path, value)
-		
+
 		return path, value
 	})
 

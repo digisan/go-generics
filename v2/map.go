@@ -117,6 +117,13 @@ func MapMergeOnValSlc[T1, T2 comparable](ms ...map[T1][]T2) map[T1][]T2 {
 	return res
 }
 
+func MapPushMerge[T1, T2 comparable](m map[T1][]T2, ms ...map[T1]T2) map[T1][]T2 {
+	if m == nil {
+		return MapMerge(ms...)
+	}
+	return MapMergeOnValSlc(m, MapMerge[T1](ms...))
+}
+
 // MapFilter:
 func MapFilter[T1 comparable, T2 any](m map[T1]T2, filter func(k T1, v T2) bool) map[T1]T2 {
 	rt := make(map[T1]T2)

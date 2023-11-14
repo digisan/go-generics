@@ -6,7 +6,6 @@ import (
 )
 
 func TestStream(t *testing.T) {
-
 	str := "ABCD"
 	r := StringToStream(str)
 	s := StreamToString(r)
@@ -16,5 +15,4 @@ func TestStream(t *testing.T) {
 	r = BytesToStream(data)
 	data = StreamToBytes(r)
 	fmt.Println(string(data))
-
 }
