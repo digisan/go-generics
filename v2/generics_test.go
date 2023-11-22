@@ -463,7 +463,7 @@ func TestFilterFast(t *testing.T) {
 				t.Errorf("Filter() = %v, want %v", got, tt.want)
 			}
 		})
-		fmt.Println("filtered:", *tt.args.data)
+		fmt.Println("filtered:", *tt.args.data) // original data is changed, let's have a look
 		fmt.Println()
 	}
 }

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/gob"
 	"log"
-	"reflect"
 	"unsafe"
 )
 
@@ -233,9 +232,10 @@ func DelEleOrderlyAt[T comparable](arr *[]T, i int) {
 
 // ***
 func DelEleAt[T comparable](arr *[]T, i int) {
-	if i >= 0 && i < len(*arr) {
+	if length := len(*arr); i >= 0 && i < length {
 		(*arr)[i] = (*arr)[len(*arr)-1]
-		(*reflect.SliceHeader)(unsafe.Pointer(arr)).Len--
+		// (*reflect.SliceHeader)(unsafe.Pointer(arr)).Len--
+		*arr = unsafe.Slice(unsafe.SliceData(*arr), length-1)
 	}
 }
 
@@ -287,7 +287,8 @@ func FilterFast[T any](pData *[]T, filter func(i int, e T) bool) []T {
 			k++
 		}
 	}
-	(*reflect.SliceHeader)(unsafe.Pointer(pData)).Len = k
+	// (*reflect.SliceHeader)(unsafe.Pointer(pData)).Len = k
+	*pData = unsafe.Slice(unsafe.SliceData(*pData), k)
 	return p
 }
 
