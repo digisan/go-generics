@@ -33,6 +33,22 @@ func TestStrToConstBytes(t *testing.T) {
 	}
 }
 
+func TestStrToBytes(t *testing.T) {
+
+	str := "ABC"
+
+	bytes := StrToConstBytes(str)
+	fmt.Println(bytes, str)
+	// crash here !!!
+	// bytes[0] += 1
+	// fmt.Println(bytes, str)
+
+	bytes1 := []byte(str)
+	fmt.Println(bytes1, str)
+	bytes1[0] += 1
+	fmt.Println(bytes1, str)
+}
+
 func TestMapCvt(t *testing.T) {
 	m := map[any]any{
 		1: "11",
