@@ -1,3 +1,3 @@
 module github.com/digisan/go-generics
 
-go 1.21.7
+go 1.22.0
