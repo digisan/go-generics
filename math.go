@@ -1,6 +1,8 @@
 package v2
 
-import "log"
+import (
+	"fmt"
+)
 
 type Number interface {
 	~int | ~int8 | ~int16 | ~int32 | ~int64 | ~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~float32 | ~float64
@@ -14,89 +16,100 @@ func Sum[T Number](arr ...T) T {
 	return *sum
 }
 
-func InRange[T Number](n, left, right T, leftClose, rightClose bool) bool {
-	if left > right {
-		log.Fatalf("[left]-%v must NOT greater than [right]-%v", left, right)
+type RangeType int
+
+const (
+	CloseOpen RangeType = iota
+	CloseClose
+	OpenOpen
+	OpenClose
+)
+
+func InRange[T Number](n, left, right T, rt RangeType) (bool, error) {
+	if left >= right {
+		return false, fmt.Errorf("[left]-%v must less than [right]-%v", left, right)
 	}
-	switch {
-	case leftClose && rightClose:
-		return n >= left && n <= right
-	case !leftClose && rightClose:
-		return n > left && n <= right
-	case leftClose && !rightClose:
-		return n >= left && n < right
+	switch rt {
+	case CloseOpen:
+		return n >= left && n < right, nil
+	case CloseClose:
+		return n >= left && n <= right, nil
+	case OpenOpen:
+		return n > left && n < right, nil
+	case OpenClose:
+		return n > left && n <= right, nil
 	default:
-		return n > left && n < right
+		return n >= left && n < right, nil
 	}
 }
 
-func NotInRange[T Number](n, left, right T, leftClose, rightClose bool) bool {
-	return !InRange(n, left, right, leftClose, rightClose)
+func NotInRange[T Number](n, left, right T, rt RangeType) (bool, error) {
+	ok, err := InRange(n, left, right, rt)
+	return !ok, err
 }
 
-func InCloseRange[T Number](n, left, right T) bool {
-	return InRange(n, left, right, true, true)
+func InRanges[T Number](n T, rt RangeType, ranges ...[2]T) (bool, error) {
+	for _, rng := range ranges {
+		ok, err := InRange(n, rng[0], rng[1], rt)
+		if err != nil {
+			return false, err
+		}
+		if ok {
+			return true, nil
+		}
+	}
+	return false, nil
 }
 
-func NotInCloseRange[T Number](n, left, right T) bool {
-	return !InCloseRange(n, left, right)
+func NotInRanges[T Number](n T, rt RangeType, ranges ...[2]T) (bool, error) {
+	ok, err := InRanges(n, rt, ranges...)
+	return !ok, err
 }
 
-func InOpenRange[T Number](n, left, right T) bool {
-	return InRange(n, left, right, false, false)
-}
+func HasOverlap[T Number](a1 [2]T, a2 [2]T, rt RangeType) bool {
+	for _, e := range a1 {
+		if e > a2[0] && e < a2[1] {
+			return true
+		}
+	}
+	for _, e := range a2 {
+		if e > a1[0] && e < a1[1] {
+			return true
+		}
+	}
 
-func NotInOpenRange[T Number](n, left, right T) bool {
-	return !InOpenRange(n, left, right)
-}
-
-func InCloseOpenRange[T Number](n, left, right T) bool {
-	return InRange(n, left, right, true, false)
-}
-
-func NotInCloseOpenRange[T Number](n, left, right T) bool {
-	return !InCloseOpenRange(n, left, right)
-}
-
-// a1, a2 are both close-open range
-func OverlappedA[T Number](a1, a2 [2]T) bool {
-	switch {
-	case InCloseOpenRange(a1[0], a2[0], a2[1]):
-		return true
-	case a2[0] < a1[1] && a1[1] < a2[1]:
-		return true
-	case InCloseOpenRange(a2[0], a1[0], a1[1]):
-		return true
-	case a1[0] < a2[1] && a2[1] < a1[1]:
-		return true
+	s1, e1 := a1[0], a1[1]
+	s2, e2 := a2[0], a2[1]
+	switch rt {
+	case CloseClose:
+		if s1 == s2 || e1 == s2 || s1 == e2 || e1 == e2 {
+			return true
+		}
+	case CloseOpen:
+		if s1 == s2 {
+			return true
+		}
+	case OpenClose:
+		if e1 == e2 {
+			return true
+		}
+	case OpenOpen:
+		if s1 == s2 && e1 == e2 {
+			return true
+		}
 	default:
 		return false
 	}
+	return false
 }
 
-// s1, s2 are both close-open range
-func OverlappedS[T Number](s1, s2 []T) bool {
+func HasOverlapSlc[T Number](s1 []T, s2 []T, rt RangeType) bool {
 	a1 := (*[2]T)(s1)
 	a2 := (*[2]T)(s2)
-	return OverlappedA(*a1, *a2)
+	return HasOverlap(*a1, *a2, rt)
 }
 
-func SpanJoin[T Number](s1, s2 []T, ocJoin bool) ([]T, bool) {
-	max := Max(s1[0], s1[1], s2[0], s2[1])
-	min := Min(s1[0], s1[1], s2[0], s2[1])
-	if OverlappedS(s1, s2) {
-		return []T{min, max}, true
-	}
-	if ocJoin {
-		if s1[1] == s2[0] || s2[1] == s1[0] {
-			return []T{min, max}, true
-		}
-	}
-	return nil, false
-}
-
-// sn are all close-open range
-func HasOverlapped[T Number](sn ...[]T) bool {
+func ShareOverlap[T Number](rt RangeType, sn ...[]T) bool {
 	if len(sn) < 2 {
 		return false
 	}
@@ -105,10 +118,19 @@ func HasOverlapped[T Number](sn ...[]T) bool {
 			if i == j {
 				continue
 			}
-			if OverlappedS(s1, s2) {
+			if HasOverlapSlc(s1, s2, rt) {
 				return true
 			}
 		}
 	}
 	return false
+}
+
+func RangeUnion[T Number](s1, s2 []T, rt RangeType) ([]T, bool) {
+	min := Min(s1[0], s2[0])
+	max := Max(s1[1], s2[1])
+	if HasOverlapSlc(s1, s2, rt) {
+		return []T{min, max}, true
+	}
+	return nil, false
 }

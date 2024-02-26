@@ -223,6 +223,19 @@ func NotIn[T comparable](e T, arr ...T) bool {
 	return !In(e, arr...)
 }
 
+func InSlices[T comparable](e T, arr ...[]T) bool {
+	for _, a := range arr {
+		if In(e, a...) {
+			return true
+		}
+	}
+	return false
+}
+
+func NotInSlices[T comparable](e T, arr ...[]T) bool {
+	return !InSlices(e, arr...)
+}
+
 // ***
 func DelEleOrderlyAt[T comparable](arr *[]T, i int) {
 	if i >= 0 && i < len(*arr) {

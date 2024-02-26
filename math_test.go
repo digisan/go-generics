@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestHasOverlapped(t *testing.T) {
+func TestHasOverlap(t *testing.T) {
 	type args struct {
 		sn [][]int
 	}
@@ -36,18 +36,18 @@ func TestHasOverlapped(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := HasOverlapped(tt.args.sn...); got != tt.want {
-				t.Errorf("HasOverlapped() = %v, want %v", got, tt.want)
+			if got := ShareOverlap(CloseOpen, tt.args.sn...); got != tt.want {
+				t.Errorf("HasOverlap() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestSpanJoin(t *testing.T) {
+func TestRangeUnion(t *testing.T) {
 	type args struct {
-		s1      []int
-		s2      []int
-		ocJoint bool
+		s1 []int
+		s2 []int
+		rt RangeType
 	}
 	tests := []struct {
 		name  string
@@ -58,49 +58,58 @@ func TestSpanJoin(t *testing.T) {
 		// TODO: Add test cases.
 		{
 			args: args{
-				s1:      []int{3, 6},
-				s2:      []int{4, 9},
-				ocJoint: false,
+				s1: []int{3, 6},
+				s2: []int{4, 9},
+				rt: CloseOpen,
 			},
 			want:  []int{3, 9},
 			want1: true,
 		},
 		{
 			args: args{
-				s1:      []int{3, 6},
-				s2:      []int{7, 9},
-				ocJoint: false,
+				s1: []int{3, 6},
+				s2: []int{7, 9},
+				rt: CloseOpen,
 			},
 			want:  nil,
 			want1: false,
 		},
 		{
 			args: args{
-				s1:      []int{3, 6},
-				s2:      []int{6, 9},
-				ocJoint: true,
+				s1: []int{3, 6},
+				s2: []int{6, 9},
+				rt: CloseClose,
 			},
 			want:  []int{3, 9},
 			want1: true,
 		},
 		{
 			args: args{
-				s1:      []int{3, 6},
-				s2:      []int{6, 9},
-				ocJoint: false,
+				s1: []int{3, 6},
+				s2: []int{6, 9},
+				rt: CloseOpen,
 			},
 			want:  nil,
 			want1: false,
+		},
+		{
+			args: args{
+				s1: []int{3, 6},
+				s2: []int{3, 8},
+				rt: OpenOpen,
+			},
+			want:  []int{3, 8},
+			want1: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, got1 := SpanJoin(tt.args.s1, tt.args.s2, tt.args.ocJoint)
+			got, got1 := RangeUnion(tt.args.s1, tt.args.s2, tt.args.rt)
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("SpanJoin() got = %v, want %v", got, tt.want)
+				t.Errorf("RangeUnion() got = %v, want %v", got, tt.want)
 			}
 			if got1 != tt.want1 {
-				t.Errorf("SpanJoin() got1 = %v, want %v", got1, tt.want1)
+				t.Errorf("RangeUnion() got1 = %v, want %v", got1, tt.want1)
 			}
 		})
 	}
