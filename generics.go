@@ -236,6 +236,37 @@ func NotInSlices[T comparable](e T, arr ...[]T) bool {
 	return !InSlices(e, arr...)
 }
 
+func OnlyIn2[T comparable](arr1, arr2 []T) (elems []T) {
+	for _, a2 := range arr2 {
+		if NotIn(a2, arr1...) {
+			elems = append(elems, a2)
+		}
+	}
+	return
+}
+
+func OnlyIn1[T comparable](arr1, arr2 []T) (elems []T) {
+	for _, a1 := range arr1 {
+		if NotIn(a1, arr2...) {
+			elems = append(elems, a1)
+		}
+	}
+	return
+}
+
+func SameElements[T comparable](arr1, arr2 []T) (same []T) {
+	for _, a1 := range arr1 {
+		if In(a1, arr2...) {
+			same = append(same, a1)
+		}
+	}
+	return
+}
+
+func CanCover[T comparable](arr1, arr2 []T) bool {
+	return len(OnlyIn2(arr1, arr2)) == 0
+}
+
 // ***
 func DelEleOrderlyAt[T comparable](arr *[]T, i int) {
 	if i >= 0 && i < len(*arr) {

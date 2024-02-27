@@ -1166,3 +1166,12 @@ func TestMinFloor(t *testing.T) {
 		})
 	}
 }
+
+func TestOnlyIn1(t *testing.T) {
+	a1 := []int{3, 5, 33, 2, 1, 12, 66, 67}
+	a2 := []int{3, 5, 33, 2, 1, 12, 67}
+	fmt.Println(OnlyIn1(a1, a2))
+	fmt.Println(OnlyIn2(a1, a2))
+	fmt.Println(SameElements(a1, a2))
+	fmt.Println(CanCover(a1, a2))
+}
