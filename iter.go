@@ -1,4 +1,4 @@
-package v2
+package gogenerics
 
 // Iter : for i := range Iter(end) / (start, end) / (start, step, end)
 func Iter[T Integer](params ...T) <-chan T {

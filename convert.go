@@ -1,4 +1,4 @@
-package v2
+package gogenerics
 
 import (
 	"fmt"
@@ -132,13 +132,29 @@ func AnyTryToType[T any](v any) (T, bool) {
 }
 
 // T is return type
+func AnyToType[T any](v any) (T, error) {
+	typ := reflect.TypeOf(*new(T))
+	if t, ok := v.(T); ok {
+		return t, nil
+	} else {
+		if reflect.TypeOf(v).ConvertibleTo(typ) {
+			v := reflect.ValueOf(v).Convert(typ).Interface()
+			return v.(T), nil
+		}
+	}
+	return *new(T), fmt.Errorf("%v cannot be converted to Type [%T]", v, typ)
+}
+
+// T is return type
 func AnysToTypes[T any](s []any) []T {
 	if s == nil {
 		return nil
 	}
 	rt := make([]T, 0, len(s))
 	for _, a := range s {
-		rt = append(rt, a.(T))
+		if v, err := AnyToType[T](a); err == nil {
+			rt = append(rt, v)
+		}
 	}
 	return rt
 }
@@ -241,45 +257,59 @@ func MapToSyncMap[T1 comparable, T2 any](m map[T1]T2) sync.Map {
 	return rt
 }
 
-func MapCvtKVAnyToType[T1 comparable, T2 any](m map[any]any) map[T1]T2 {
+func MapCvtKVTypeToAny[T1 comparable, T2 any](m map[T1]T2) map[any]any {
 	if m == nil {
 		return nil
 	}
-	rt := make(map[T1]T2)
-	for k, v := range m {
-		rt[k.(T1)] = v.(T2)
-	}
-	return rt
-}
-
-func MapCvtVTypeToAny[T1 comparable, T2 any](m map[T1]T2) map[T1]any {
-	rt := make(map[T1]any)
+	rt := make(map[any]any)
 	for k, v := range m {
 		rt[k] = v
 	}
 	return rt
 }
 
-func MapCvtVAnyToType[T1 comparable, T2 any](m map[T1]any) map[T1]T2 {
+func MapCvtKVAnyToType[T1 comparable, T2 any](m map[any]any) map[T1]T2 {
+	if m == nil {
+		return nil
+	}
 	rt := make(map[T1]T2)
 	for k, v := range m {
-		rt[k] = v.(T2)
+		if kt, err := AnyToType[T1](k); err == nil {
+			if vt, err := AnyToType[T2](v); err == nil {
+				rt[kt] = vt
+			}
+		}
 	}
 	return rt
 }
 
-func MapCvtVTypesToAnys[T1 comparable, T2 any](m map[T1][]T2) map[T1][]any {
-	rt := make(map[T1][]any)
+// TK1: input map key type; TV1: input map value type;
+// TK2: output map key type; TK2: output map value type;
+func MapCvtKVTypeToType[TK1, TK2 comparable, TV1, TV2 any](m map[TK1]TV1) map[TK2]TV2 {
+	return MapCvtKVAnyToType[TK2, TV2](MapCvtKVTypeToAny(m))
+}
+
+func MapCvtKVTypesToAnys[T1 comparable, T2 any](m map[T1][]T2) map[any][]any {
+	rt := make(map[any][]any)
 	for k, v := range m {
-		rt[k] = TypesAsAnyToAnys(v)
+		var a any = k
+		rt[a] = TypesAsAnyToAnys(v)
 	}
 	return rt
 }
 
-func MapCvtVAnysToTypes[T1 comparable, T2 any](m map[T1][]any) map[T1][]T2 {
+func MapCvtKVAnysToTypes[T1 comparable, T2 any](m map[any][]any) map[T1][]T2 {
 	rt := make(map[T1][]T2)
 	for k, v := range m {
-		rt[k] = AnysToTypes[T2](v)
+		if kt, err := AnyToType[T1](k); err == nil {
+			rt[kt] = AnysToTypes[T2](v)
+		}
 	}
 	return rt
+}
+
+// TK1: input map key type; TV1: input map value type;
+// TK2: output map key type; TK2: output map value type;
+func MapCvtKVTypesToTypes[TK1, TK2 comparable, TV1, TV2 any](m map[TK1][]TV1) map[TK2][]TV2 {
+	return MapCvtKVAnysToTypes[TK2, TV2](MapCvtKVTypesToAnys(m))
 }

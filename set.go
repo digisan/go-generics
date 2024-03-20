@@ -1,4 +1,4 @@
-package v2
+package gogenerics
 
 // IsSuper :
 func IsSuper[T comparable](setA, setB []T) bool {

@@ -1,4 +1,4 @@
-package v2
+package gogenerics
 
 import (
 	"fmt"
@@ -208,11 +208,11 @@ func TestMapPushMerge(t *testing.T) {
 	}
 	m2 := map[int]string{
 		66: "6",
-		1: "1",
-		2: "2",
-		3: "A",
-		4: "B",
-		5: "5",
+		1:  "1",
+		2:  "2",
+		3:  "A",
+		4:  "B",
+		5:  "5",
 	}
 	fmt.Println(MapPushMerge(m1, m2))
 }

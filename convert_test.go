@@ -1,8 +1,7 @@
-package v2
+package gogenerics
 
 import (
 	"fmt"
-	"reflect"
 	"sync"
 	"testing"
 	"time"
@@ -226,68 +225,50 @@ func TestTryToTime(t *testing.T) {
 	}
 }
 
-func TestMapToValAny(t *testing.T) {
-	type args struct {
-		m map[int]int
-	}
-	tests := []struct {
-		name string
-		args args
-		want map[int]any
-	}{
-		// TODO: Add test cases.
-		{
-			args: args{
-				m: map[int]int{
-					1: 1,
-					2: 2,
-					3: 3,
-				},
-			},
-			want: map[int]any{
-				1: 1,
-				2: 2,
-				3: 3,
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := MapCvtVTypeToAny(tt.args.m); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("MapToValAny() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
+func TestAnysToTypes(t *testing.T) {
 
-func TestMapToArrValAny(t *testing.T) {
-	type args struct {
-		m map[int][]int
+	type MyStr string
+
+	const (
+		First  MyStr = "first"
+		Second MyStr = "second"
+		Third  MyStr = "third"
+	)
+	myArr := []MyStr{First, Second, Third}
+	strArr := TypesAsAnyToTypes[string](myArr)
+
+	fmt.Println(strArr)
+
+	///////////////////////////////////////////////////
+
+	type MyInt int32
+
+	const (
+		FirstNum  MyInt = 1
+		SecondNum MyInt = 2
+		ThirdNum  MyInt = 3
+	)
+	myArrNum := []MyInt{FirstNum, SecondNum, ThirdNum}
+	numArr := TypesAsAnyToTypes[float64](myArrNum)
+
+	fmt.Println(numArr)
+
+	///////////////////////////////////////////////////
+
+	m := map[MyStr]MyInt{
+		"a": 1,
+		"b": 2,
 	}
-	tests := []struct {
-		name string
-		args args
-		want map[int][]any
-	}{
-		// TODO: Add test cases.
-		{
-			args: args{
-				m: map[int][]int{
-					1: {1, 2, 3},
-					2: {4, 5, 6},
-				},
-			},
-			want: map[int][]any{
-				1: {1, 2, 3},
-				2: {4, 5, 6},
-			},
-		},
+
+	m1 := MapCvtKVTypeToType[MyStr, string, MyInt, float32](m)
+	fmt.Println(m1)
+
+	///////////////////////////////////////////////////
+
+	ma := map[MyStr][]MyInt{
+		"a": {1},
+		"b": {2, 3},
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := MapCvtVTypesToAnys(tt.args.m); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("MapToArrValAny() = %v, want %v", got, tt.want)
-			}
-		})
-	}
+	ma1 := MapCvtKVTypesToTypes[MyStr, string, MyInt, byte](ma)
+	fmt.Println(ma1)
 }
