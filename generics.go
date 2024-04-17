@@ -2,16 +2,11 @@ package gogenerics
 
 import (
 	"bytes"
+	"cmp"
 	"encoding/gob"
 	"log"
 	"unsafe"
 )
-
-type Ordered interface {
-	~int | ~int8 | ~int16 | ~int32 | ~int64 |
-		~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 |
-		~uintptr | ~float32 | ~float64 | ~string
-}
 
 func AppendBytes(blocks ...[]byte) []byte {
 	return bytes.Join(blocks, []byte{})
@@ -64,7 +59,7 @@ func Last[T any](arr []T, idx int) T {
 }
 
 // ***
-func Max[T Ordered](arr ...T) T {
+func Max[T cmp.Ordered](arr ...T) T {
 	if len(arr) == 0 {
 		panic("Max args at least has one element")
 	}
@@ -77,7 +72,7 @@ func Max[T Ordered](arr ...T) T {
 	return m
 }
 
-func MaxCeiling[T Ordered](ceiling T, close bool, arr ...T) (m T, ok bool) {
+func MaxCeiling[T cmp.Ordered](ceiling T, close bool, arr ...T) (m T, ok bool) {
 	if len(arr) == 0 {
 		panic("Max args at least has one element")
 	}
@@ -114,7 +109,7 @@ func MaxCeiling[T Ordered](ceiling T, close bool, arr ...T) (m T, ok bool) {
 }
 
 // ***
-func MaxIdx[T Ordered](arr ...T) (T, int) {
+func MaxIdx[T cmp.Ordered](arr ...T) (T, int) {
 	if len(arr) == 0 {
 		panic("Max args at least has one element")
 	}
@@ -129,7 +124,7 @@ func MaxIdx[T Ordered](arr ...T) (T, int) {
 }
 
 // ***
-func Min[T Ordered](arr ...T) T {
+func Min[T cmp.Ordered](arr ...T) T {
 	if len(arr) == 0 {
 		panic("Min args at least has one element")
 	}
@@ -142,7 +137,7 @@ func Min[T Ordered](arr ...T) T {
 	return m
 }
 
-func MinFloor[T Ordered](floor T, close bool, arr ...T) (m T, ok bool) {
+func MinFloor[T cmp.Ordered](floor T, close bool, arr ...T) (m T, ok bool) {
 	if len(arr) == 0 {
 		panic("Min args at least has one element")
 	}
@@ -179,7 +174,7 @@ func MinFloor[T Ordered](floor T, close bool, arr ...T) (m T, ok bool) {
 }
 
 // ***
-func MinIdx[T Ordered](arr ...T) (T, int) {
+func MinIdx[T cmp.Ordered](arr ...T) (T, int) {
 	if len(arr) == 0 {
 		panic("Min args at least has one element")
 	}
