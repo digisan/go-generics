@@ -1,7 +1,7 @@
 # go-generics
 
-golang generics for common used function,
-should be the lowest level
+golang generics for common other functions,
+Must be the lowest level
 
 move all content from go-generics/v2 to go-generics/
 go1.22.0
