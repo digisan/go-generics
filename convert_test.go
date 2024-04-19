@@ -160,14 +160,14 @@ func TestAnyTryToType(t *testing.T) {
 		panic("")
 	}
 
-	u, ok := AnyTryToType[uint]("123")
+	u, ok := AnyTryToType[uint]("12a3", 16)
 	if ok {
 		fmt.Println(u + 100.0)
 	} else {
 		panic("")
 	}
 
-	u64, ok := AnyTryToType[uint64]("123")
+	u64, ok := AnyTryToType[uint64]("123", 8)
 	if ok {
 		fmt.Println(u64 + 100.0)
 	} else {

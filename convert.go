@@ -19,19 +19,27 @@ func ConstBytesToStr(b []byte) string {
 }
 
 // if return type 'T' is []byte, then return value is v's printed string as []byte, NOT binary encoding
-func AnyTryToType[T any](v any) (T, bool) {
+//
+// optBase is 'parse (u)int base (2, 8, 10, 16)'
+func AnyTryToType[T any](v any, optBase ...any) (T, bool) {
 
 	sv := ""
-
 	if TypeOf(v) == "[]uint8" {
 		sv = ConstBytesToStr(v.([]byte))
 	} else {
 		sv = fmt.Sprint(v)
 	}
 
+	base := 0
+	if len(optBase) > 0 {
+		if b, ok := AnyTryToType[int](optBase[0]); ok {
+			base = b
+		}
+	}
+
 	fv, errF := strconv.ParseFloat(sv, 64)
-	iv, errI := strconv.ParseInt(sv, 10, 64)
-	uv, errU := strconv.ParseUint(sv, 10, 64)
+	iv, errI := strconv.ParseInt(sv, base, 64)
+	uv, errU := strconv.ParseUint(sv, base, 64)
 	bv, errB := strconv.ParseBool(sv)
 	cv, errC := strconv.ParseComplex(sv, 128)
 	tm, okT := TryToDateTime(sv)
