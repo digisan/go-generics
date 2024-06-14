@@ -1175,3 +1175,13 @@ func TestOnlyIn1(t *testing.T) {
 	fmt.Println(SameElements(a1, a2))
 	fmt.Println(CanCover(a1, a2))
 }
+
+func TestContains(t *testing.T) {
+	a1 := []int{3, 5, 33, 2, 1, 12, 66, 671}
+	a2 := []int{3, 5, 33, 2, 1, 12, 67}
+	fmt.Println(ContainsAll(a1, a2...))
+
+	a1 = []int{3, 5, 33, 2, 1, 12, 66, 67}
+	a2 = []int{31, 51, 331, 21, 11, 121, 671, 10 - 5}
+	fmt.Println(ContainsAny(a1, a2...))
+}

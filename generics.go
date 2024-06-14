@@ -218,7 +218,7 @@ func NotIn[T comparable](e T, arr ...T) bool {
 	return !In(e, arr...)
 }
 
-func InSlices[T comparable](e T, arr ...[]T) bool {
+func InAnyOfSlices[T comparable](e T, arr ...[]T) bool {
 	for _, a := range arr {
 		if In(e, a...) {
 			return true
@@ -227,8 +227,8 @@ func InSlices[T comparable](e T, arr ...[]T) bool {
 	return false
 }
 
-func NotInSlices[T comparable](e T, arr ...[]T) bool {
-	return !InSlices(e, arr...)
+func NotInAnyOfSlices[T comparable](e T, arr ...[]T) bool {
+	return !InAnyOfSlices(e, arr...)
 }
 
 func OnlyIn2[T comparable](arr1, arr2 []T) (elems []T) {
@@ -260,6 +260,19 @@ func SameElements[T comparable](arr1, arr2 []T) (same []T) {
 
 func CanCover[T comparable](arr1, arr2 []T) bool {
 	return len(OnlyIn2(arr1, arr2)) == 0
+}
+
+func ContainsAll[T comparable](arr []T, elems ...T) bool {
+	return CanCover(arr, elems)
+}
+
+func ContainsAny[T comparable](arr []T, elems ...T) bool {
+	for _, e := range elems {
+		if In(e, arr...) {
+			return true
+		}
+	}
+	return false
 }
 
 // ***
